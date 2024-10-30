@@ -223,3 +223,10 @@ jekyll-archives:
   permalinks:
     tag: /tags/:name/
     category: /categories/:name/
+
+htmlproofer:
+  allow_http: true
+  url_ignore:
+    - http://sobereva.com
+    - http://bbs.keinsci.com
+
