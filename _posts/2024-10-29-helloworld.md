@@ -13,7 +13,7 @@ cd D:\blog_source\bane-dysta.github.io
  bundle exec jekyll serve
 ```
 
-[本地服务器网址](http://127.0.0.1:4000/)
+[本地服务器网址](http://127.0.0.1:4000/){:target="_blank"}
 
 post：
 ```
@@ -23,3 +23,8 @@ git add .
 git commit -m "post" 
 git push -u origin main
 ```
+
+[Chripy官网](https://chirpy.cotes.page/){:target="_blank"}
+
+[Marvin](https://winxuan.github.io/posts/creat-blog/){:target="_blank"}
+
