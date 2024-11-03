@@ -33,36 +33,41 @@ cub2iso 0.001
 ~~~
 即可可视化电子与空穴。但若是要绘制三个激发态的图像，手动输入hole_00001等文件名仍觉繁琐，因此写了新的tcl脚本：
 ~~~
-proc hole {suffix} {
-    # 检查输入的 suffix 是否为空
+proc hole {suffix {filename "hole_electron"}} {
+    # 检查输入的 suffix 是否为空或为 "r"
     if {$suffix eq ""} {
-        # 默认情况下运行 cub2 electron hole
-        puts "Running: cub2 electron hole"
-        puts "Running: cub2iso 0.001"
+        # 默认情况下运行 cub2 electron hole 0.001
+        puts "Running: cub2 electron hole 0.001"
         
-        # 执行命令
-        cub2 electron hole
-        cub2iso 0.001
+        # 执行 cub2 命令
+        cub2 electron hole 0.001
+    } elseif {$suffix eq "r"} {
+        # 如果 suffix 为 "r"，运行渲染命令，将 .tga 添加到 filename 中
+        set output_file "${filename}.tga"
+        
+        puts "Running: render TachyonInternal $output_file"
+        
+        # 执行渲染命令
+        render TachyonInternal $output_file
     } else {
-        # 如果提供了 suffix，则在文件名中加入该后缀
+        # 如果提供了其他的 suffix，在文件名中加入该后缀
         set electron_file "electron_0000$suffix"
         set hole_file "hole_0000$suffix"
         
-        puts "Running: cub2 $electron_file $hole_file"
-        puts "Running: cub2iso 0.001"
+        puts "Running: cub2 $electron_file $hole_file 0.001"
         
-        # 执行带有后缀的命令
-        cub2 $electron_file $hole_file
-        cub2iso 0.001
+        # 执行带有后缀的 cub2 命令
+        cub2 $electron_file $hole_file 0.001
     }
 }
+
 ~~~
 将该脚本保存为hole.tcl，输入source hole.tcl，即可使用hole命令。hole命令可以不带参数启动，此时读取的是hole.cub和electron.cub。若运行时提供参数，如``hole 1``，则读取``hole_00001.cub``和``electron_00001.cub``。
 # 3. 渲染
 可以使用命令进行渲染：
 ~~~
-render TachyonInternal output_image.tga
+render TachyonInternal hole_electron.tga
 ~~~
-只要将output_image.tga替换为输出文件名即可。
+只要将``output_image.tga``替换为输出文件名即可。hole命令也定义了渲染模式，输入``hole r``触发，默认文件名为``hole_electron.tga``。如果提供第二个参数，则使用第二个参数作为文件名，如``hole r pyronine``会将文件保存为pyronine.tga。
 
 
