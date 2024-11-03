@@ -232,3 +232,6 @@ htmlproofer:
     - http://sobereva.com
     - http://bbs.keinsci.com
 
+external_links:
+  target: "_blank"
+  rel: "noopener noreferrer"

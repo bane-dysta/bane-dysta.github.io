@@ -41,7 +41,7 @@ obabel -:"O=C1OC2=CC=CC=C2C=C1" -O Coumarin.gjf --gen3d
 ```
 即可在当前目录生成Coumarin.gjf文件。注意这里生成的的gjf文件没有title行，也没有计算参数行，得手动补上。这种方式适合批量获取化合物的3D初始结构。
 ## 1.4 从数据库中下载
-很多已知的分子可以从一些化学数据库，如[PubChem](https://pubchem.ncbi.nlm.nih.gov/)上找到已经使用力场预优化过的较为合理的3D结构。在PubChem中搜索Coumairn，点进[第一个链接](https://pubchem.ncbi.nlm.nih.gov/compound/323)，在右侧点击Download，会弹出一个选项卡。在3D Conformer下，可以看到PubChem可以提供SDF、JSON、XML、ASNT格式的文件。笔者习惯下载SDF文件，然后用OpenBabel命令：
+很多已知的分子可以从一些化学数据库，如[PubChem](https://pubchem.ncbi.nlm.nih.gov/)上找到已经使用力场预优化过的较为合理的3D结构。在PubChem中搜索Coumairn，点进[第一个链接](https://pubchem.ncbi.nlm.nih.gov/compound/323)，在右侧点击Download，会弹出一个选项卡。在3D Conformer下，可以看到PubChem提供SDF、JSON、XML、ASNT格式的几何文件。笔者习惯下载SDF文件，然后用OpenBabel命令：
 ```
 obabel name.sdf -O name.gjf
 ```
@@ -137,7 +137,7 @@ STO-3G < 6-31G(d) < def2-SVP ≈ 6-31G(d,p) << 6-311G(d,p) < def-TZVP < def2-TZV
 - 在不会引起歧义的前提下，可以进行省略。如opt=ModRedundant可简写为opt=modr，因为opt的参数中以"modr"开头的只有ModRedundant。
 - 由于结构优化和频率分析的计算级别需要严格一致，多数量化程序都支持结构优化和频率分析合并成一个任务。但除这两个可以一起做以外，其他的计算任务关键词不能写在一起。
 
-首先应当明确的是计算任务。结构优化的关键词为``opt``，振动分析的关键词是``freq``，能量的关键词是``sp``或留空。如前所述，几何优化和频率分析一般是一起做的，可以写``opt freq``。
+首先应当明确的是计算任务。结构优化的关键词为``opt``，振动分析的关键词是``freq``，能量的关键词是``sp``或留空。如前所述，几何优化和频率分析一般是一起做的，可以写``opt freq``。而如果你要计算能量，习惯上是不写任务关键词的。
 
 然后是计算水平，即泛函/基组，如前所述，找到对应关键词后添加进关键词行即可。香豆素是共轭体系，笔者选择使用ωB97X-D和def2-SVP进行计算，则关键词为``wB97XD/def2SVP``
 
@@ -162,7 +162,10 @@ g16 coumarin.gjf > coumarin.log
 ```
 Normal termination of Gaussian 16 at Fri Nov  1 18:40:19 2024.
 ```
-此时就可以用GaussView打开log文件或者out文件查看结果了。
+此时就可以用GaussView打开log文件或者out文件查看结果了。多数简单的信息可以在右键菜单的Results选项卡中找到对应的输出，但也有少数信息需要阅读输出文件才能得到，这里就不再多讲。
+
+> 能量计算的输出可以在Results - Summary处查看，在Overview选项卡列出的表格中，有一行以E(计算级别)开头，后面的数值即为计算出的绝对能量。绝对能量值不是化学上感兴趣的量，应当横向与其他化合物进行对比。
+{: .prompt-tip }
 
 对于做了opt+freq的任务，要判断几何结构是否真正收敛到了势能面极小点，可以在右键菜单中找到Results - Vibration，检查最上面有没有频率值为负数的虚频。如果没有虚频，说明当前几何结构确实是能量最低结构。而如果存在虚频，则说明当前结构处于势能面上的鞍点，没有收敛到真正的极小点。这种情况下，还需要将log文件``Ctrl+S``保存为gjf文件，更改计算设置后重新进行一次几何计算。推荐尝试``opt=calcfc``。
 

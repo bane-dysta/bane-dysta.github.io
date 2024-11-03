@@ -1,7 +1,6 @@
 ---
 layout: page
 title: "Hidden Page"
-permalink: /bane/hid/
 hidden: true
 ---
 
