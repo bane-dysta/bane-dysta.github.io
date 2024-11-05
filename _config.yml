@@ -30,8 +30,8 @@ url: "https://bane-dysta.github.io"
 github:
   username: bane-dysta # change to your GitHub username
 
-twitter:
-  username: twitter_username # change to your Twitter username
+# twitter:
+#  username: bane-dysta # change to your Twitter username
 
 social:
   # Change to your full name.
@@ -43,7 +43,7 @@ social:
     - https://twitter.com/username # change to your Twitter homepage
     - https://github.com/username # change to your GitHub homepage
     # Uncomment below to add more social links
-    - https://www.facebook.com/username
+    # - https://www.facebook.com/username
     # - https://www.linkedin.com/in/username
 
 # Site Verification Settings
