@@ -6,7 +6,7 @@ tags: [Gaussian]
 ---
 计算激发态的理论方法很多，上至EOM-CCSD，下至sTDA-xtb，各有特色，不过目前最常用的计算方法还要属TD-DFT。截至目前，ORCA 6.0.0版本仍未支持TD-DFT的解析Hessian，而且在溶剂模型的支持上做的不尽人意，因此当下Gaussian仍然是进行TD-DFT任务最好的软件，也是研究激发态首先应当掌握的软件。总之，本文将简单介绍如何用Gaussian进行TD-DFT水平的结构优化以及单点能计算。
 # 1. 结构准备
-对于几何优化，若没有特殊需求，一般取S<sub>0</sub>极小点结构进行激发态优化的初猜结构，S<sub>0</sub>极小点结构优化方法参考[Gaussian入门：几何优化、振动分析和能量计算](https://bane-dysta.github.io/posts/Gaussian%E5%85%A5%E9%97%A8-%E5%87%A0%E4%BD%95%E4%BC%98%E5%8C%96-%E6%8C%AF%E5%8A%A8%E5%88%86%E6%9E%90%E5%92%8C%E8%83%BD%E9%87%8F%E8%AE%A1%E7%AE%97/)。
+对于几何优化，若没有特殊需求，一般取S<sub>0</sub>极小点结构进行激发态优化的初猜结构，S<sub>0</sub>极小点结构优化方法参考[Gaussian入门：几何优化、振动分析和能量计算](https://bane-dysta.github.io/posts/Gaussian_opt/)。
 
 对于激发能计算，可以采用S<sub>0</sub>极小点结构计算，此时得到的激发能对应S<sub>0</sub>吸收情况；也可以采用某激发态极小点结构计算，此时得到的激发能对应发射情况。
 
