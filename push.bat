@@ -9,6 +9,5 @@ git commit -m "post"
 REM 推送到远程仓库
 git push -u origin main
 
-@echo on
 
 pause
