@@ -5,7 +5,7 @@ categories: [Data Analysis, Molecular Orbital]
 tags: [H-Bond,AIM,Multiwfn]     
 ---
 Multiwfn分析功能十分强大，但没有内置渲染功能，且分子不能拖动总觉得差点意思。不过Sobereva老师写了不少结合VMD绘制高质量图像的方法，很大程度弥补了这一缺陷。本文以hole-electron分析为例，记录高度脚本化的Multiwfn+VMD绘制电子-空穴图像的方法。
-# 1. Multiwfn处理
+## 1. Multiwfn处理
 进行空穴分析的命令是：
 ~~~
 Multiwfn name.fchk < ~/scrpts/wfntxts/hole.txt > output.log
@@ -21,7 +21,7 @@ py wfn -t ~/scrpts/wfntxts/hole123.txt
 ~~~
 此时运行目录下输出的文件为``hole_00001.cub``、``hole_00002.cub``、``hole_00003.cub``和``electron_00001.cub``、``electron_00002.cub``、``electron_00003.cub``。
 
-# 2. VMD可视化
+## 2. VMD可视化
 参考[在VMD里将cube文件瞬间绘制成效果极佳的等值面图的方法](http://sobereva.com/483)，首先将showcub.vmd复制到VMD目录下，输入
 ~~~
 source showcub.vmd
@@ -63,7 +63,7 @@ proc hole {suffix {filename "hole_electron"}} {
 
 ~~~
 将该脚本保存为hole.tcl，输入source hole.tcl，即可使用hole命令。hole命令可以不带参数启动，此时读取的是hole.cub和electron.cub。若运行时提供参数，如``hole 1``，则读取``hole_00001.cub``和``electron_00001.cub``。
-# 3. 渲染
+## 3. 渲染
 可以使用命令进行渲染：
 ~~~
 render TachyonInternal hole_electron.tga
