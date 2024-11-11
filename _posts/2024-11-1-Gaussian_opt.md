@@ -5,7 +5,7 @@ categories: [Calculation, Quantum Chemistry]
 tags: [Gaussian]     
 ---
 Gaussian是最流行的量子化学计算软件，功能涵盖了绝大部分常规任务。且Gaussian的输入文件绝对是所有主流量子化程序中最简洁的，这一点笔者在学过ORCA、Dalton、NMChem等软件后深有体会。因此，Gaussian是入门量子化学应当首先掌握的软件。而几何优化又是所有任务中最基础的任务，绝大多数量子化学计算都要基于几何优化后的结构来进行。总之，这是一个入门级的几何优化教程贴。
-# 0. 软件安装
+## 0. 软件安装
 Gaussian安装包各位八仙过海各显神通，笔者这里就不提供了。
 
 Windows下安装Gaussian，只要跟着安装程序走就行。需要注意的问题有：
@@ -24,23 +24,23 @@ echo 'export GAUSS_SCRDIR=/path/to/g16/scratch' >> ~/.bashrc
 echo 'source /path/to/g16/bsd/g16.profile' >> ~/.bashrc
 ~~~
 注意将/path/to/g16替换为你的实际解压路径。最后在g16目录下输入``chmod 750 -R *``加上可执行权限，Gaussian就安装完毕了。
-# 1. 搭建结构
+## 1. 搭建结构
 我们平时看的lewis式或键线式都是2D结构，不包含3D信息。因此需要首先将其转换成相对合理的3D坐标，才能拿给程序去计算。这里笔者以香豆素为例，介绍一下转换方法。
-## 1.1 使用Chem Office套件转换
+### 1.1 使用Chem Office套件转换
 首先，在ChemDraw上绘制香豆素的结构。能看到这的人应该不用我教ChemDraw了，如果你不会，请你关闭此网站并认真完成今天的家庭作业。在ChemDraw上画好2D结构后，``Ctrl+C``复制，打开Chem3D，然后``Ctrl+V``粘贴，就得到了一个3D结构。如果你用的不是老爷机，可以使用``Ctrl+M``进行MM2初步优化，得到一个相对合理一些的结构。完成后，使用``Ctrl+Shift+S``另存为Gaussian Input文件（在后缀名下拉菜单里找到gjf并保存）。
 
 最后以记事本格式打开产生的gjf文件，把``#``后面自动产生的``sp test``删掉，这样结构就准备好了。使用Chem3D转换结构的坏处是Chem3D提供的初始结构可能相当不合理，需要依照化学直觉检查有没有什么离谱的地方。
 > 注意：如果你使用了MM2优化，你还需要额外查找文件内以"Lp"字样开头的行并将其全部删掉。
 {: .prompt-info }
-## 1.2 使用GaussView搭建结构
+### 1.2 使用GaussView搭建结构
 这个笔者自己也用不太明白，暂时略过，以后看心情补。GaussView的好处是可以自己调整立体结构，比Chem3D灵活得多，且很适合用点群工具搭建对称性体系，但是笔者已经太习惯ChemDraw延申碳碳键的方式了，换GaussView很不适应。
-## 1.3 使用OpenBabel转换smiles字符串
+### 1.3 使用OpenBabel转换smiles字符串
 有些网站会提供smiles字符串，可以使用OpenBabel将其转换为3D结构，适合写批量转换脚本，有一定命令行基础的读者可以尝试。去[OpenBabel官网](https://openbabel.org/docs/Installation/install.html)下载并安装好OpenBabel后，在命令行中运行：
 ```
 obabel -:"O=C1OC2=CC=CC=C2C=C1" -O Coumarin.gjf --gen3d
 ```
 即可在当前目录生成Coumarin.gjf文件。注意这里生成的的gjf文件没有title行，也没有计算参数行，得手动补上。这种方式适合批量获取化合物的3D初始结构。
-## 1.4 从数据库中下载
+### 1.4 从数据库中下载
 很多已知的分子可以从一些化学数据库，如[PubChem](https://pubchem.ncbi.nlm.nih.gov/)上找到已经使用力场预优化过的较为合理的3D结构。在PubChem中搜索Coumairn，点进[第一个链接](https://pubchem.ncbi.nlm.nih.gov/compound/323)，在右侧点击Download，会弹出一个选项卡。在3D Conformer下，可以看到PubChem提供SDF、JSON、XML、ASNT格式的几何文件。笔者习惯下载SDF文件，然后用OpenBabel命令：
 ```
 obabel name.sdf -O name.gjf
@@ -49,7 +49,7 @@ obabel name.sdf -O name.gjf
 > Chemdraw绘制出来的结构可以使用``Ctrl+Alt+C``复制为smiles字符串，可以粘贴进PubChem来搜索。
 {: .prompt-tip }
 
-# 2. 输入文件准备
+## 2. 输入文件准备
 刚刚拿到的输入文件只有几何信息，没有计算相关信息，还需要告诉程序计算相关的设置才能开始计算。以香豆素为例，进行结构优化的完整输入文件应该是类似这样的：
 ```
 %mem=16gb                           //分配内存
@@ -70,13 +70,13 @@ H          -2.81290        -1.79660         0.00060
                                     //几何坐标输入结束后，留空两行
 ```
 
-## 2.1 电荷与自旋多重度
+### 2.1 电荷与自旋多重度
 虽然几何结构已经有了，但是程序自动给出的电荷和自旋不一定是对的，需要手动检查。
 
 电荷就是体系的总电荷数，这个不必多说。
 
 自旋多重度是``α电子数-β电子数+1``，这个解释起来稍微麻烦一些，可以姑且认为常见有机体系自旋均为1。但是如果涉及自由基、金属、卡宾、氧气等情况，就另当别论了。可以参考这个[帖子](http://bbs.keinsci.com/thread-4836-1-1.html)里的讨论。
-## 2.2 基组的选择
+### 2.2 基组的选择
 基组是描述电子在空间中分布的基函数集，用来近似表示分子体系中电子的波函数。笔者常用的基组系列有：
 - pople系列基组：如6-31g、6-311g等
 - Ahlrichs系列基组：如def-TZVP、def2-SVP等
@@ -114,7 +114,7 @@ STO-3G < 6-31G(d) < def2-SVP ≈ 6-31G(d,p) << 6-311G(d,p) < def-TZVP < def2-TZV
 | 6-31g(d,p)   | 6-31g(d,p)   | 6-31g**    | def-TZVP  | TZVP      |
 | 6-311+g(d,p) | 6-311+g(d,p) |  6-311+g** | def2-TZVP | def2TZVP  |
 
-## 2.3 泛函的选择
+### 2.3 泛函的选择
 密度泛函是基于Kohn-Shan方程用于计算体系电子相关能量的函数表达式，核心思想是通过电子密度来确定体系的能量，而不是直接处理多电子波函数。密度泛函是一种映射关系，将电子密度映射到体系的能量上，因此不同的泛函会影响到计算结果的精确度。
 
 由于DFT理论对电子库伦相关与交换作用描述并不充分，可以引入Hartree-Fock相关项与MP2交换项来改进计算结果。引入Hartree-Fock相关项的泛函称为杂化泛函，同时引入Hartree-Fock相关项与MP2交换项的泛函称为双杂化泛函。
@@ -132,7 +132,7 @@ STO-3G < 6-31G(d) < def2-SVP ≈ 6-31G(d,p) << 6-311G(d,p) < def-TZVP < def2-TZV
 | PBE0       | PBE1PBE   | M06-2X     | M062X     |
 | ωB97X-D    | wB97XD    | TPSSh      | TPSSh     |
 
-## 2.4 计算关键词
+### 2.4 计算关键词
 在gjf文件中，关键词行是控制量子化学计算内容的核心部分，包含了计算任务、计算方法、计算参数等所有计算相关的选项。书写规则：
 - 位于核数、内存、检查点文件设置之后，位于title行之前
 - 以"#"开头，关键词之间用空格分隔，且不区分大小写、不区分顺序
@@ -148,14 +148,14 @@ STO-3G < 6-31G(d) < def2-SVP ≈ 6-31G(d,p) << 6-311G(d,p) < def-TZVP < def2-TZV
   >注意不同泛函对色散校正的支持情况不同，B3LYP支持BJ阻尼形式的D3校正``em=gd3BJ``，而M06-2X只支持0阻尼形式的D3校正``em=gd3``，ωB97X-D则自带D2校正，不用额外添加。
 - 溶剂模型：使用``scrf=(solvent=water)``来添加隐式溶剂，默认模型为IEFPCM。在计算能量时，可以使用`scrf=(SMD,solvent=water)``切换为SMD溶剂模型，以更好地描述非极性部分。water可以更改为Gaussian支持的任何溶剂，通常关键词为该化合物的系统命名。Gaussian的[溶剂手册](https://gaussian.com/scrf/)列出了Gaussian支持的所有溶剂与对应的关键词。
 
-## 2.5 计算资源分配
+### 2.5 计算资源分配
 如果是个人笔记本或台式机来运行Gaussian，笔者建议核数按照(计算机物理核心数-2)来给即可，而内存最好每个核分配2-3gb，最少每个核要1gb，不然可能会拖慢计算速度。
 
 为了提供一些参考，假设配置为12核，内存24GB，计算级别选择B3LYP/6-31g*，这样算小型体系是算的动的，而中型体系就有些吃力了，较大体系基本没戏。笔者平时计算惯用配置是32核+96gb，用比较好的级别如``wb97XD/TZVP``计算中型体系也没什么问题，而较大体系换小级别也能应付一下。
 
 一般chk文件就保存在当前目录即可。注意linux版Gaussian输入文件的chk行可以不写绝对路径。
 
-# 3. 提交计算 
+## 3. 提交计算 
 提交计算是很简单的。windows提交计算可以直接把gjf拖进Gaussian程序，然后点开始；linux版Gaussian需要命令行启动，命令为：
 ```
 g16 coumarin.gjf > coumarin.log
