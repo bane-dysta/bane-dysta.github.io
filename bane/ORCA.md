@@ -44,5 +44,28 @@ END
    | FCWL | force constant weighted following Lindh |
    | FCWS | same as before, but using Swart’s model Hessian |
 
+### SF-TDDFT
 
+输入文件示例：
+
+~~~
+! ci-opt WB97X-D3 def2-SVP rijcosx def2-SVP/c miniprint # 话说def2-tzvp/c能加速tddft吗？输出文件里面好像并没有体现tddft应用了/C辅助基组。
+%maxcore 4000
+%pal
+ nproc 40
+end
+%tddft
+ sf true # 使用SF-TDDFT。
+ nroots 5
+ iroot 2 # SF-TDDFT的基态是1号，第一激发态是2号。
+ jroot 1
+end
+%geom
+ maxstep 0.05 # 经验表明，优化交叉点，步长不能太长，否则容易振荡。
+ trust -0.05
+end
+*xyzfile 0 3 CASprobe.XYZ # SF-TDDFT 的参考态必须设为高自旋态。我的体系是单重态，所以参考态要设为三重态（应该也可以是五重或更高，没试
+~~~
+
+### 
 
