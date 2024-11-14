@@ -36,15 +36,15 @@ END
  - PRINTLEVEL 4：要求打印Huang-Rhys Factor
  - COORDSYS：切换坐标模式。可选项
   
-   | KEYWORDS | EXPLAIN |
-   | :-----: | :-----: |
-   | CARTESIAN | - |
-   | INTERNAL(default) | Baker delocalized |
-   | WINT | for weighted internals following Swart and Bickelhaupt |
-   | FCWL | force constant weighted following Lindh |
-   | FCWS | same as before, but using Swart’s model Hessian |
+   |     KEYWORDS      |                        EXPLAIN                         |
+   | :---------------: | :----------------------------------------------------: |
+   |     CARTESIAN     |                           -                            |
+   | INTERNAL(default) |                   Baker delocalized                    |
+   |       WINT        | for weighted internals following Swart and Bickelhaupt |
+   |       FCWL        |        force constant weighted following Lindh         |
+   |       FCWS        |    same as before, but using Swart’s model Hessian     |
 
-### SF-TDDFT
+### SF-TDDFT找MECI
 
 输入文件示例：
 
@@ -95,8 +95,29 @@ CCSD/cc-pVDZ示例：
 *xyzfile 0 1 YMT-.xyz
 ~~~
 
+### SOC计算
+输入文件示例：
+~~~
+! WB97X-D3 def2-SVP miniprint tightSCF
+%pal
+nprocs 32
+end
+%maxcore 3000
+%tddft
+nroots 5
+dosoc true
+tda false
+printlevel 3
+end
 
-### 
+* xyzfile 0 1 coumarin.xyz
+~~~
+
+
+
+###
+
+
 
 
 
