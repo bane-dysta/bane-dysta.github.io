@@ -67,5 +67,37 @@ end
 *xyzfile 0 3 CASprobe.XYZ # SF-TDDFT 的参考态必须设为高自旋态。我的体系是单重态，所以参考态要设为三重态（应该也可以是五重或更高，没试
 ~~~
 
+### CASSCF
+
+DLPNO-NEVPT2 示例：
+~~~
+! DLPNO-NEVPT2 cc-pVTZ cc-pVTZ/JK  miniprint noautostart
+%maxcore 12500
+%pal nprocs 8 end
+%casscf
+nel 6
+norb 6
+nroots 4
+weights[0] = 1,1,0,0
+end
+%moinp "gs_CN2_NEVPT2.gbw"
+*xyzfile 0 1 abs_benzene-kun-ToneTo2CN-probe.xyz
+~~~
+
+
+### CCSD
+
+CCSD/cc-pVDZ示例：
+~~~
+! CCSD cc-pVDZ tightSCF opt noautostart miniprint nopop
+%maxcore  3000
+%pal nprocs  32 end
+*xyzfile 0 1 YMT-.xyz
+~~~
+
+
 ### 
+
+
+
 
