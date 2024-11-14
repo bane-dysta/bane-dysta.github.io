@@ -16,6 +16,7 @@ $$
 
 行内公式用单个美元符号：$E=mc^2$
 独立公式块用双美元符号：
+
 $$
 E = mc^2
 $$
@@ -31,6 +32,7 @@ $$
 ~~~
 
 多行对齐公式使用 \begin{align} 环境：
+
 $$
 \begin{align}
 f(x) &= x^2 \\
@@ -49,6 +51,7 @@ $$
 ~~~
 
 矩阵可以用 \begin{matrix}、\begin{pmatrix} 等：
+
 $$
 \begin{pmatrix}
 a & b \\
@@ -66,6 +69,7 @@ $$
 ~~~
 
 如果想要在公式中使用特殊符号：
+
 $$
 箭头：\uparrow, \downarrow, \rightarrow
 向量加粗：\mathbf{v}
