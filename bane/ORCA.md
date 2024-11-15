@@ -5,6 +5,8 @@ date: 2024-11-1 12:00:00 +0800
 hidden: true
 ---
 
+
+
 ### FCHT计算
 
 输入文件示例：
@@ -83,10 +85,23 @@ end
 %moinp "gs_CN2_NEVPT2.gbw"
 *xyzfile 0 1 abs_benzene-kun-ToneTo2CN-probe.xyz
 ~~~
-### STEOM-DLPNO-CCSD
-输入文件示例：
+
+## 2. Coupled Cluster系列
+
+### 1. CCSD
+
+ORCA的CCSD有解析梯度，做几何优化示例：
 ~~~
-! STEOM-DLPNO-CCSD RIJK def2-TZVP def2/JK def2-TZVP/C noautostart miniprint nopop
+! CCSD cc-pVDZ tightSCF opt noautostart miniprint nopop
+%maxcore  3000
+%pal nprocs  32 end
+*xyzfile 0 1 YMT-.xyz
+~~~
+
+### STEOM-DLPNO-CCSD
+高精度计算激发能的方法，对双激发和三激发有一定描述。对内存和IO的需求很大，对高于1500个基函数的分子，计算消耗指数增长。基组用到def2-TZVP(-f)就够
+~~~
+! STEOM-DLPNO-CCSD RIJK def2-TZVP(-f) def2/JK def2-TZVP/C noautostart miniprint nopop
 %maxcore  6250
 %pal nprocs  16 end
 ! CPCM(Ethanol)
@@ -114,17 +129,9 @@ Iter    Delta-E          Residual              Time
  99   0.000003973179   0.740728747740         4.843
                         --- The EOM iterations have NOT converged ---
 ~~~
-可以尝试verytightSCF。
+可以尝试verytightSCF，
 
-### CCSD
 
-CCSD/cc-pVDZ示例：
-~~~
-! CCSD cc-pVDZ tightSCF opt noautostart miniprint nopop
-%maxcore  3000
-%pal nprocs  32 end
-*xyzfile 0 1 YMT-.xyz
-~~~
 
 ### SOC计算
 输入文件示例：
