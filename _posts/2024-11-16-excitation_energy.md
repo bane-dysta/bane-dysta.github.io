@@ -1,5 +1,5 @@
 ---
-title: Study notes: 精确计算激发能的方法
+title: Study notes：精确计算激发能的方法
 date: 2024-11-16 12:00:00 +0800
 categories: [Calculation, Quantum Chemistry]
 tags: [notes,excited state]     
@@ -52,6 +52,7 @@ title
  - M062X
  - cam-B3LYP
  - PBE0
+ - B3LYP
 
 待尝试：
  - PBE38
@@ -145,7 +146,7 @@ note：
   这种情况下，可以尝试verytightSCF，可能帮助收敛。
 
 ### 多参考方法
-Gaussian对CASSCF支持的很差，笔者只会在考虑分子的活性空间范围时用Gaussian来做些简单的计算。要真正计算激发能，推荐使用(DLPNO-)NEVPT2，由ORCA来进行：
+CASPT2和NEVPT2是计算光化学问题的常客，精度很好，也时常作为标杆为泛函提供参照。由于Gaussian对CASSCF支持的很差，笔者只会在考虑分子的活性空间范围时用Gaussian来做些简单的计算。要真正计算激发能，推荐使用(DLPNO-)NEVPT2，由ORCA来进行：
 ~~~
 ! DLPNO-NEVPT2 aug-cc-pVTZ aug-cc-pVTZ/JK  miniprint noautostart CPCM(ethanol)
 %maxcore 6250
