@@ -231,6 +231,7 @@ htmlproofer:
   url_ignore:
     - http://sobereva.com
     - http://bbs.keinsci.com
+    - http://www.keinsci.com
 
 external_links:
   target: "_blank"
