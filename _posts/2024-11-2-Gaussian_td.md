@@ -5,6 +5,8 @@ categories: [Calculation, Quantum Chemistry]
 tags: [Gaussian]     
 ---
 计算激发态的理论方法很多，上至EOM-CCSD，下至sTDA-xtb，各有特色，不过目前最常用的计算方法还要属TD-DFT。截至目前，ORCA 6.0.0版本仍未支持TD-DFT的解析Hessian，而且在溶剂模型的支持上做的不尽人意，因此当下Gaussian仍然是进行TD-DFT任务最好的软件，也是研究激发态首先应当掌握的软件。总之，本文将简单介绍如何用Gaussian进行TD-DFT水平的结构优化以及单点能计算。
+
+进阶的激发能计算笔记：[Study notes：精确计算激发能的方法](https://bane-dysta.github.io/posts/excitation_energy/)
 ## 1. 结构准备
 对于几何优化，若没有特殊需求，一般取S<sub>0</sub>极小点结构进行激发态优化的初猜结构，S<sub>0</sub>极小点结构优化方法参考[Gaussian入门：几何优化、振动分析和能量计算](https://bane-dysta.github.io/posts/Gaussian_opt/)。
 
@@ -82,7 +84,9 @@ H          -2.81290        -1.79660         0.00060
  Excited State   3:      Singlet-A      3.4266 eV  361.83 nm  f=0.0997  <S**2>=0.000
       77 -> 80         0.69361
 ~~~
-由输出可以看出，第一激发态的激发能是2.0573 eV，换算成波长是602.65 nm，振子强度是0.8145，S<sup>2</sup>算符的值为0，表明这个态是单重激发态。跃迁轨道对为79→80，可以从用multiwfn读取fchk文件观看对应轨道图像。E(TD-HF/TD-DFT)输出的是激发态的绝对能量。这些输出反映了基础的激发情况，若要得到更详细的信息，可以使用multiwfn对fchk文件和log文件进行进一步分析。
+由输出可以看出，第一激发态的激发能是2.0573 eV，换算成波长是602.65 nm，振子强度是0.8145，S<sup>2</sup>算符的值为0，表明这个态是单重激发态。跃迁轨道对为79→80，可以从用multiwfn读取fchk文件观看对应轨道图像。E(TD-HF/TD-DFT)输出的是激发态的绝对能量
+
+这些输出反映了基础的激发情况，若要得到更详细的信息，可以使用multiwfn对fchk文件和log文件进行进一步分析。
 
 
 
