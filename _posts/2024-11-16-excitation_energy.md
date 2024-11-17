@@ -113,7 +113,7 @@ end
 
 ### 低标度耦合簇类方法
 
-#### ``STEOM-DLPNO-CCSD``
+#### STEOM-DLPNO-CCSD
 作为一种低标度耦合簇方法，``STEOM-DLPNO-CCSD``常常作为大体系激发能计算的标杆出现。``STEOM-DLPNO-CCSD``输入文件可以由Multiwfn生成，默认基组是``def2-TZVP(-f)``：
 ~~~
 ! STEOM-DLPNO-CCSD RIJK def2-TZVP(-f) def2/JK def2-TZVP/C noautostart miniprint nopop
@@ -156,6 +156,9 @@ note：
     No of roots active in EA calculation:    4
     ~~~
 
+#### RI-CC2
+待补充
+
 ### 多参考方法
 ``CASPT2``和``NEVPT2``是计算光化学问题的常客，精度很好，也时常作为标杆为泛函提供参照。对于多参考体系，``STEOM-CCSD``常常较难收敛，此时可以尝试``DLPNO-NEVPT2``或``CASPT2``方法。由于Gaussian对CASSCF支持的很差，笔者只会在考虑分子的活性空间范围时用Gaussian来做些简单的计算。要真正计算激发能，推荐由ORCA来进行：
 ~~~
@@ -179,8 +182,10 @@ end
 - ``norb``：纳入CAS的空轨道数
 - ``weights[0]``：各个态的权重系数
 - ``rotate``：对调轨道，相当于Gaussian的``guess=alter``
+
 ### CIS(D)
 由[*J Mol Model 23, 164 (2017).*](https://link.springer.com/article/10.1007/s00894-017-3341-9)了解到CIS(D)在某些方面存在优势，在尝试后，笔者意外发现这个级别在某些情况下存在惊喜，在此记录。
+
 ~~~
 ! RHF def2-TZVP Def2-TZVP/C noautostart miniprint nopop
 %maxcore 5000
