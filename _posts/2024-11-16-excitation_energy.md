@@ -91,7 +91,7 @@ title
    Integral transformation       ...  1172.251 sec
   ~~~
   STATE 1的Correction比激发能还要高，该结果的可信度需要斟酌。笔者建议对于CT激发的情况谨慎相信``DSD-PBEP86``，应当与其他级别的结果做对比。
-- ``ωB2GP-PLYP``：范围分离泛函，似乎支持ω调控，但是笔者没有试过，用的是默认参数。该泛函在ORCA 6.0.0上的运行[有bug](https://orcaforum.kofo.mpg.de/viewtopic.php?f=8&t=11682)，会报错退出。
+- ``ωB2GP-PLYP``：范围分离泛函，似乎支持ω调控，但是笔者没有试过，用的是默认参数。PS: 该泛函在ORCA 6.0.0上的运行[有bug](https://orcaforum.kofo.mpg.de/viewtopic.php?f=8&t=11682)，会报错退出。
 - ``RSX-QIDH``：范围分离泛函，总体感觉与``ωB2GP-PLYP``表现差不多。
 
 ~~~
@@ -128,7 +128,7 @@ end
 
 ~~~
 note：
-- 该计算对内存的要求巨高无比，``%maxcore``设置像3000这种小内存根本就不用试，呱唧呱唧算几个小时后爆内存白算的可能性极大。推荐从8000开始尝试，机器内存不够时须牺牲并行核数。
+- 该计算对内存的要求巨高无比，``%maxcore``设置像3000这种小内存根本就不用试，呱唧呱唧算几个小时后爆内存白算的可能性极大。推荐从6000开始尝试，机器内存不够时须牺牲并行核数。
 - 该计算容易出现EOM不收敛：
   ~~~
   BATCH   6 OF   6
@@ -185,7 +185,7 @@ end
 - ``rotate``：对调轨道，相当于Gaussian的``guess=alter``
 
 ### CIS(D)
-由[*J Mol Model 23, 164 (2017).*](https://link.springer.com/article/10.1007/s00894-017-3341-9)了解到CIS(D)在计算某些激发态比较精准，在尝试后，笔者意外发现这个级别计算具有双电子激发特征的BODIPY还不错，在此记录。
+由[*J Mol Model 23, 164 (2017).*](https://link.springer.com/article/10.1007/s00894-017-3341-9)了解到CIS(D)在计算某些激发态比较精准，在尝试后，笔者意外发现这个级别计算具有双电子激发特征的BODIPY有时还不错，在此记录。
 
 ~~~
 ! RHF def2-TZVP Def2-TZVP/C noautostart miniprint nopop
