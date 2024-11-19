@@ -147,20 +147,21 @@ note：
    99   0.000003973179   0.740728747740         4.843
                           --- The EOM iterations have NOT converged ---
   ~~~
-  解决办法：
-  - 尝试``verytightSCF``，这可能帮助收敛。
-  - 增加``nroots``数量
-  - 将``DoCISNat``设置为false，并按照输出文件中的活性空间数手动设置``NActIP``和``NActEA``
+  可能的解决办法：
+  - 尝试``verytightSCF``；
+  - 增加``nroots``数量；
+  - 将``DoCISNat``设置为false，并按照输出文件中的活性空间数手动设置``NActIP``和``NActEA``；
     ~~~
     No of roots active in IP calculation:    5
     No of roots active in EA calculation:    4
     ~~~
+  - 通过减小``OThresh``和``VThresh``控制活性空间大小，该项默认值为0.001
 
-#### RI-CC2
-待补充
+#### LR-CC2
+ORCA不支持该方法，需要安装Dalton。由于笔者的节点系统太老，无法编译Dalton，待学习。
 
 ### 多参考方法
-对于多参考体系，``STEOM-DLPNO-CCSD``常常较难收敛，此时可以尝试``NEVPT2``或``CASPT2``方法，二者是计算光化学问题的常客，计算激发的精度很好，也时常作为标杆为泛函提供参照。由于Gaussian对CASSCF支持的很差，笔者只会在考虑分子的活性空间范围时用Gaussian来做些简单的计算。要真正计算激发能，推荐由ORCA来进行：
+对于多参考体系，EOM常常较难收敛，此时可以尝试``NEVPT2``或``CASPT2``方法，二者是计算光化学问题的常客，计算激发的精度很好，也时常作为标杆为泛函提供参照。由于Gaussian对CASSCF支持的很差，笔者只会在考虑分子的活性空间范围时用Gaussian来做些简单的计算。要真正计算激发能，推荐由ORCA来进行：
 ~~~
 ! DLPNO-NEVPT2 aug-cc-pVTZ aug-cc-pVTZ/JK  miniprint noautostart CPCM(ethanol)
 %maxcore 6250
@@ -184,7 +185,7 @@ end
 - ``rotate``：对调轨道，相当于Gaussian的``guess=alter``
 
 ### CIS(D)
-由[*J Mol Model 23, 164 (2017).*](https://link.springer.com/article/10.1007/s00894-017-3341-9)了解到CIS(D)在某些方面存在优势，在尝试后，笔者意外发现这个级别在某些情况下存在惊喜，在此记录。
+由[*J Mol Model 23, 164 (2017).*](https://link.springer.com/article/10.1007/s00894-017-3341-9)了解到CIS(D)在计算某些激发态比较精准，在尝试后，笔者意外发现这个级别计算具有双电子激发特征的BODIPY还不错，在此记录。
 
 ~~~
 ! RHF def2-TZVP Def2-TZVP/C noautostart miniprint nopop
