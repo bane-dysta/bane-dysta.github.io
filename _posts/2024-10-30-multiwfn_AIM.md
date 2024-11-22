@@ -20,7 +20,7 @@ E<sub>HB</sub> = -223.08 * ρ<sub>BCP</sub>+0.7423
 
 ```
 %chk=sp.chk
-# B3LYP/gen em=hd3bj geom=allchk
+# B3LYP/gen em=gd3bj geom=allchk
 
 @/path/to/ma-TZVPP.txt
 ```
