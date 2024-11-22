@@ -191,7 +191,7 @@ end
 - ``rotate``：对调轨道，相当于Gaussian的``guess=alter``
 
 ### CIS(D)
-由[*J. Phys. Chem. A 2021, 125, 47, 10174–10188*](https://pubs.acs.org/doi/full/10.1021/acs.jpca.1c08524)了解到CIS(D)在一众比较便宜的级别中表现比较出色，在尝试后，笔者意外发现这个级别计算具有双电子激发特征的BODIPY有时还不错，在此记录。
+由[*Chem. Phys. 2004, 305 (1–3), 223–230.*](https://www.sciencedirect.com/science/article/pii/S0301010404003179?via%3Dihub)了解到CIS(D)表现还行，在尝试后，笔者意外发现这个级别计算具有双电子激发特征的BODIPY有时还不错，在此记录。
 
 ~~~
 ! RHF def2-TZVP Def2-TZVP/C noautostart miniprint nopop
@@ -227,7 +227,6 @@ end
 *xyzfile 0 1 opt_PPH2.xyz
 
 ```
-
 
 ## 3. 杂项考量
 这些因素也会影响激发能是否能与实验光谱对应上：
