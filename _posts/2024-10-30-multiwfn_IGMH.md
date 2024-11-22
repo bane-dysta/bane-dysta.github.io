@@ -1,15 +1,19 @@
 ---
-title: IGMH分析
+title: 弱相互作用的分析
 date: 2024-10-30 19:00:00 +0800
 categories: [Data Analysis, Weak Interaction]
-tags: [H-Bond,IGMH,Multiwfn]     
+tags: [H-Bond,RDG,NCI,IGMH,Multiwfn]     
 ---
 ## 1. 介绍
+NCI分析是在[*JACS,132,6498-6506*](https://pubs.acs.org/doi/10.1021/ja100936w)一文中提出的一种可视化研究弱相互作用的方法，又称为RDG方法，需要使用波函数信息进行分析。
+
 IGMH分析是一种将化学体系间相互作用以图像方式展现出来的方法。需要波函数信息。
 
 Reference: [sobereva老师的博文][1]  
 
 [1]: http://sobereva.com/621 "使用Multiwfn做IGMH分析非常清晰直观地展现化学体系中的相互作用"
+
+
 
 ## 2. 使用
 ### 2.1 (构象搜索)

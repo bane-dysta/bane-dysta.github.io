@@ -1,5 +1,5 @@
 ---
-title: Study notes：精确计算激发能的方法
+title: Study note：精确计算激发能的方法
 date: 2024-11-16 12:00:00 +0800
 categories: [Calculation, Quantum Chemistry]
 tags: [notes,excited state]     
@@ -67,7 +67,7 @@ title
 0 1
 ...
 ~~~
-计算时应当采用SMD溶剂模型。根据[*Angew.Chem.Int.Ed.2020, 59,10160–10172*](https://onlinelibrary.wiley.com/doi/10.1002/anie.201916357)，计算TICT能垒时可尝试基于corrected LR的SMD溶剂模型。必要时，可使用显示溶剂进行计算。
+计算时应当采用SMD溶剂模型。必要时，可使用显示溶剂进行计算。
 
 使用杂化泛函计算后，可以进行hole-electron分析来确认激发态类型。若为CT激发，则应考虑范围分离泛函或``M06-2X``，反之则应考虑``PBE0``。
 
@@ -133,8 +133,8 @@ end
 
 ~~~
 note：
-- 该计算对内存的要求巨高无比，``%maxcore``设置像3000这种小内存根本就不用试，呱唧呱唧算几个小时后爆内存白算的可能性极大。推荐从6000开始尝试，机器内存不够时须牺牲并行核数。
-- 该计算对硬盘空间的需求同样夸张，笔者计算一55原子有机体系，临时文件硬生生挤爆3TB硬盘空间崩了任务，大体系计算建议使用土豪配置服务器。
+- 该计算对内存容量的要求巨高无比，若为了多用核而给``%maxcore``设置像3000这种小内存，呱唧呱唧算几个小时后爆内存白算的可能性极大。推荐从6000开始尝试，机器内存不够时须牺牲并行核数。
+- 该计算对硬盘空间的需求极其夸张，笔者计算一55原子有机体系，临时文件硬生生挤爆3TB硬盘空间崩了任务，若要大体系计算建议使用土豪配置服务器。
 - 该计算容易出现EOM不收敛：
   ~~~
   BATCH   6 OF   6
@@ -164,7 +164,7 @@ note：
   - 通过调整``OThresh``和``VThresh``控制活性空间大小，该项默认值为0.001
 
 #### LR-CC2
-ORCA不支持该方法，需要安装Dalton。由于笔者的节点系统太老，无法编译Dalton，待学习。
+ORCA不支持该方法，需要安装Dalton或MRCC。由于笔者的节点系统太老，无法编译Dalton，待学习。
 
 ### 多参考方法
 对于多参考体系，EOM常常较难收敛，此时可以尝试``NEVPT2``或``CASPT2``方法，二者是计算光化学问题的常客，计算激发的精度很好，也时常作为标杆为泛函提供参照。由于Gaussian对CASSCF支持的很差，笔者只会在考虑分子的活性空间范围时用Gaussian来做些简单的计算。要真正计算激发能，推荐由ORCA来进行：
@@ -191,7 +191,7 @@ end
 - ``rotate``：对调轨道，相当于Gaussian的``guess=alter``
 
 ### CIS(D)
-由[*J Mol Model 23, 164 (2017).*](https://link.springer.com/article/10.1007/s00894-017-3341-9)了解到CIS(D)在计算某些激发态比较精准，在尝试后，笔者意外发现这个级别计算具有双电子激发特征的BODIPY有时还不错，在此记录。
+由[*J. Phys. Chem. A 2021, 125, 47, 10174–10188*](https://pubs.acs.org/doi/full/10.1021/acs.jpca.1c08524)了解到CIS(D)在一众比较便宜的级别中表现比较出色，在尝试后，笔者意外发现这个级别计算具有双电子激发特征的BODIPY有时还不错，在此记录。
 
 ~~~
 ! RHF def2-TZVP Def2-TZVP/C noautostart miniprint nopop
@@ -214,6 +214,20 @@ end
 * xyzfile 0 1 opt_PPH2.xyz
 
 ~~~
+
+### ADC(2)
+精度高于TD-DFT，但比EOM-CCSD差不少。计算量也相当大，40原子以内考虑。
+```
+! ADC2 def2-TZVP Def2-TZVP/C TightSCF
+%maxcore 10000
+%pal nprocs 24 end
+%mdci
+ nroots 5
+end
+*xyzfile 0 1 opt_PPH2.xyz
+
+```
+
 
 ## 3. 杂项考量
 这些因素也会影响激发能是否能与实验光谱对应上：
