@@ -60,19 +60,19 @@ title
 
 ~~~
 %chk=rhodamine.chk
-# wB97XD/def2SVP opt freq scrf=(SMD,solvent=water)
+# wB97XD/def2SVP td scrf=(SMD,solvent=water)
 
 title
 
 0 1
 ...
 ~~~
-计算时应当采用SMD溶剂模型。必要时，可使用显示溶剂进行计算。
+计算能量时，应当采用SMD溶剂模型，必要情况下可使用显示溶剂进行计算。
 
 使用杂化泛函计算后，可以进行hole-electron分析来确认激发态类型。若为CT激发，则应考虑范围分离泛函或``M06-2X``，反之则应考虑``PBE0``。
 
 #### 歪门邪道
-有时候，计算激发能并非为了预测，而是为了对准实验光谱凑数据，此时还有这些办法可以尝试：
+有时候，计算激发能并非为了预测光谱，而是已有期望值，此时还有这些办法可以尝试：
 - 使用HF成分不同的泛函微调激发能：纯泛函通常低估激发能，HF则高估激发能。若及算激发能偏高，可以尝试B3LYP、TPSSh等低HF成分的泛函；若计算激发能偏低，可以尝试M06-2X、BHandHLYP等高HF成分的泛函。[不同DFT泛函的HF成份一览](http://sobereva.com/282)。
 - 使用ω调控泛函优化长程校正参数：参考[优化长程校正泛函w参数的简便工具optDFTw](http://bbs.keinsci.com/thread-4100-1-1.html)。
 
