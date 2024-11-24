@@ -1,5 +1,5 @@
 ---
-title: 使用LeDock(Linux)进行批量对接
+title: Study note：使用LeDock(Linux)进行批量对接
 date: 2024-10-31 19:00:00 +0800
 categories: [Calculation, Molecular simulation]
 tags: [LeDock]     

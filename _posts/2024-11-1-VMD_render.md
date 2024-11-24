@@ -1,5 +1,5 @@
 ---
-title: 使用VMD和Multiwfn绘制图像
+title: Study note：使用VMD和Multiwfn绘制图像
 date: 2024-11-01 19:00:00 +0800
 categories: [Data Analysis, Molecular Orbital]
 tags: [VMD,Multiwfn]     

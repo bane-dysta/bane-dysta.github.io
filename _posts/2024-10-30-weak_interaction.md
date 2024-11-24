@@ -1,5 +1,5 @@
 ---
-title: 弱相互作用的分析
+title: Study note：弱相互作用的分析
 date: 2024-10-30 19:00:00 +0800
 categories: [Data Analysis, Weak Interaction]
 tags: [H-Bond,RDG,NCI,IGMH,Multiwfn]     
