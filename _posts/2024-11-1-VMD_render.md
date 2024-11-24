@@ -2,7 +2,7 @@
 title: 使用VMD和Multiwfn绘制图像
 date: 2024-11-01 19:00:00 +0800
 categories: [Data Analysis, Molecular Orbital]
-tags: [H-Bond,AIM,Multiwfn]     
+tags: [VMD,Multiwfn]     
 ---
 Multiwfn分析功能十分强大，但没有内置渲染功能，且分子不能拖动总觉得差点意思。不过Sobereva老师写了不少结合VMD绘制高质量图像的方法，很大程度弥补了这一缺陷。本文以hole-electron分析为例，记录高度脚本化的Multiwfn+VMD绘制电子-空穴图像的方法。
 ## 1. Multiwfn处理
