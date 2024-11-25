@@ -77,3 +77,11 @@ $$
 数学运算符：\cdot, \times, \sum, \int
 分数：\frac{numerator}{denominator}
 $$
+
+```
+> [!NOTE]
+> Useful information that users should know, even when skimming content.
+```
+> [!NOTE]
+> Useful information that users should know, even when skimming content.
+
