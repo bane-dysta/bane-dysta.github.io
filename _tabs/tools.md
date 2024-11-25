@@ -1,8 +1,9 @@
 ---
-title: 网址导航
-date: 2024-11-13 12:00:00 +0800
-categories: [tools]   
+layout: page
+icon: fas fa-cog
+order: 4
 ---
+
 ## Gaussian
 [Gaussian 16](https://gaussian.com/gaussian16/)
 
@@ -10,7 +11,8 @@ categories: [tools]
 [ORCA 6.0 Manual](https://www.faccts.de/docs/orca/6.0/manual/index.html)
 
 [泛函列表](https://www.faccts.de/docs/orca/6.0/manual/contents/structure.html#density-functional-methods)
-https://www.faccts.de/docs/orca/6.0/manual/contents/detailed/model.html#sec-model-dft-functionals-detailed
+
+[Choice of Functional](https://www.faccts.de/docs/orca/6.0/manual/contents/detailed/model.html#sec-model-dft-functionals-detailed)
 
 [基组可用性](https://www.faccts.de/docs/orca/6.0/manual/contents/detailed/basisset.html#table-basisset-availability-detailed)
 

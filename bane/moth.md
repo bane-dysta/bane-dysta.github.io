@@ -1,12 +1,11 @@
 ---
 layout: page
-title: "Hidden Pages Directory"
+title: A hiden moth in the site
 permalink: /bane/
 hidden: true
 ---
 
-# Welcome to the Hidden Pages Directory
-This is the main page for the hidden pages. You can only access this directory and its pages via direct links.
+There is a moth hiding in this site. Would you help her reaching THE CANDLE? 
 
 {% assign pages_in_directory = site.pages | where_exp: "page", "page.path contains 'bane/' and page.url != '/bane/'" %}
 
