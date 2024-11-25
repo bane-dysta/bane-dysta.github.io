@@ -1,4 +1,8 @@
-
+---
+layout: page
+title: excimer
+date: 2024-11-1 12:00:00 +0800
+---
 ## Information
 BBS：
 [[综合交流] 如何计算研究激基缔合物发光？谢谢指点。](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=6724&highlight=%BC%A4%BB%F9%B5%DE%BA%CF%CE%EF)
