@@ -2,7 +2,6 @@
 layout: page
 title: 草稿纸
 permalink: /draft/
-hidden: true
 ---
 
 {% assign pages_in_directory = site.pages | where_exp: "page", "page.path contains 'draft/' and page.url != '/draft/'" %}
