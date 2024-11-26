@@ -67,7 +67,9 @@ order: 4
 
 [MsEspeon](https://ittousei.github.io/posts/customize-my-blog/)
 
-[本地服务器网址](http://127.0.0.1:4000/){:target="_blank"}
+[本地服务器网址](http://127.0.0.1:4000/)
+
+[草稿纸](https://bane-dysta.github.io/draft)
 
 </div>
 </div>
