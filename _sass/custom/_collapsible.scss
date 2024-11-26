@@ -1,0 +1,120 @@
+// _sass/custom/_collapsible.scss
+
+/* 折叠面板容器 */
+.collapsible-section {
+    margin: 1rem 0;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    background: var(--card-bg);
+}
+
+/* 折叠按钮样式 */
+.collapsible-btn {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background: var(--card-bg);
+    border: none;
+    border-bottom: 1px solid var(--border-color);
+    color: var(--text-color);
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: left;
+}
+
+.collapsible-btn:hover {
+    background-color: var(--hover-bg);
+}
+
+/* 展开/收起图标 */
+.collapsible-btn::after {
+    content: "+";
+    font-size: 1.2rem;
+    font-weight: bold;
+    transition: transform 0.3s ease;
+}
+
+.collapsible-btn.active::after {
+    content: "−";
+}
+
+/* 内容区域 */
+.collapsible-content {
+    padding: 0 1rem;
+    background: var(--card-bg);
+    overflow: hidden;
+    max-height: 0;
+    transition: all 0.35s ease-in-out;
+    opacity: 0;
+}
+
+.collapsible-content.active {
+    padding: 1rem;
+    max-height: 2000px; /* 足够大的值以确保内容能完全展开 */
+    opacity: 1;
+}
+
+/* Markdown 内容样式修复 */
+.collapsible-content {
+    /* 确保 Markdown 内容正确渲染 */
+    > * {
+        margin-bottom: 1rem;
+    }
+
+    > *:last-child {
+        margin-bottom: 0;
+    }
+
+    /* 代码块样式 */
+    pre {
+        margin: 1rem 0;
+        padding: 1rem;
+        background-color: var(--highlight-bg);
+        border-radius: 0.3rem;
+        overflow-x: auto;
+    }
+
+    /* 内联代码样式 */
+    code {
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.2rem;
+        background-color: var(--highlight-bg);
+    }
+
+    /* 表格样式 */
+    table {
+        display: table;
+        width: 100%;
+        margin: 1rem 0;
+        border-collapse: collapse;
+
+        th, td {
+            padding: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: var(--thead-bg);
+        }
+    }
+
+    /* 列表样式 */
+    ul, ol {
+        padding-left: 1.5rem;
+        
+        li {
+            margin: 0.5rem 0;
+        }
+    }
+
+    /* 引用块样式 */
+    blockquote {
+        margin: 1rem 0;
+        padding: 0.5rem 1rem;
+        border-left: 4px solid var(--border-color);
+        background-color: var(--hover-bg);
+    }
+}
