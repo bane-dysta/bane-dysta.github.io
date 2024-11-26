@@ -56,3 +56,18 @@ order: 4
 
 </div>
 </div>
+
+<div class="collapsible-section">
+<button class="collapsible-btn">Blog</button>
+<div class="collapsible-content" markdown="1">
+
+[Chripy官网](https://chirpy.cotes.page/)
+
+[Marvin](https://winxuan.github.io/posts/creat-blog/)
+
+[MsEspeon](https://ittousei.github.io/posts/customize-my-blog/)
+
+[本地服务器网址](http://127.0.0.1:4000/){:target="_blank"}
+
+</div>
+</div>
