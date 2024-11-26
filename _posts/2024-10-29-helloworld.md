@@ -24,8 +24,4 @@ git commit -m "post"
 git push -u origin main
 ```
 
-[Chripy官网](https://chirpy.cotes.page/)
 
-[Marvin](https://winxuan.github.io/posts/creat-blog/)
-
-[MsEspeon](https://ittousei.github.io/posts/customize-my-blog/)
