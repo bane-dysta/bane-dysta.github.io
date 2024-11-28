@@ -79,7 +79,10 @@ title
 [不同DFT泛函的HF成份一览](http://sobereva.com/282)。
 
 ### 双杂化泛函
-这个级别是比较精确的，已经开始期望对上实验光谱了。笔者尝试过的双杂化泛函有：
+这个级别是比较精确的，已经开始期望对上实验光谱了。
+
+#### 使用基于MP2的Double Corrections：
+一般意义上的双杂化泛函，被广泛认可。笔者尝试过这些：
 
 - ``DSD-PBEP86``：sob老师推荐的比较稳健的选择，然而笔者的运气不好，第一次使用就出现了Double Correction反客为主的现象：
   ~~~
@@ -118,6 +121,11 @@ end
 ~~~
 笔者在Gaussian中运行过双杂化泛函任务，慢的要死不说，最后还给硬盘存储空间干爆了没跑完，于是后来计算双杂化泛函就都用ORCA了，虽然一样吃比较硬盘但起码ORCA有RIJCOSX加速，计算速度会明显快很多。
 
+#### 使用其他Double Corrections：
+这类双杂化泛函未经广泛测试，可能被审稿人提出comment，也没什么好的办法回答，使用时需要谨慎，最好基于其他研究结果。例如，[*J. Chem. Theory Comput. 2022, 18, 2, 865–882*](https://pubs.acs.org/doi/10.1021/acs.jctc.1c01100)提出Double Corrections基于SCS-ADC(2)的范围分离双杂化泛函计算各类激发能都很理想。MRCC可以做。
+
+
+
 ### 低标度耦合簇类方法
 
 #### STEOM-DLPNO-CCSD
@@ -136,7 +144,7 @@ end
 ~~~
 note：
 - 该计算对内存容量的要求巨高无比，若为了多用核而给``%maxcore``设置像3000这种小内存，呱唧呱唧算几个小时后爆内存白算的可能性极大。推荐从6000开始尝试，机器内存不够时须牺牲并行核数。
-- 该计算对硬盘空间的需求极其夸张，笔者计算一55原子有机体系，临时文件硬生生挤爆3TB硬盘空间崩了任务，若要大体系计算建议使用土豪配置服务器。
+- 该计算对硬盘空间的需求极其夸张，笔者计算一55原子有机体系，临时文件硬生生挤爆3TB硬盘空间崩了任务，若要大体系计算建议使用土豪配置服务器。后记：笔者后来又向管理员申请了10TB硬盘重跑该任务，结果这一次消耗硬盘量又只要1.6TB了，怀疑是6.0.0版本的bug。
 - 该计算容易出现EOM不收敛：
   ~~~
   BATCH   6 OF   6
@@ -157,16 +165,37 @@ note：
   ~~~
   可能的解决办法：
   - 尝试``verytightSCF``；
-  - 增加``nroots``数量；
+  - 调整``nroots``数量；
+  - 如发现有收敛趋势，可以增加``Maxiter``的值，默认100。
   - 将``DoCISNat``设置为false，并按照输出文件中的活性空间数手动设置``NActIP``和``NActEA``；
     ~~~
     No of roots active in IP calculation:    5
     No of roots active in EA calculation:    4
     ~~~
   - 通过调整``OThresh``和``VThresh``控制活性空间大小，该项默认值为0.001
+  - 若残差震荡，[可尝试](https://orcaforum.kofo.mpg.de/viewtopic.php?f=8&t=11409&hilit=failed+to+retrieve+V_OO)调整``levelshift``，如0.5
+
+#### EOM-DLPNO-CCSD
+类似上述STEOM，但似乎资料不是很多，ORCA手册中也语焉不详。下述输入文件是笔者的推测：
+```
+! EOM-DLPNO-CCSD normalPNO RIJCOSX def2-TZVP(-f) def2/J def2-TZVP/C tightSCF noautostart miniprint
+%maxcore     9600
+%pal nprocs   22 end
+! CPCM(Ethanol)
+%mdci
+  nroots 3
+  Density Unrelaxed
+end
+* xyzfile 0 1 opt_PPH2.xyz
+
+```
+其中：不加Density Unrelaxed会导致MDCI模块报错，似乎是因为EOM-CCSD不支持溶剂弛豫密度
 
 #### LR-CC2
-ORCA不支持该方法，需要安装Dalton或MRCC。由于笔者的节点系统太老，无法编译这些软件，待学习。
+ORCA不支持该方法，需要Dalton或MRCC。不能计算跃迁偶极矩。
+
+#### SCS-CC2
+ORCA不支持该方法，需要Dalton或MRCC。
 
 ### 多参考方法
 对于多参考体系，EOM常常较难收敛，此时可以尝试``NEVPT2``或``CASPT2``方法，二者是计算光化学问题的王牌，计算激发的精度很好，也时常作为标杆为泛函提供参照。由于Gaussian对CASSCF支持的很差，笔者只会在考虑分子的活性空间范围时用Gaussian来做些简单的计算。要真正计算激发能，推荐由ORCA来进行：
@@ -217,7 +246,9 @@ end
 
 ~~~
 
-### ADC(2)
+### Algebraic-Diagrammatic Construction
+
+#### ADC(2)
 精度高于TD-DFT，但比EOM-CCSD差不少。计算量也相当大，40原子以内考虑。
 ```
 ! ADC2 def2-TZVP Def2-TZVP/C TightSCF
@@ -229,6 +260,9 @@ end
 *xyzfile 0 1 opt_PPH2.xyz
 
 ```
+
+#### SCS-ADC(2)
+ORCA不支持该方法，需要MRCC。
 
 ## 3. 杂项考量
 这些因素也会影响激发能是否能与实验光谱对应上：
