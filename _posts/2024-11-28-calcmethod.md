@@ -2,7 +2,8 @@
 title: Study note：理论方法
 date: 2024-11-23 12:00:00 +0800
 categories: [Calculation]
-tags: [notes]     
+tags: [notes]
+math: true     
 ---
 ## 1.量子力学方法
 
