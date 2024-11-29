@@ -1,6 +1,6 @@
 ---
 title: Study note：量子力学方法
-date: 2024-11-23 12:00:00 +0800
+date: 2024-11-28 12:00:00 +0800
 categories: [Calculation]
 tags: [notes]
 math: true     
