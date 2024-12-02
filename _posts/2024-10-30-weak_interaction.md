@@ -29,7 +29,7 @@ Reference: [Multiwfn支持的弱相互作用的分析方法概览](http://sobere
 formchk 1.chk
 ```
 ### 2.3 Multiwfn分析
-运行Multiwfn后，进入主功能20。20的子菜单中，选项1，4，11分别对应NCI、IRI和IGMH。其中，NCI、IRI在建立格点可以直接导出密度数据，而IGMH还需要定义片段：
+运行Multiwfn后，进入主功能20。20的子菜单中，选项1，4，11分别对应NCI、IRI和IGMH。其中，NCI、IRI在建立格点后可以直接导出密度数据，而IGMH还需要定义片段：
 ```
 20
 11
@@ -63,11 +63,46 @@ color scale method BGR
 ```
 source IGM_inter.vmd
 ```
-两个脚本一个是绘制片段间的，一个是绘制片段内的。
+两个脚本，inter是绘制片段间的，intra是同时绘制片段内和片段间的。
 
 调整好后，使用render渲染导出bmp图像即可。
 
+[弱相互作用之可视化分析](https://zhuanlan.zhihu.com/p/665460526)
+```
+set terminal postscript landscape enhanced color 'Helvetica' 20
+set encoding iso_8859_1
+set output 'RDGscatter.ps'
 
+# 设置图例
+set key
 
+# 设置X轴和Y轴的标签、字体及字号
+set ylabel 'RDG' font 'Helvetica, 20'
+set xlabel 'sign({/Symbol-Oblique l}_2){/Symbol-Oblique r} (a.u.)' font "Helvetica, 20"
 
+# 设置色卡和绘图模式
+set pm3d map
+set palette defined (-0.035 "blue", -0.0075 "green", 0.02 "red")
+
+# 设置数值格式
+set format y "%.1f"
+set format x "%.2f"
+set format cb "%.3f"
+
+# 设置边框宽度
+set border lw 2
+
+# 设置刻度范围、步长及字体
+set xtic -0.05, 0.01, 0.05 nomirror rotate font "Helvetica"
+set ytic -0.0, 0.2, 2.0 nomirror font "Helvetica"
+set cbtic -0.035, 0.005, 0.02 nomirror font "Helvetica"
+
+# 设置X轴、Y轴和色标范围
+set xrange [-0.05:0.05]
+set yrange [0.0:2.0]
+set cbrange [-0.035:0.02]
+
+# 绘图命令
+plot 'output.txt' u 4:5:4 with points pointtype 31 pointsize 0.3 palette t  ''
+```
 
