@@ -5,7 +5,7 @@ categories: [Calculation]
 tags: [notes]
 math: true     
 ---
-
+笔者是初学者，理解可能有误，以下内容请慎重相信。
 ## **1 Hartree-Fock方法 (HF)**
 Hartree-Fock方法是一种多电子近似方法，核心思想是将复杂的多电子波函数转化为简单的单电子问题，并通过自洽场方法迭代求解波函数和能量。
 
