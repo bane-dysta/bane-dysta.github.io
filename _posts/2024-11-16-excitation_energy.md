@@ -84,7 +84,7 @@ title
 #### 使用基于MP2的Double Corrections：
 一般意义上的双杂化泛函，被广泛认可。笔者尝试过这些：
 
-- ``DSD-PBEP86``：sob老师推荐的比较稳健的选择，然而笔者的运气不好，第一次使用就出现了Double Correction反客为主的现象：
+- ``DSD-PBEP86``：笔者的运气不好，第一次使用就出现了Double Correction反客为主的现象：
   ~~~
   Contributions to the (D) correction(s) (in eV)
   
@@ -189,17 +189,17 @@ end
 * xyzfile 0 1 opt_PPH2.xyz
 
 ```
-这个级别资料很少，容易出现MDCI模块报错，且没什么资料。
+这个级别资料很少，容易出现MDCI模块报错，且没什么相关帖子讨论，不建议使用。
 
 #### LR-CC2
 ORCA不支持该方法，需要Dalton或MRCC。不能计算跃迁偶极矩。
 
 #### SCS-CC2
-ORCA不支持该方法，需要Dalton或MRCC。
+ORCA不支持该方法，需要Dalton或MRCC。不能计算跃迁偶极矩。
 似乎严重高估激发能
 
 ### 多参考方法
-对于多参考体系，EOM常常较难收敛，此时可以尝试``NEVPT2``或``CASPT2``方法，二者是计算光化学问题的王牌，计算激发的精度很好，也时常作为标杆为泛函提供参照。由于Gaussian对CASSCF支持的很差，笔者只会在考虑分子的活性空间范围时用Gaussian来做些简单的计算。要真正计算激发能，推荐由ORCA来进行：
+对于多参考体系，EOM常常较难收敛，此时可以尝试``NEVPT2``或``CASPT2``方法，二者是计算光化学问题的王牌，计算激发的精度很好，也时常作为标杆为泛函提供参照。由于Gaussian对CASSCF支持的很差，笔者只会在考虑分子的活性空间范围时用Gaussian来做些简单的计算。要真正用多参考级别计算激发能，推荐由ORCA来进行：
 ~~~
 ! DLPNO-NEVPT2 aug-cc-pVTZ aug-cc-pVTZ/JK  miniprint noautostart CPCM(ethanol)
 %maxcore 6250
