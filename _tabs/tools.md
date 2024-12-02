@@ -25,6 +25,8 @@ order: 4
 
 [基组可用性](https://www.faccts.de/docs/orca/6.0/manual/contents/detailed/basisset.html#table-basisset-availability-detailed)
 
+[TDDFT](https://www.faccts.de/docs/orca/6.0/manual/contents/detailed/tddft.html)
+
 </div>
 </div>
 
