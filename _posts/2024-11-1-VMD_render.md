@@ -22,7 +22,7 @@ py wfn -t ~/scrpts/wfntxts/hole123.txt
 此时运行目录下输出的文件为``hole_00001.cub``、``hole_00002.cub``、``hole_00003.cub``和``electron_00001.cub``、``electron_00002.cub``、``electron_00003.cub``。
 
 ## 2. VMD可视化
-参考[在VMD里将cube文件瞬间绘制成效果极佳的等值面图的方法](http://sobereva.com/483)，首先将showcub.vmd复制到VMD目录下，输入
+参考[在VMD里将cube文件瞬间绘制成效果极佳的等值面图的方法](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=13329&fromuid=63020)，首先将showcub.vmd复制到VMD目录下，输入
 ~~~
 source showcub.vmd
 ~~~

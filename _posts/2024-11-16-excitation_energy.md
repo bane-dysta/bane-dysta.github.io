@@ -43,7 +43,7 @@ title
 激发能对计算级别比几何优化敏感得多，不同的级别反映在激发能上会差出十万八千里，因此这里不能再像几何优化一样万金油``ωB97XD``扫六合，要认真起来了！
 
 ### 基组
-对于激发能计算，``TZVP``同样已经够用，如果误差几十上百nm，就不要往基组头上怀疑了。笔者在一个[帖子](http://bbs.keinsci.com/thread-49607-1-1.html)里建议楼主用``def2-TZVP``被sob老师在楼下指正了🥲
+对于激发能计算，``TZVP``同样已经够用，如果误差几十上百nm，就不要往基组头上怀疑了。笔者在一个[帖子](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=49607&fromuid=63020)里建议楼主用``def2-TZVP``被sob老师在楼下指正了🥲
 
 不过，由于multiwfn生成ORCA输入文件的默认基组是``def2-TZVP``，笔者仍然常用``def2-TZVP``来计算激发能。
 
@@ -57,7 +57,7 @@ title
 
 待尝试：
  - ``PBE38``：HF成分37.5%，可以计算有一定CT特征的LE激发。
- - ``LC-ωPBE``：ω调控泛函，理论上可以算的很准，但对每个体系都要单独优化ω。ω默认值为0.4，直接用会高估激发能，调控后普遍在0.25左右。参考[优化长程校正泛函w参数的简便工具optDFTw](http://bbs.keinsci.com/thread-4100-1-1.html)。
+ - ``LC-ωPBE``：ω调控泛函，理论上可以算的很准，但对每个体系都要单独优化ω。ω默认值为0.4，直接用会高估激发能，调控后普遍在0.25左右。参考[优化长程校正泛函w参数的简便工具optDFTw](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=4100&fromuid=63020)。
  - ``BHandHLYP``：HF成分50%，若只追求HF成分可以作为M06-2X的代替品。
 
 ~~~
@@ -76,7 +76,7 @@ title
 - 纯泛函通常低估激发能。若计算激发能偏高，可以尝试B3LYP、TPSSh等低HF成分的泛函
 - HF通常高估激发能。若计算激发能偏低，可以尝试M06-2X、BHandHLYP等高HF成分的泛函。
 
-[不同DFT泛函的HF成份一览](http://sobereva.com/282)。
+[不同DFT泛函的HF成份一览](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=807&fromuid=63020)。
 
 ### 双杂化泛函
 这个级别是比较精确的，已经开始期望对上实验光谱了。
