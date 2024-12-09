@@ -14,10 +14,10 @@ tags: [notes,excited state]
 - ``6-31g*``
 - ``TZVP``
 
-``TZVP``级别很精确了，继续加到``def2-TZVP``通常已经不能带来什么显著提升，且计算成本又贵的多，不值得尝试。
+``TZVP``级别很精确了，继续加到``def2-TZVP``通常已经不能带来什么显著提升，且计算成本又贵的多，不值得尝试。不过对于小体系，要进行正版耦合簇或者是MCSCF计算的话，还是可以考虑用``def2-TZVP``过一下的。
 
 ### 泛函
-由于笔者接触的体系大多为大共轭体系，用的最多的泛函是``ωB97XD``，其次是``cam-B3LYP``和``M06-2X``。如果是非共轭体系，``B3LYP-D3BJ``也是个不错的选择。
+由于笔者接触的体系大多为大共轭有机体系，用的最多的泛函是``ωB97XD``，其次是``cam-B3LYP``和``M06-2X``。如果是非共轭体系，``B3LYP-D3BJ``也是个不错的选择。
 ~~~
 %chk=rhodamine.chk
 # wB97XD/def2SVP opt freq scrf=solvent=water
@@ -43,22 +43,21 @@ title
 激发能对计算级别比几何优化敏感得多，不同的级别反映在激发能上会差出十万八千里，因此这里不能再像几何优化一样万金油``ωB97XD``扫六合，要认真起来了！
 
 ### 基组
-对于激发能计算，``TZVP``同样已经够用，如果误差几十上百nm，就不要往基组头上怀疑了。笔者在一个[帖子](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=49607&fromuid=63020)里建议楼主用``def2-TZVP``被sob老师在楼下指正了🥲
+对于TD-DFT激发能计算，``TZVP``同样已经够用，如果误差几十上百nm，就不要往基组头上怀疑了。笔者在一个[帖子](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=49607&fromuid=63020)里建议楼主用``def2-TZVP``被sob老师在楼下指正了🥲不过，由于multiwfn生成ORCA输入文件的默认基组是``def2-TZVP``，笔者仍然常用``def2-TZVP``来计算激发能。
 
-不过，由于multiwfn生成ORCA输入文件的默认基组是``def2-TZVP``，笔者仍然常用``def2-TZVP``来计算激发能。
-
+对于后HF计算，则非常需要高角动量基组，起码也要``def2-TZVP``才能描述的比较好，若是小体系，则应当优先考虑``cc-pVTZ``。
 ### 杂化泛函
 虽说笔者一次都没算准过，但杂化泛函依然是计算激发能的首选，没别的原因，就是便宜，很多时候杂化泛函可以起到投石问路的作用，为接下来计算级别的选择奠定基础。笔者常用的有：
  - ``ωB97XD``：范围分离泛函，计算CT激发还行，但形式比较复杂，略贵。
  - ``M06-2X``：HF成分54%，计算LE严重高估激发能。形式复杂，较贵。
- - ``cam-B3LYP``：范围分离泛函，可以计算CT激发。笔者用这个少于ωB97XD，因为后者自带DFT-D校正。
+ - ``cam-B3LYP``：范围分离泛函，可以计算CT激发。笔者用这个泛函少于ωB97XD，因为后者自带拟合的DFT-D校正，但这个泛函比ωB97XD要便宜些。
  - ``PBE0``：HF成分25%，适合计算LE激发。
- - ``B3LYP``：HF成分20%，适合计算LE激发。对大共轭体系有高估离域性的倾向。
+ - ``B3LYP``：HF成分20%，适合计算LE激发。
 
 待尝试：
  - ``PBE38``：HF成分37.5%，可以计算有一定CT特征的LE激发。
- - ``LC-ωPBE``：ω调控泛函，理论上可以算的很准，但对每个体系都要单独优化ω。ω默认值为0.4，直接用会高估激发能，调控后普遍在0.25左右。参考[优化长程校正泛函w参数的简便工具optDFTw](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=4100&fromuid=63020)。
- - ``BHandHLYP``：HF成分50%，若只追求HF成分可以作为M06-2X的代替品。
+ - ``LC-ωPBE``：ω调控泛函，理论上对于单电子激发体系可以算的很准，但对每个体系都要单独优化ω。ω默认值为0.4，直接用会高估激发能。参考[优化长程校正泛函w参数的简便工具optDFTw](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=4100&fromuid=63020)。
+ - ``BHandHLYP``：HF成分50%，若只追求HF成分可以作为M06-2X的代替品，比后者便宜。
 
 ~~~
 %chk=rhodamine.chk
@@ -129,7 +128,7 @@ end
 ### 低标度耦合簇类方法
 
 #### STEOM-DLPNO-CCSD
-作为一种低标度耦合簇方法，``STEOM-DLPNO-CCSD``常常作为大体系激发能计算的标杆出现。``STEOM-DLPNO-CCSD``输入文件可以由Multiwfn生成，默认基组是``def2-TZVP(-f)``：
+作为一种耦合簇方法，``STEOM-DLPNO-CCSD``常常作为中大体系激发能计算的标杆出现。``STEOM-DLPNO-CCSD``输入文件可以由Multiwfn生成，默认基组是``def2-TZVP(-f)``：
 ~~~
 ! STEOM-DLPNO-CCSD RIJK def2-TZVP(-f) def2/JK def2-TZVP/C noautostart miniprint nopop
 %maxcore  12500
@@ -250,7 +249,7 @@ end
 ### Algebraic-Diagrammatic Construction
 
 #### ADC(2)
-精度高于TD-DFT，但比EOM-CCSD差不少。计算量也相当大，40原子以内考虑。
+精度高于TD-DFT，但比EOM-CCSD差不少，对双电子激发特征明显的体系比较有优势。计算量也相当大，40原子以内考虑。
 ```
 ! ADC2 def2-TZVP Def2-TZVP/C TightSCF
 %maxcore 10000
