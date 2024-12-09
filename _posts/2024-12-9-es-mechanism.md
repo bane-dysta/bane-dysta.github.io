@@ -1,6 +1,6 @@
 ---
 title: "Study note：Fluorescence Probe - part A"
-date: 2024-11-28 12:00:00 +0800
+date: 2024-12-9 12:00:00 +0800
 categories: [Calculation, Quantum Chemistry]
 tags: [notes,excited state]   
 math: true     
