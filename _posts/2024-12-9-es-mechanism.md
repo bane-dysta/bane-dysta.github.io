@@ -140,7 +140,7 @@ $$
 ### 6.1 内转换(Internal Conversion, IC)  
 内转换指同多重度（如同为单重态）的电子激发态之间的无辐射过程。在绝热近似下，两个电子态的波函数随核坐标变化彼此独立，没有有效的转化通道。而当绝热近似被破坏，两个电子态在核坐标空间产生一定的关联时，就可以通过内转换转移能量。
 
-我们引入非绝热耦合（Non-adiabatic Coupling，NAC）来描述这种关联。设 $|\Phi_i(\mathbf{r};\mathbf{R})\rangle$ 是在给定核坐标 $\mathbf{R}$ 下的第 $i$ 个电子本征态，则非绝热耦合一般定义为两个电子态 $|\Phi_i\rangle$ 和 $|\Phi_j\rangle$ 间的导数内积：
+我们引入非绝热耦合（Non-adiabatic Coupling，NAC）来描述这种关联。设 $\|\Phi_i(\mathbf{r};\mathbf{R})\rangle$ 是在给定核坐标 $\mathbf{R}$ 下的第 $i$ 个电子本征态，则非绝热耦合一般定义为两个电子态 $\|\Phi_i\rangle$ 和 $\|\Phi_j\rangle$ 间的导数内积：
 
 $$
 d_{ij}(\mathbf{R}) = \langle \Phi_i(\mathbf{r};\mathbf{R}) \mid \nabla_{\mathbf{R}} \mid \Phi_j(\mathbf{r};\mathbf{R}) \rangle \tag{6.1.1}
