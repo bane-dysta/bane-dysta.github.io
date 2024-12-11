@@ -129,7 +129,7 @@ $$
 然而，从激发态回到基态的通道并不仅限于辐射跃迁，还包括一类不发射光子的跃迁过程。这类跃迁被称为非辐射跃迁，特征是体系会通过非光子途径将激发态的能量耗散到周围环境中，回到基态。非辐射跃迁速率可以用费米黄金定则(Fermi's Golden Rule)来计算。设初态为 $|\psi_i\rangle$，末态为 $|\psi_f\rangle$，对应能量为 $E_i$ 和 $E_f$，则：
 
 $$
-k_{\text{IC}} = \frac{2\pi}{\hbar} \sum_{i} \bigl|\langle \psi_i | \hat{H} | \psi_j \rangle \bigr|^2 \rho(E_i) \tag{6.0.1}
+k_{\text{nr}} = \frac{2\pi}{\hbar} \sum_{i} \bigl|\langle \psi_i | \hat{H} | \psi_j \rangle \bigr|^2 \rho(E_i) \tag{6.0.1}
 $$
 
 式中：
