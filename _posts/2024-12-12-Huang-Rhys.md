@@ -1,9 +1,12 @@
 ---
-layout: page
-title: Huang-Rhys Factor的计算方法
-date: 2024-11-1 12:00:00 +0800
+title: "Study note：Huang-Rhys因子的计算方法"
+date: 2024-12-12 12:00:00 +0800
+categories: [Quantum Chemistry,note]
+tags: [note,Huang-Rhys]   
+math: true     
 ---
 ## Gaussian
+输入文件：
 ```
 %oldchk=final.chk
 #p geom=allcheck freq(readfc,fcht,readfcht)
@@ -17,6 +20,7 @@ final.chk
 其中：
 initial.chk为含有S1态freq信息的chk文件，final.chk为含有S0态freq信息的chk文件。
 
+该任务计算振动分辩光谱可能失败，但Huang-Rhys因子会正常打印出来。
 ## ORCA
 ```
 ! wb97x-d3 DEF2-SVP TIGHTSCF ESD(fluor) 
@@ -71,4 +75,4 @@ STATE1_FILE = td_YMT-.fcc
 STATE2_FILE = opt_YMT-.fcc 
 ELDIP_FILE = eldip_td_YMT-_fchk
 ```
-输入文件都可以从fchk文件中获得，用fcc工具转换一下格式就行。笔者写过一个[脚本](http://bbs.keinsci.com/thread-49173-1-1.html)，可以生成输入文件。
+输入文件都可以从fchk文件中获得，用fcc工具转换一下格式就行。笔者写过一个[脚本](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=49173&fromuid=63020)，可以生成输入文件。

@@ -1,8 +1,8 @@
 ---
 title: Gaussian入门：几何优化、振动分析和能量计算
 date: 2024-11-1 12:00:00 +0800
-categories: [Calculation, Quantum Chemistry]
-tags: [Gaussian]     
+categories: [Quantum Chemistry,Gaussian]
+tags: [Optimization]     
 ---
 Gaussian是最流行的量子化学计算软件，功能涵盖了绝大部分常规任务。且Gaussian的输入文件绝对是所有主流量子化程序中最简洁的，这一点笔者在学过ORCA、Dalton、NMChem等软件后深有体会。因此，Gaussian是入门量子化学应当首先掌握的软件。而几何优化又是所有任务中最基础的任务，绝大多数量子化学计算都要基于几何优化后的结构来进行。总之，这是一个入门级的几何优化教程贴。
 ## 0. 软件安装

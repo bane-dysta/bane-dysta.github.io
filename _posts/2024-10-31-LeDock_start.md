@@ -1,7 +1,7 @@
 ---
 title: Study note：使用LeDock(Linux)进行批量对接
 date: 2024-10-31 19:00:00 +0800
-categories: [Calculation, Molecular simulation]
+categories: [Molecular simulation]
 tags: [LeDock]     
 ---
 分子对接是一种计算生物学技术，用于预测两个或多个分子（通常是蛋白质和配体或小分子药物）之间的相互作用方式。流行的分子对接软件有Autodock、Autodock vina、Discovery Studio、glide、rDock、GOLD、LeDock等。笔者是从Autodock入手的，结合ADT的UI界面大致学习了一下如何进行分子对接。起初对接CHNO的有机分子还挺顺利，但开始自己的课题后光速遇到麻烦。
