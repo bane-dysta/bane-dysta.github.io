@@ -130,7 +130,14 @@ date: 2024-11-1 12:00:00 +0800
             margin: 10px 0;
         }
     </style>
-
+<div id="chem-sketcher-page">
+    <div id="sketcherContainer">
+        <canvas id="sketcher" width="500" height="300"></canvas>
+    </div>
+    <button class="export-button" onclick="exportToSMILES()">导出为 SMILES</button>
+    <br>
+    <input type="text" id="smilesOutput" readonly placeholder="SMILES 会显示在这里...">
+</div>
 <script>
     // 自定义元素颜色
     ChemDoodle.ELEMENT['H'].jmolColor = 'black';
