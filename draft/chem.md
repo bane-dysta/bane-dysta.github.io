@@ -43,7 +43,6 @@ date: 2024-11-1 12:00:00 +0800
             align-items: center;
             margin-top: 20px;
         }
-        /* 修复工具栏布局 */
         #sketcher_buttons {
             display: flex !important;
             flex-wrap: wrap;
