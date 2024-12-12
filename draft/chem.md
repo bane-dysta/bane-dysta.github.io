@@ -6,8 +6,8 @@ date: 2024-11-1 12:00:00 +0800
 
 
 <!-- 引入必要的 CSS 文件 -->
-<link rel="stylesheet" href="{{ '/assets/js/css/jquery-ui-1.11.4.css' | relative_url }}" type="text/css">
-<link rel="stylesheet" href="{{ '/assets/js/css/ChemDoodleWeb.css' | relative_url }}" type="text/css">
+<link rel="stylesheet" href="{{ '/assets/css/jquery-ui-1.11.4.css' | relative_url }}" type="text/css">
+<link rel="stylesheet" href="{{ '/assets/css/ChemDoodleWeb.css' | relative_url }}" type="text/css">
 
 <!-- 引入必要的 JavaScript 文件 -->
 <script type="text/javascript" src="{{ '/assets/js/ChemDoodleWeb.js' | relative_url }}"></script>
