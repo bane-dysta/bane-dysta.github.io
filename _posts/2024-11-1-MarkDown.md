@@ -1,7 +1,7 @@
 ---
 title: Study note：MarkDown
 date: 2024-10-31 19:00:00 +0800
-tags: [tools]   
+tags: [tools]
 math: true  
 ---
 数学：

@@ -1,8 +1,11 @@
 ---
 layout: page
 icon: fas fa-cog
-order: 4
+order: 5
 ---
+<div class="collapsible-section">
+<button class="collapsible-btn">量子化学</button>
+<div class="collapsible-content" markdown="1">
 
 <div class="collapsible-section">
 <button class="collapsible-btn">Gaussian</button>
@@ -16,6 +19,8 @@ order: 4
 
 </div>
 </div>
+
+
 
 <div class="collapsible-section">
 <button class="collapsible-btn">ORCA</button>
@@ -52,6 +57,23 @@ order: 4
 [计算化学公社](http://bbs.keinsci.com/forum.php)
 
 [思想家公社的门口](http://sobereva.com/)
+
+</div>
+</div>
+
+<div class="collapsible-section">
+<button class="collapsible-btn">单位换算</button>
+<div class="collapsible-content" markdown="1">
+
+|            |   Hartree    |      eV      |     kcal/mol     |    kJ/mol     |
+| :--------: | :----------: | :----------: | :--------------: | :-----------: |
+| 1 Hartree  |      1       | 27.211386 eV | 627.509 kcal/mol | 2625.5 kJ/mol |
+|    1 eV    | 0.0367493 Eh |      1       | 23.0605 kcal/mol | 96.485 kJ/mol |
+| 1 kcal/mol | 0.0015936 Eh | 0.0433641 eV |        1         | 4.184 kJ/mol  |
+|  1 kJ/mol  | 0.0003800 Eh | 0.0103643 eV | 0.2390 kcal/mol  |       1       |
+
+</div>
+</div>
 
 </div>
 </div>
@@ -100,21 +122,6 @@ sudo systemctl restart docker
 
 </div>
 </div>
-
-<div class="collapsible-section">
-<button class="collapsible-btn">单位换算</button>
-<div class="collapsible-content" markdown="1">
-
-|            |   Hartree    |      eV      |     kcal/mol     |    kJ/mol     |
-| :--------: | :----------: | :----------: | :--------------: | :-----------: |
-| 1 Hartree  |      1       | 27.211386 eV | 627.509 kcal/mol | 2625.5 kJ/mol |
-|    1 eV    | 0.0367493 Eh |      1       | 23.0605 kcal/mol | 96.485 kJ/mol |
-| 1 kcal/mol | 0.0015936 Eh | 0.0433641 eV |        1         | 4.184 kJ/mol  |
-|  1 kJ/mol  | 0.0003800 Eh | 0.0103643 eV | 0.2390 kcal/mol  |       1       |
-
-</div>
-</div>
-
 
 ```
 test

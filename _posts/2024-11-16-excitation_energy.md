@@ -1,8 +1,8 @@
 ---
 title: Study note：精确计算激发能的方法
 date: 2024-11-16 12:00:00 +0800
-categories: [Calculation, Quantum Chemistry]
-tags: [notes,excited state]     
+categories: [Quantum Chemistry,note]
+tags: [note,excited state]     
 ---
 长期以来，笔者一直算不准激发能，还常常遇到用``B3LYP``、``PBE0``等泛函算纯LE激发比实验值蓝100nm以上等幽默的问题。不过在探索怎么算准激发能的过程中，笔者也借机学会了一些以前一直不敢碰的计算级别。这里权且记录一下笔者试过的方法备用。
 ## 1. 几何优化

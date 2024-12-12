@@ -1,8 +1,8 @@
 ---
 title: Study note：量子力学方法
 date: 2024-11-28 12:00:00 +0800
-categories: [Calculation]
-tags: [notes]
+categories: [Quantum Chemistry,note]
+tags: [note]
 math: true     
 ---
 笔者是初学者，理解可能有误，以下内容请慎重相信。
