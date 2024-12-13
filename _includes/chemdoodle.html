@@ -1,67 +1,11 @@
 <!-- custom-resources.html -->
 <link rel="stylesheet" href="{{ '/assets/css/jquery-ui-1.11.4.css' | relative_url }}" type="text/css">
 <link rel="stylesheet" href="{{ '/assets/css/ChemDoodleWeb.css' | relative_url }}" type="text/css">
+<link rel="stylesheet" href="{{ '/assets/css/cd.css' | relative_url }}" type="text/css">
 
 <script type="text/javascript" src="{{ '/assets/js/ChemDoodleWeb.js' | relative_url }}"></script>
 <script type="text/javascript" src="{{ '/assets/js/ChemDoodleWeb-uis.js' | relative_url }}"></script>
 <script type="text/javascript" src="{{ '/assets/js/openchemlib-full.js' | relative_url }}"></script>
-
-<!-- 添加自定义 CSS -->
-<style>
-    body {
-        font-family: Arial, sans-serif;
-    }
-    #chem-sketcher-page {
-        text-align: center;
-        margin: 20px;
-    }
-    #sketcherContainer {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    #sketcher {
-        border: 1px solid #ccc;
-        margin: 10px 0;
-    }
-    .export-button {
-        margin: 10px;
-        padding: 6px 12px;
-        background-color: #4CAF50;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-    .export-button:hover {
-        background-color: #45a049;
-    }
-    #smilesOutput {
-        width: 400px;
-        padding: 5px;
-        margin: 10px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-    }
-
-    /* 自定义工具栏样式 */
-    #custom-toolbar {
-        margin-top: 20px;
-    }
-    #custom-toolbar button {
-        margin: 5px;
-        padding: 8px 12px;
-        background-color: #f0f0f0;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        cursor: pointer;
-        transition: background-color 0.3s;
-    }
-    #custom-toolbar button:hover {
-        background-color: #e0e0e0;
-    }
-</style>
 
 <div id="chem-sketcher-page">
     <div id="sketcherContainer">
