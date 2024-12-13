@@ -22,13 +22,7 @@ body {
     width: 100%;
 }
 
-#sketcher {
-    width: 100%;
-    height: auto;
-    max-width: 800px; /* 与HTML中的canvas width匹配 */
-    border: 2px solid #ccc;
-    margin: 10px 0;
-}
+
 
 /* 导出按钮样式 */
 .export-button {
