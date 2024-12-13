@@ -1,108 +1,170 @@
 <!-- custom-resources.html -->
-<link rel="stylesheet" href="{{ '/assets/css/jquery-ui-1.11.4.css' | relative_url }}" type="text/css">
-<link rel="stylesheet" href="{{ '/assets/css/ChemDoodleWeb.css' | relative_url }}" type="text/css">
-<link rel="stylesheet" href="{{ '/assets/css/cd.css' | relative_url }}" type="text/css">
 
-<script type="text/javascript" src="{{ '/assets/js/ChemDoodleWeb.js' | relative_url }}"></script>
-<script type="text/javascript" src="{{ '/assets/js/ChemDoodleWeb-uis.js' | relative_url }}"></script>
-<script type="text/javascript" src="{{ '/assets/js/openchemlib-full.js' | relative_url }}"></script>
 
-<div id="chem-sketcher-page">
-    <div id="sketcherContainer">
-        <canvas id="sketcher" width="500" height="300"></canvas>
-    </div>
-    <button class="export-button" onclick="exportToSMILES()">导出为 SMILES</button>
-    <br>
-    <input type="text" id="smilesOutput" readonly placeholder="SMILES 会显示在这里...">
-</div>
-<script>
-    // 自定义元素颜色
-    ChemDoodle.ELEMENT['H'].jmolColor = 'black';
-    ChemDoodle.ELEMENT['S'].jmolColor = '#B9A130';
-
-    // 初始化 Sketcher 画布
-    var sketcher = new ChemDoodle.SketcherCanvas('sketcher', 500, 300, {useServices:true});
-    sketcher.styles.atoms_displayTerminalCarbonLabels_2D = true;
-    sketcher.styles.atoms_useJMOLColors = true;
-    sketcher.styles.bonds_clearOverlaps_2D = true;
-    sketcher.styles.shapes_color = '#c10000';
-    sketcher.repaint();
-
-    function exportToSMILES() {
-        try {
-            let mol = sketcher.getMolecule();
-            if (!mol || mol.atoms.length === 0) {
-                document.getElementById('smilesOutput').value = '请先绘制一个分子';
-                return;
-            }
-
-            let molfile = ChemDoodle.writeMOL(mol);
-            let molecule = OCL.Molecule.fromMolfile(molfile);
-            if (!molecule) {
-                throw new Error('无法解析 MOL 文件');
-            }
-
-            let smiles = molecule.toSmiles();
-            document.getElementById('smilesOutput').value = smiles;
-
-            // 尝试将 SMILES 复制到剪贴板
-            if (navigator.clipboard && window.isSecureContext) {
-                // 使用 Clipboard API
-                navigator.clipboard.writeText(smiles).then(() => {
-                    showCopySuccess();
-                }).catch((err) => {
-                    console.error('复制到剪贴板失败:', err);
-                    fallbackCopyText(smiles);
-                });
-            } else {
-                // 使用旧的 `execCommand` 方法
-                fallbackCopyText(smiles);
-            }
-        } catch(error) {
-            console.error('详细错误:', error);
-            document.getElementById('smilesOutput').value = '错误：' + error.message;
+<head>
+    <meta charset="UTF-8">
+    <title>ChemDoodle 测试</title>
+    <link rel="stylesheet" href="{{ '/assets/css/jquery-ui-1.11.4.css' | relative_url }}" type="text/css">
+    <link rel="stylesheet" href="{{ '/assets/css/ChemDoodleWeb.css' | relative_url }}" type="text/css">
+    <link rel="stylesheet" href="{{ '/assets/css/cd.css' | relative_url }}" type="text/css">
+    
+    <script type="text/javascript" src="{{ '/assets/js/ChemDoodleWeb.js' | relative_url }}"></script>
+    <script type="text/javascript" src="{{ '/assets/js/ChemDoodleWeb-uis.js' | relative_url }}"></script>
+    <script type="text/javascript" src="{{ '/assets/js/openchemlib-full.js' | relative_url }}"></script>
+    
+    <style>
+        /* 可选：添加一些基本样式 */
+        #chem-sketcher-page {
+            margin: 20px;
         }
-    }
-
-    function fallbackCopyText(text) {
-        // 创建一个临时的 textarea 元素
-        let textarea = document.createElement('textarea');
-        textarea.value = text;
-        // 避免页面滚动
-        textarea.style.position = 'fixed';
-        textarea.style.top = '-9999px';
-        document.body.appendChild(textarea);
-        textarea.focus();
-        textarea.select();
-
-        try {
-            let successful = document.execCommand('copy');
-            if (successful) {
-                showCopySuccess();
-            } else {
+        .export-button, .test-button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+        }
+        #smilesOutput {
+            width: 500px;
+            padding: 5px;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div id="chem-sketcher-page">
+        <div id="sketcherContainer">
+            <canvas id="sketcher" width="500" height="300"></canvas>
+        </div>
+        <button class="export-button" onclick="exportToSMILES()">导出为 SMILES</button>
+        <br>
+        <input type="text" id="smilesOutput" readonly placeholder="SMILES 会显示在这里...">
+        <br>
+        <!-- 添加测试按钮 -->
+        <button class="test-button" onclick="testChemDoodle()">测试 ChemDoodle 加载</button>
+    </div>
+    
+    <script>
+        // 自定义元素颜色
+        ChemDoodle.ELEMENT['H'].jmolColor = 'black';
+        ChemDoodle.ELEMENT['S'].jmolColor = '#B9A130';
+    
+        // 初始化 Sketcher 画布
+        var sketcher = new ChemDoodle.SketcherCanvas('sketcher', 500, 300, {useServices:true});
+        sketcher.styles.atoms_displayTerminalCarbonLabels_2D = true;
+        sketcher.styles.atoms_useJMOLColors = true;
+        sketcher.styles.bonds_clearOverlaps_2D = true;
+        sketcher.styles.shapes_color = '#c10000';
+        sketcher.repaint();
+    
+        function exportToSMILES() {
+            try {
+                let mol = sketcher.getMolecule();
+                if (!mol || mol.atoms.length === 0) {
+                    document.getElementById('smilesOutput').value = '请先绘制一个分子';
+                    return;
+                }
+    
+                let molfile = ChemDoodle.writeMOL(mol);
+                let molecule = OCL.Molecule.fromMolfile(molfile);
+                if (!molecule) {
+                    throw new Error('无法解析 MOL 文件');
+                }
+    
+                let smiles = molecule.toSmiles();
+                document.getElementById('smilesOutput').value = smiles;
+    
+                // 尝试将 SMILES 复制到剪贴板
+                if (navigator.clipboard && window.isSecureContext) {
+                    // 使用 Clipboard API
+                    navigator.clipboard.writeText(smiles).then(() => {
+                        showCopySuccess();
+                    }).catch((err) => {
+                        console.error('复制到剪贴板失败:', err);
+                        fallbackCopyText(smiles);
+                    });
+                } else {
+                    // 使用旧的 `execCommand` 方法
+                    fallbackCopyText(smiles);
+                }
+            } catch(error) {
+                console.error('详细错误:', error);
+                document.getElementById('smilesOutput').value = '错误：' + error.message;
+            }
+        }
+    
+        function fallbackCopyText(text) {
+            // 创建一个临时的 textarea 元素
+            let textarea = document.createElement('textarea');
+            textarea.value = text;
+            // 避免页面滚动
+            textarea.style.position = 'fixed';
+            textarea.style.top = '-9999px';
+            document.body.appendChild(textarea);
+            textarea.focus();
+            textarea.select();
+    
+            try {
+                let successful = document.execCommand('copy');
+                if (successful) {
+                    showCopySuccess();
+                } else {
+                    alert('复制失败，请手动复制 SMILES。');
+                }
+            } catch (err) {
+                console.error('执行复制命令时出错:', err);
                 alert('复制失败，请手动复制 SMILES。');
             }
-        } catch (err) {
-            console.error('执行复制命令时出错:', err);
-            alert('复制失败，请手动复制 SMILES。');
+    
+            document.body.removeChild(textarea);
         }
+    
+        function showCopySuccess() {
+            let exportButton = document.querySelector('.export-button');
+            let originalText = exportButton.innerText;
+            exportButton.innerText = '已复制!';
+            exportButton.disabled = true;
+    
+            setTimeout(() => {
+                exportButton.innerText = originalText;
+                exportButton.disabled = false;
+            }, 2000); // 2秒后恢复按钮
+        }
+    
+        // 添加测试按钮的函数
+        function testChemDoodle() {
+            if (typeof ChemDoodle !== 'undefined' && typeof ChemDoodle.SketcherCanvas !== 'undefined') {
+                alert('ChemDoodle 已成功加载！');
+                
+                // 可选：在现有的 sketcher 画布中绘制一个简单的分子（例如，苯环）
+                try {
+                    let benzene = ChemDoodle.readMOL(`
+  ChemDoodle Molecule
+  OpenBabel09122115212D
 
-        document.body.removeChild(textarea);
-    }
-
-    function showCopySuccess() {
-        let exportButton = document.querySelector('.export-button');
-        let originalText = exportButton.innerText;
-        exportButton.innerText = '已复制!';
-        exportButton.disabled = true;
-
-        setTimeout(() => {
-            exportButton.innerText = originalText;
-            exportButton.disabled = false;
-        }, 2000); // 2秒后恢复按钮
-    }
-
-</script>
-
-
+  6 6  0  0  0  0            999 V2000
+    1.3927   -0.8055    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.6964    0.4027    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.6964    0.4027    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -1.3927   -0.8055    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+   -0.6964   -1.6117    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+    0.6964   -1.6117    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
+  1  2  1  0
+  2  3  2  0
+  3  4  1  0
+  4  5  2  0
+  5  6  1  0
+  6  1  2  0
+M  END
+                `);
+                    sketcher.loadMolecule(benzene);
+                    sketcher.repaint();
+                } catch (err) {
+                    console.error('绘制测试分子时出错:', err);
+                    alert('ChemDoodle 加载成功，但绘制测试分子时出错。');
+                }
+            } else {
+                alert('ChemDoodle 加载失败！');
+            }
+        }
+    </script>
+</body>
 
