@@ -5,24 +5,6 @@ date: 2024-11-1 12:00:00 +0800
 ---
 
 <style>
-/* 全局样式 */
-body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-    text-align: center;
-}
-
-.sketcher-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 10px;
-    box-sizing: border-box;
-    width: 100%;
-}
-
-
 
 /* 导出按钮样式 */
 .export-button {
