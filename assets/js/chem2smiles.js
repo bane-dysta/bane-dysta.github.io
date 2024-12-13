@@ -4,7 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     ChemDoodle.ELEMENT['S'].jmolColor = '#B9A130';
 
     // 初始化 Sketcher 画布
-    var sketcher = new ChemDoodle.SketcherCanvas('sketcher', 500, 500, {useServices:false});
+    var sketcher = new ChemDoodle.SketcherCanvas('sketcher', 800, 400, {useServices:false});
     sketcher.styles.atoms_displayTerminalCarbonLabels_2D = true;
     sketcher.styles.atoms_useJMOLColors = true;
     sketcher.styles.bonds_clearOverlaps_2D = true;

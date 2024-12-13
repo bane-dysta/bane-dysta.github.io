@@ -26,7 +26,7 @@ body {
     width: 100%;
     height: auto;
     max-width: 800px; /* 与HTML中的canvas width匹配 */
-    border: 1px solid #ccc;
+    border: 2px solid #ccc;
     margin: 10px 0;
 }
 
