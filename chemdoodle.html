@@ -1,6 +1,11 @@
+---
+layout: page
+title: chemdoodle2smiles
+date: 2024-11-1 12:00:00 +0800
+---
 <!-- custom-resources.html -->
-
-
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <title>ChemDoodle 测试</title>
@@ -38,8 +43,6 @@
         <br>
         <input type="text" id="smilesOutput" readonly placeholder="SMILES 会显示在这里...">
         <br>
-        <!-- 添加测试按钮 -->
-        <button class="test-button" onclick="testChemDoodle()">测试 ChemDoodle 加载</button>
     </div>
     
     <script>
@@ -129,42 +132,6 @@
             }, 2000); // 2秒后恢复按钮
         }
     
-        // 添加测试按钮的函数
-        function testChemDoodle() {
-            if (typeof ChemDoodle !== 'undefined' && typeof ChemDoodle.SketcherCanvas !== 'undefined') {
-                alert('ChemDoodle 已成功加载！');
-                
-                // 可选：在现有的 sketcher 画布中绘制一个简单的分子（例如，苯环）
-                try {
-                    let benzene = ChemDoodle.readMOL(`
-  ChemDoodle Molecule
-  OpenBabel09122115212D
-
-  6 6  0  0  0  0            999 V2000
-    1.3927   -0.8055    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.6964    0.4027    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.6964    0.4027    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -1.3927   -0.8055    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.6964   -1.6117    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.6964   -1.6117    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  1  0
-  2  3  2  0
-  3  4  1  0
-  4  5  2  0
-  5  6  1  0
-  6  1  2  0
-M  END
-                `);
-                    sketcher.loadMolecule(benzene);
-                    sketcher.repaint();
-                } catch (err) {
-                    console.error('绘制测试分子时出错:', err);
-                    alert('ChemDoodle 加载成功，但绘制测试分子时出错。');
-                }
-            } else {
-                alert('ChemDoodle 加载失败！');
-            }
-        }
     </script>
 </body>
-
+</html>
