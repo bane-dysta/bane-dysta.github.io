@@ -130,7 +130,7 @@ end
 #### STEOM-DLPNO-CCSD
 作为一种耦合簇方法，``STEOM-DLPNO-CCSD``常常作为中大体系激发能计算的标杆出现。``STEOM-DLPNO-CCSD``输入文件可以由Multiwfn生成，默认基组是``def2-TZVP(-f)``：
 ~~~
-! STEOM-DLPNO-CCSD RIJK def2-TZVP(-f) def2/JK def2-TZVP/C noautostart miniprint nopop
+! STEOM-DLPNO-CCSD RIJK def2-TZVP(-f) def2/JK def2-TZVP/C noautostart miniprint nopop tightSCF
 %maxcore  12500
 %pal nprocs 16 end
 ! CPCM(Ethanol)
@@ -173,6 +173,26 @@ note：
     ~~~
   - 通过调整``OThresh``和``VThresh``控制活性空间大小，该项默认值为0.001
   - 若残差震荡，[可尝试](https://orcaforum.kofo.mpg.de/viewtopic.php?f=8&t=11409&hilit=failed+to+retrieve+V_OO)调整``levelshift``，如0.5
+  - 通过``maxiter``增加迭代圈数。
+    >与一般的几何震荡，SCF震荡不同的是，即使EOM迭代有明显残差震荡行为，这个方法*或许也有一定几率奏效(?)，因为可能会舍弃计算过程中出现明显双激发特征的根*。以下为笔者进行的一个计算，明显看到150步仍然剧烈震荡，但在151步时程序判断出这个根双激发比例过高，进行了舍弃，于是EOM顺利收敛。**笔者尚未搞清楚这是偶然现象、特定情况还是一般规律，不推荐盲目效仿。**
+    ~~~
+    147   0.002621612128   0.256568117508       321.455
+      --- complex eigenvalues and eigenvectors
+    148   0.021219261958   0.265873644210       343.678
+      --- complex eigenvalues and eigenvectors
+    149   0.002102111899   0.261006465945       409.504
+      --- complex eigenvalues and eigenvectors
+    150   0.019927585792   0.229664022575       392.272
+      --- complex eigenvalues and eigenvectors
+    151   0.143100715614   0.106145094265       340.091
+      --- complex eigenvalues and eigenvectors
+    Warning: Percentage singles character reduced to=     48.50
+    Warning: high double excitation character, Faking convergence for IROOT =   5
+    152   0.000732525688   0.129516181747       306.201
+    
+          *** CONVERGENCE OF RESIDUAL NORM REACHED ***
+            --- The EOM iterations have converged ---
+    ~~~
 
 #### EOM-DLPNO-CCSD
 类似上述STEOM，但似乎资料不是很多，ORCA手册中也语焉不详。下述输入文件是笔者的推测：

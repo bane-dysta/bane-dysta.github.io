@@ -11,3 +11,4 @@ permalink: /draft/
     <li><a href="{{ page.url | relative_url }}">{{ page.title }}</a></li>
   {% endfor %}
 </ul>
+
