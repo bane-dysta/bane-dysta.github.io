@@ -116,9 +116,11 @@ sudo systemctl restart docker
 
 [MsEspeon](https://ittousei.github.io/posts/customize-my-blog/)
 
+[草稿纸](https://bane-dysta.github.io/draft)
+
 [本地服务器网址](http://127.0.0.1:4000/)
 
-[草稿纸](https://bane-dysta.github.io/draft)
+[本地草稿纸](http://127.0.0.1:4000/draft)
 
 </div>
 </div>

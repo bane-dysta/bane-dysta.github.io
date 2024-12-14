@@ -1,11 +1,12 @@
 ---
 layout: cds
-title: cds
+title: ChemDoodle转smiles
 date: 2024-11-1 12:00:00 +0800
 ---
+## ChemDoodle 转 smiles字符串
+tips：移动端ChemDoodle绘板会错位，笔者太菜了没能力解决这个问题，请在设置中选择访问电脑版。
 
 <style>
-
 /* 导出按钮样式 */
 .export-button {
     margin: 10px;
