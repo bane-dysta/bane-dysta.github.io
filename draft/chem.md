@@ -50,7 +50,7 @@ tips：
 
 <center>
     <div id="sketcherContainer">
-        <canvas id="sketcher" width="800" height="300"></canvas>
+        <canvas id="sketcher" width="500" height="400"></canvas>
     </div>
     <br>
     <button class="export-button" onclick="exportToSMILES()">导出为 SMILES</button>

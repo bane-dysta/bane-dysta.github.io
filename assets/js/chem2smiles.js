@@ -1,7 +1,7 @@
 document.addEventListener('DOMContentLoaded', function() {
 
     // 初始化 Sketcher 画布
-    var sketcher = new ChemDoodle.SketcherCanvas('sketcher', 500, 400, {useServices:false,floatDrawTools:true});
+    var sketcher = new ChemDoodle.SketcherCanvas('sketcher', 750, 600, {useServices:false,floatDrawTools:true});
     sketcher.styles.atoms_displayTerminalCarbonLabels_2D = true;
     sketcher.styles.atoms_useJMOLColors = true;
     sketcher.styles.bonds_clearOverlaps_2D = true;
