@@ -4,7 +4,10 @@ title: ChemDoodle转smiles
 date: 2024-11-1 12:00:00 +0800
 ---
 ## ChemDoodle 转 smiles字符串
-tips：移动端ChemDoodle绘板会错位，笔者太菜了没能力解决这个问题，请在设置中选择访问电脑版。
+tips：
+- 移动端ChemDoodle绘板会错位，笔者太菜了没能力解决这个问题，请在设置中选择访问电脑版。
+- OpenChemLib导出的smiles结构没有立体结构信息，改用OpenBabel可以避免此问题。然而OpenChemLib有minimal版本，大小仅560kb，OpenBabel足足8M，为性能考虑，笔者未在Git Page上部署OpenBabel版。
+- 免费版ChemDoodle没有手动输入基团的功能，花钱买他们的软件才给用。
 
 <style>
 /* 导出按钮样式 */
@@ -42,53 +45,12 @@ tips：移动端ChemDoodle绘板会错位，笔者太菜了没能力解决这个
     font-size: 16px;
 }
 
-/* 响应式调整 */
-@media (max-width: 800px) {
-    #sketcher {
-        max-width: 100%;
-    }
-
-    .export-button {
-        padding: 8px 16px;
-        font-size: 14px;
-    }
-
-    #smilesOutput {
-        width: 90%;
-        font-size: 14px;
-    }
-
-    #copyFeedback {
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 500px) {
-    #sketcher {
-        max-width: 100%;
-    }
-
-    .export-button {
-        padding: 6px 12px;
-        font-size: 12px;
-    }
-
-    #smilesOutput {
-        width: 95%;
-        font-size: 12px;
-    }
-
-    #copyFeedback {
-        font-size: 12px;
-    }
-}
-
 
 </style>
 
 <center>
     <div id="sketcherContainer">
-        <canvas id="sketcher" width="500" height="300"></canvas>
+        <canvas id="sketcher" width="800" height="300"></canvas>
     </div>
     <br>
     <button class="export-button" onclick="exportToSMILES()">导出为 SMILES</button>

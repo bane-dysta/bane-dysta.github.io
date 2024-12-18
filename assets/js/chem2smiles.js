@@ -1,15 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 自定义元素颜色
-    ChemDoodle.ELEMENT['H'].jmolColor = 'black';
-    ChemDoodle.ELEMENT['S'].jmolColor = '#B9A130';
 
     // 初始化 Sketcher 画布
-    var sketcher = new ChemDoodle.SketcherCanvas('sketcher', 800, 400, {useServices:false});
+    var sketcher = new ChemDoodle.SketcherCanvas('sketcher', 500, 400, {useServices:false,floatDrawTools:true});
     sketcher.styles.atoms_displayTerminalCarbonLabels_2D = true;
     sketcher.styles.atoms_useJMOLColors = true;
     sketcher.styles.bonds_clearOverlaps_2D = true;
     sketcher.styles.shapes_color = '#c10000';
     sketcher.repaint();
+    
 
     // 导出 SMILES 并复制到剪贴板功能
     window.exportToSMILES = function() {
@@ -20,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 return;
             }
 
-            let molfile = ChemDoodle.writeMOL(mol);
+            let molfile = ChemDoodle.writeMOLV3(mol);
             let molecule = OCL.Molecule.fromMolfile(molfile);
             if (!molecule) {
                 throw new Error('无法解析 MOL 文件');
