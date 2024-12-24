@@ -1,10 +1,9 @@
 ---
-layout: page
 title: "Study note：Fluorescence Probe - part B"
 date: 2024-12-24 12:00:00 +0800
 categories: [Quantum Chemistry,note]
 tags: [note,excited state]   
-math: true     
+math: true        
 ---
 > tips：荧光探针的机理很杂很碎，而错误解读又很多，难以分辨。本文记录一下笔者学习过程中对各种基本原理的总结，内容仅供参考，未必完全正确，会随笔者学习理解过程随时更新。
 
@@ -52,7 +51,7 @@ _没有引文，我画的_
 ![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2024/12/20241224211320.png)
 _还是我画的_
 
-除PET外，还有大量围绕电荷转移发展出的机理，如空间电荷转移(TSCT)，跨键电荷转移(TBCT)
+除PET外，还有大量围绕电荷转移发展出的机理，如空间电荷转移(TSCT)，跨键电荷转移(TBCT)等。这些机理虽然存在差异，但核心依然是利用电荷转移引起的能量变化或跃迁偶极矩变化。万变不离其宗了，只要抓住本质，理解起来就相当容易了。
 
 ## 9 调控圆锥交叉：RACI与AIE，以及光化学反应
 
