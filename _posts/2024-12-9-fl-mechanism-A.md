@@ -76,7 +76,7 @@ $$
 通常Herzberg-Teller高阶项贡献相对较小，在小振幅的情况下很少考虑二阶项或更高的项。考虑一阶Herzberg-Teller效应的跃迁强度可以表示为：
 
 $$
-I_{i \leftarrow j} \propto |\langle \Psi_i|\mu|\Psi_j \rangle|^2 = |\mu_{ij}^0\langle \chi_i|\chi_j \rangle + \sum_k (\frac{\partial \mu_{ij}}{\partial Q_k})_0 \langle \chi_i|Q_k|\chi_j \rangle|^2
+I_{i \leftarrow j} \propto |\langle \Psi_i|\mu|\Psi_j \rangle|^2 = |\mu_{ij}^0\langle \chi_i|\chi_j \rangle + \sum_k (\frac{\partial \mu_{ij}}{\partial Q_k})_0 \langle \chi_i|Q_k|\chi_j \rangle|^2 \tag{4.1}
 $$
 
 式中：
