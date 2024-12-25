@@ -41,7 +41,7 @@ _Fig. n TICT态的形成_
 ![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2024/12/20241224201712.png)
 _Sci. Adv. 2024, 10, eadi8847._
 
-这些结论同样适用于没有π桥的结构。当Donor或Acceptor直连荧光团时，它们可能向荧光团转移电子/从荧光团获得电子，从而形成电荷分离态，这称为PET(Photoinduced Electron Transfer，光生电子转移)。由于没有π桥，PET要求Donor或Acceptor的能量与荧光团匹配，这样才能顺利转移电子。经典PET过程的特征是Donor的HOMO轨道或Acceptor的LUMO轨道插在荧光团的HOMO与LUMO之间，这样电子就可以从Donor向作为Acceptor的荧光团转移(A-PET)或从作为Donor的荧光团向Acceptor转移(D-PET)：
+这些理论同样适用于没有π桥的结构。当Donor或Acceptor直连荧光团时，它们可能向荧光团转移电子/从荧光团获得电子，从而形成电荷分离态，这称为PET(Photoinduced Electron Transfer，光生电子转移)。由于没有π桥，PET要求Donor或Acceptor的能量与荧光团匹配，这样才能顺利转移电子。经典PET过程的特征是Donor的HOMO轨道或Acceptor的LUMO轨道插在荧光团的HOMO与LUMO之间，这样电子就可以从Donor向作为Acceptor的荧光团转移(A-PET)或从作为Donor的荧光团向Acceptor转移(D-PET)：
 
 ![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2024/12/20241225095005.png)
 _别找了，没有引文，这是我画的_
@@ -51,7 +51,7 @@ _别找了，没有引文，这是我画的_
 ![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2024/12/20241225094939.png)
 _这也是我画的_
 
-除PET外，还有大量围绕电荷转移发展出的机理，如空间电荷转移(TSCT)，跨键电荷转移(TBCT)等。这些机理虽然存在差异，但核心依然是利用电荷转移引起的能量变化或跃迁偶极矩变化。万变不离其宗了，只要抓住本质，理解起来就相当容易了。
+除PET外，还有大量围绕电荷转移发展出的机理，如空间电荷转移(TSCT)，跨键电荷转移(TBCT)等。这些机理虽然存在差异，但核心依然是利用电荷转移引起的能量变化或跃迁偶极矩变化。万变不离其宗，只要抓住本质，理解起来就相当容易了。
 
 ## 9 调控圆锥交叉：RACI与AIE，以及光化学反应
 
