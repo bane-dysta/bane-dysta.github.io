@@ -1,5 +1,5 @@
 ---
-title: Study note：量子力学方法
+title: Study note：量子化学方法
 date: 2024-11-28 12:00:00 +0800
 categories: [Quantum Chemistry,note]
 tags: [note]
