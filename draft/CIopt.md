@@ -46,6 +46,29 @@ Second State
 ./runMECP.sh
 ```
 
+## SF-TDDFT
+参考态需要三重态。准备好xyz文件，使用ORCA输入文件：
+~~~
+! CI-opt WB97X-D3 def2-SVP RIJCOSX def2-SVP/C miniprint 
+%maxcore 3000
+%pal
+ nproc 32
+end
+%tddft
+ sf true
+ nroots 5
+ iroot 2 
+ jroot 1
+end
+%geom
+ maxstep 0.05
+ trust -0.05
+end
+*xyzfile 0 3 probe.xyz
+
+~~~
+NOTE：SF-TDDFT的基态是1号，第一激发态是2号。
+
 ## MRSF-TDDFT
 首先，要在RODFT下计算一个三重态作为参考态。
 
@@ -137,7 +160,7 @@ GAMESS inp file produced by MOKIT,na=136,nb=134,nif=640,nbf=640
 ```
 再次提交计算。
 
-
+这玩意很难收敛，也不知道是GAMESS的问题还是圆锥交叉本身难找的问题。若计算失败想改变SIGMA值续跑，可以去临时文件目录找到输入文件同名的.dat文件，其中有当前结构坐标。把该坐标复制出来，写成RODFT输入文件，重复上述步骤再次提交计算即可。
 
 
 
