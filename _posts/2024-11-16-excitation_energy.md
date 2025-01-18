@@ -80,7 +80,7 @@ title
 ### 双杂化泛函
 这个级别是比较精确的，已经开始期望对上实验光谱了。
 
-#### 使用基于MP2的Double Corrections：
+#### 使用基于二阶微扰校正的Double Corrections：
 一般意义上的双杂化泛函，被广泛认可。笔者尝试过这些：
 
 - ``DSD-PBEP86``：笔者的运气不好，第一次使用就出现了Double Correction反客为主的现象：
@@ -121,14 +121,55 @@ end
 笔者在Gaussian中运行过双杂化泛函任务，慢的要死不说，最后还给硬盘存储空间干爆了没跑完，于是后来计算双杂化泛函就都用ORCA了，虽然一样吃比较硬盘但起码ORCA有RIJCOSX加速，计算速度会明显快很多。
 
 #### 使用其他Double Corrections：
-这类双杂化泛函未经广泛测试，可能被审稿人提出comment，也没什么好的办法回答，使用时需要谨慎，最好基于其他研究结果。例如，[*J. Chem. Theory Comput. 2022, 18, 2, 865–882*](https://pubs.acs.org/doi/10.1021/acs.jctc.1c01100)提出Double Corrections基于SCS-ADC(2)的范围分离双杂化泛函计算各类激发能都很理想。MRCC可以做。
+Double Corrections也可以基于ADC(2)来做，但这样产生的双杂化泛函未经广泛测试，可能被审稿人提出comment，也没什么好的办法回答，使用时需要谨慎，最好基于其他研究结果。MRCC可以通过dhexc关键词切换校正形式，除普通的CIS(D)校正外，MRCC还支持ADC(2)以及二者各自的SOS和SCS版本。
+例如，[*J. Chem. Theory Comput. 2022, 18, 2, 865–882*](https://pubs.acs.org/doi/10.1021/acs.jctc.1c01100)提出Double Corrections基于SCS-ADC(2)的范围分离双杂化泛函计算各类激发能都很理想：
+```
+mem=96GB
+calc=TDDFT
+basis=def2-TZVP
+dft=RS-PBE-P86
+dhexc=scs-adc(2)
+nsing=4
+ntrip=3
+#itol=10
+#scftol=8
+#cctol=6
+#scfdtol=9
+localcc=off
+lcorthr=Normal
+redcost_exc=off
+PCM=ETHANOL
+#ccprog=cis
+verbosity=2
+charge=1
+mult=1
+geom=xyz
+ ···
+
+```
 
 
+### 耦合簇类方法
 
-### 低标度耦合簇类方法
+#### EOM-CCSD
+运动方程结合正版CCSD计算激发态的方法，耗时相比DFT高很多，换来了比较好的精度，但对双电子激发显著的体系和多参考体系误差较大：
+```
+! EOM-CCSD cc-pVTZ tightSCF noautostart miniprint
+%maxcore     13000
+%pal nprocs   15 end
+! CPCM(Ethanol)
+%mdci
+  nroots 3
+  Density Unrelaxed
+end
+!moread
+%moinp "EOM_PPH2-old.gbw"
+* xyzfile 0 1 opt_PPH2.xyz
+
+```
 
 #### STEOM-DLPNO-CCSD
-作为一种耦合簇方法，``STEOM-DLPNO-CCSD``常常作为中大体系激发能计算的标杆出现。``STEOM-DLPNO-CCSD``输入文件可以由Multiwfn生成，默认基组是``def2-TZVP(-f)``：
+低标度耦合簇，引入了一定的双电子与三电子激发，计算电荷激发转移好于EOM-CCSD。``STEOM-DLPNO-CCSD``常常作为中大体系激发能计算的标杆出现。``STEOM-DLPNO-CCSD``输入文件可以由Multiwfn生成，默认基组是``def2-TZVP(-f)``：
 ~~~
 ! STEOM-DLPNO-CCSD RIJK def2-TZVP(-f) def2/JK def2-TZVP/C noautostart miniprint nopop tightSCF
 %maxcore  12500
@@ -174,30 +215,9 @@ note：
   - 通过调整``OThresh``和``VThresh``控制活性空间大小，该项默认值为0.001
   - 若残差震荡，[可尝试](https://orcaforum.kofo.mpg.de/viewtopic.php?f=8&t=11409&hilit=failed+to+retrieve+V_OO)调整``levelshift``，如0.5
   - 通过``maxiter``增加迭代圈数。
-  
-    > 与一般的几何震荡，SCF震荡不同的是，即使EOM迭代有明显残差震荡行为，这个方法*或许也有一定几率奏效(?)，因为可能会舍弃计算过程中出现明显双激发特征的根*。以下为笔者进行的一个计算，明显看到150步仍然剧烈震荡，但在151步时程序判断出这个根双激发比例过高，进行了舍弃，于是EOM顺利收敛。**笔者尚未搞清楚这是偶然现象、特定情况还是一般规律，不推荐盲目效仿。**
-
-    ~~~
-    147   0.002621612128   0.256568117508       321.455
-      --- complex eigenvalues and eigenvectors
-    148   0.021219261958   0.265873644210       343.678
-      --- complex eigenvalues and eigenvectors
-    149   0.002102111899   0.261006465945       409.504
-      --- complex eigenvalues and eigenvectors
-    150   0.019927585792   0.229664022575       392.272
-      --- complex eigenvalues and eigenvectors
-    151   0.143100715614   0.106145094265       340.091
-      --- complex eigenvalues and eigenvectors
-    Warning: Percentage singles character reduced to=     48.50
-    Warning: high double excitation character, Faking convergence for IROOT =   5
-    152   0.000732525688   0.129516181747       306.201
-    
-          *** CONVERGENCE OF RESIDUAL NORM REACHED ***
-            --- The EOM iterations have converged ---
-    ~~~
 
 #### EOM-DLPNO-CCSD
-类似上述STEOM，但似乎资料不是很多，ORCA手册中也语焉不详。下述输入文件是笔者的推测：
+类似上述STEOM-DLPNO-CCSD的低标度方法，但似乎资料不是很多，ORCA手册中也语焉不详。下述输入文件是笔者的推测：
 ```
 ! EOM-DLPNO-CCSD normalPNO RIJCOSX def2-TZVP(-f) def2/J def2-TZVP/C tightSCF noautostart miniprint
 %maxcore     9600
@@ -217,10 +237,32 @@ ORCA不支持该方法，需要Dalton或MRCC。不能计算跃迁偶极矩。
 
 #### SCS-CC2
 ORCA不支持该方法，需要Dalton或MRCC。不能计算跃迁偶极矩。
-似乎严重高估激发能
+```
+mem=96GB
+calc=SCS-CC2
+basis=def2-TZVP
+dft=off
+dhexc=ADC(2)
+nsing=3
+ntrip=2
+#itol=10
+#scftol=8
+#cctol=6
+#scfdtol=9
+localcc=off
+lcorthr=Normal
+redcost_exc=off
+#ccprog=cis
+verbosity=2
+charge=0
+mult=1
+geom=xyz
+ ...
+
+```
 
 ### 多参考方法
-对于多参考体系，EOM常常较难收敛，此时可以尝试``NEVPT2``或``CASPT2``方法，二者是计算光化学问题的王牌，计算激发的精度很好，也时常作为标杆为泛函提供参照。由于Gaussian对CASSCF支持的很差，笔者只会在考虑分子的活性空间范围时用Gaussian来做些简单的计算。要真正用多参考级别计算激发能，推荐由ORCA来进行：
+对于多参考体系，EOM常常较难收敛，此时可以尝试``NEVPT2``或``CASPT2``方法，二者是计算光化学问题的王牌，计算激发的精度很好，也时常作为标杆为泛函提供参照。由于Gaussian对CASSCF支持的很差，笔者只会在考虑分子的活性空间范围时用Gaussian来做些简单的计算。要真正用多参考级别计算激发能，可以由ORCA来进行：
 ~~~
 ! DLPNO-NEVPT2 aug-cc-pVTZ aug-cc-pVTZ/JK  miniprint noautostart CPCM(ethanol)
 %maxcore 6250
@@ -284,9 +326,30 @@ end
 ```
 
 #### SCS-ADC(2)
-ORCA不支持该方法，需要MRCC。
-似乎严重高估激发能
+ORCA不支持该方法，需要MRCC：
+```
+mem=96GB
+calc=SCS-ADC(2)
+basis=def2-TZVP
+dft=off
+dhexc=ADC(2)
+nsing=3
+ntrip=2
+#itol=10
+#scftol=8
+#cctol=6
+#scfdtol=9
+localcc=off
+lcorthr=Normal
+redcost_exc=off
+#ccprog=cis
+verbosity=2
+charge=0
+mult=1
+geom=xyz
+ ...
 
+```
 ## 3. 杂项考量
 这些因素也会影响激发能是否能与实验光谱对应上：
 - 自旋轨道耦合：对于存在强SOC的分子，可以尝试使用ORCA计算考虑SOC的光谱，兴许对结果有改善。
