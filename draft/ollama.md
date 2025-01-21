@@ -1,0 +1,45 @@
+---
+layout: page
+title: "本地部署ollama"
+date: 2024-1-21 12:00:00 +0800
+---
+## 下载
+
+在[官网](https://ollama.com/)下载，下载源是github上的，可能需要*修炼轻功*才能正常下载。
+
+目前(25.1.21)，ollama默认安装在C盘，这对于笔者这样C盘红了的很不友好。可以按如下步骤更改安装位置：
+
+- 正常安装；
+- 找到Ollama安装目录，目前是安装在默认路径下的。去`~\AppData\Local\Programs`(~请自行展开)文件夹中找到Ollama文件夹，将其移动至别的盘，如`D:\program`；
+- 将环境变量中Path里的`~\AppData\Local\Programs`改为`D:\program`；
+- 添加一个`OLLAMA_MODELS`环境变量，值为存放大模型的目录，如`D:\ollama\models`。
+
+完成后，在cmd中检查环境变量设置是否成功：
+```bat
+set
+```
+或者
+```bat
+echo %OLLAMA_MODELS%
+```
+
+## 安装大模型
+使用ollama run安装大模型，可以指定参数数量：
+```bat
+ollama run llama3.1:8b 
+ollama run deepseek-r1:7b
+```
+
+使用ollama list列出本地大模型：
+```
+(base) PS D:> ollama list
+NAME              ID              SIZE      MODIFIED
+gemma2:9b         ff02c3702f32    5.4 GB    20 minutes ago
+llama3.1:8b       46e0c10c039e    4.9 GB    38 minutes ago
+deepseek-r1:7b    0a8c26691023    4.7 GB    59 minutes ago
+```
+
+## 设置知识库
+
+待学
+
