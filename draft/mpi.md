@@ -1,3 +1,9 @@
+---
+layout: page
+title: "MPI"
+date: 2024-1-21 12:00:00 +0800
+---
+
 ## openMPI 4.1.6
 
 [下载地址](https://download.open-mpi.org/release/open-mpi/v4.1/openmpi-4.1.6.tar.bz2)
