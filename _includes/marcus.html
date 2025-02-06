@@ -104,110 +104,111 @@ svg {
 </style>
 
 <script>
-const width = 600;
-const height = 400;
-const a = 0.01;
-const xRange = 150;
-const kT = 0.3;
-const denomFactor = 2;
-
-function calculateParameters(control) {
-    const xShift = control * 1.5;
-    const lambda = a * xShift * xShift;
+    document.addEventListener('DOMContentLoaded', function() {
+        const width = 600;
+        const height = 400;
+        const a = 0.01;
+        const xRange = 150;
+        const kT = 0.3;
+        const denomFactor = 2;
     
-    const normalizedControl = control / 100;
-    const deltaG = -lambda * (0.2 + (4/3) * normalizedControl);
+        function calculateParameters(control) {
+            const xShift = control * 1.5;
+            const lambda = a * xShift * xShift;
+            
+            const normalizedControl = control / 100;
+            const deltaG = -lambda * (0.2 + (4/3) * normalizedControl);
+            
+            const exponent = -Math.pow(lambda + deltaG, 2) / (denomFactor * lambda * kT);
+            const rate = Math.exp(exponent)*10;
+            
+            return { xShift, deltaG, lambda, rate };
+        }
     
-    const exponent = -Math.pow(lambda + deltaG, 2) / (denomFactor * lambda * kT);
-    const rate = Math.exp(exponent)*10;
+        function generateParabolaPoints(xOffset, yOffset) {
+            const points = [];
+            for (let x = -xRange; x <= xRange; x += 5) {
+                const y = a * x * x + yOffset;
+                points.push(`${x + xOffset + width/2},${-y + height/2}`);
+            }
+            return points.join(' ');
+        }
     
-    return { xShift, deltaG, lambda, rate };
-}
-
-function generateParabolaPoints(xOffset, yOffset) {
-    const points = [];
-    for (let x = -xRange; x <= xRange; x += 5) {
-        const y = a * x * x + yOffset;
-        points.push(`${x + xOffset + width/2},${-y + height/2}`);
-    }
-    return points.join(' ');
-}
-
-function determineRegime(lambda, deltaG) {
-    if (Math.abs(lambda + deltaG) < 0.1) return 'Activationless Point';
-    if (lambda > -deltaG) return 'Normal Regime';
-    return 'Inverted Regime';
-}
-
-function updateVisualization(control) {
-    const params = calculateParameters(control);
-    const svg = document.getElementById('marcusCurves');
+        function determineRegime(lambda, deltaG) {
+            if (Math.abs(lambda + deltaG) < 0.1) return 'Activationless Point';
+            if (lambda > -deltaG) return 'Normal Regime';
+            return 'Inverted Regime';
+        }
     
-    svg.innerHTML = '';
+        function updateVisualization(control) {
+            const params = calculateParameters(control);
+            const svg = document.getElementById('marcusCurves');
+            
+            svg.innerHTML = '';
+            
+            const donorCurve = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            donorCurve.setAttribute('points', generateParabolaPoints(0, 0));
+            donorCurve.setAttribute('fill', 'none');
+            donorCurve.setAttribute('stroke', '#3B82F6');
+            donorCurve.setAttribute('stroke-width', '2');
+            
+            const acceptorCurve = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
+            acceptorCurve.setAttribute('points', generateParabolaPoints(params.xShift, params.deltaG));
+            acceptorCurve.setAttribute('fill', 'none');
+            acceptorCurve.setAttribute('stroke', '#EF4444');
+            acceptorCurve.setAttribute('stroke-width', '2');
+            
+            const deltaGLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            deltaGLine.setAttribute('x1', width/2 + params.xShift);
+            deltaGLine.setAttribute('y1', height/2);
+            deltaGLine.setAttribute('x2', width/2 + params.xShift);
+            deltaGLine.setAttribute('y2', -params.deltaG + height/2);
+            deltaGLine.setAttribute('stroke', '#6B7280');
+            deltaGLine.setAttribute('stroke-dasharray', '4,4');
+            
+            const deltaGText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            deltaGText.setAttribute('x', width/2 + params.xShift + 10);
+            deltaGText.setAttribute('y', height/2 - params.deltaG/2);
+            deltaGText.setAttribute('fill', '#6B7280');
+            deltaGText.style.fontSize = '14px';
+            deltaGText.textContent = `ΔG = ${params.deltaG.toFixed(1)}`;
+            
+            const lambdaLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+            lambdaLine.setAttribute('x1', width/2);
+            lambdaLine.setAttribute('y1', -(a * 0 * 0 + params.deltaG) + height/2);
+            lambdaLine.setAttribute('x2', width/2);
+            lambdaLine.setAttribute('y2', -(a * params.xShift * params.xShift + params.deltaG) + height/2);
+            lambdaLine.setAttribute('stroke', '#6B7280');
+            lambdaLine.setAttribute('stroke-dasharray', '4,4');
+            
+            const lambdaText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+            lambdaText.setAttribute('x', width/2 - 40);
+            lambdaText.setAttribute('y', -(a * params.xShift * params.xShift/2 + params.deltaG) + height/2);
+            lambdaText.setAttribute('fill', '#6B7280');
+            lambdaText.style.fontSize = '14px';
+            lambdaText.textContent = `λ = ${params.lambda.toFixed(1)}`;
+            
+            svg.appendChild(donorCurve);
+            svg.appendChild(acceptorCurve);
+            svg.appendChild(deltaGLine);
+            svg.appendChild(deltaGText);
+            svg.appendChild(lambdaLine);
+            svg.appendChild(lambdaText);
+            
+            document.getElementById('regimeValue').textContent = control.toFixed(1);
+            document.getElementById('regimeType').textContent = determineRegime(params.lambda, params.deltaG);
+            document.getElementById('parameterValues').innerHTML = `
+                <div>λ = ${params.lambda.toFixed(1)}</div>
+                <div>ΔG = ${params.deltaG.toFixed(1)}</div>
+                <div>ΔG + λ = ${(params.deltaG + params.lambda).toFixed(1)}</div>
+                <div>ET Rate ∝ ${params.rate.toExponential(2)}</div>
+            `;
+        }
     
-    const donorCurve = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    donorCurve.setAttribute('points', generateParabolaPoints(0, 0));
-    donorCurve.setAttribute('fill', 'none');
-    donorCurve.setAttribute('stroke', '#3B82F6');
-    donorCurve.setAttribute('stroke-width', '2');
-    
-    const acceptorCurve = document.createElementNS('http://www.w3.org/2000/svg', 'polyline');
-    acceptorCurve.setAttribute('points', generateParabolaPoints(params.xShift, params.deltaG));
-    acceptorCurve.setAttribute('fill', 'none');
-    acceptorCurve.setAttribute('stroke', '#EF4444');
-    acceptorCurve.setAttribute('stroke-width', '2');
-    
-    const deltaGLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    deltaGLine.setAttribute('x1', width/2 + params.xShift);
-    deltaGLine.setAttribute('y1', height/2);
-    deltaGLine.setAttribute('x2', width/2 + params.xShift);
-    deltaGLine.setAttribute('y2', -params.deltaG + height/2);
-    deltaGLine.setAttribute('stroke', '#6B7280');
-    deltaGLine.setAttribute('stroke-dasharray', '4,4');
-    
-    const deltaGText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    deltaGText.setAttribute('x', width/2 + params.xShift + 10);
-    deltaGText.setAttribute('y', height/2 - params.deltaG/2);
-    deltaGText.setAttribute('fill', '#6B7280');
-    deltaGText.style.fontSize = '14px';
-    deltaGText.textContent = `ΔG = ${params.deltaG.toFixed(1)}`;
-    
-    const lambdaLine = document.createElementNS('http://www.w3.org/2000/svg', 'line');
-    lambdaLine.setAttribute('x1', width/2);
-    lambdaLine.setAttribute('y1', -(a * 0 * 0 + params.deltaG) + height/2);
-    lambdaLine.setAttribute('x2', width/2);
-    lambdaLine.setAttribute('y2', -(a * params.xShift * params.xShift + params.deltaG) + height/2);
-    lambdaLine.setAttribute('stroke', '#6B7280');
-    lambdaLine.setAttribute('stroke-dasharray', '4,4');
-    
-    const lambdaText = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    lambdaText.setAttribute('x', width/2 - 40);
-    lambdaText.setAttribute('y', -(a * params.xShift * params.xShift/2 + params.deltaG) + height/2);
-    lambdaText.setAttribute('fill', '#6B7280');
-    lambdaText.style.fontSize = '14px';
-    lambdaText.textContent = `λ = ${params.lambda.toFixed(1)}`;
-    
-    svg.appendChild(donorCurve);
-    svg.appendChild(acceptorCurve);
-    svg.appendChild(deltaGLine);
-    svg.appendChild(deltaGText);
-    svg.appendChild(lambdaLine);
-    svg.appendChild(lambdaText);
-    
-    document.getElementById('regimeValue').textContent = control.toFixed(1);
-    document.getElementById('regimeType').textContent = determineRegime(params.lambda, params.deltaG);
-    document.getElementById('parameterValues').innerHTML = `
-        <div>λ = ${params.lambda.toFixed(1)}</div>
-        <div>ΔG = ${params.deltaG.toFixed(1)}</div>
-        <div>ΔG + λ = ${(params.deltaG + params.lambda).toFixed(1)}</div>
-        <div>ET Rate ∝ ${params.rate.toExponential(2)}</div>
-    `;
-}
-
-// Initialize and add event listener
-document.addEventListener('DOMContentLoaded', function() {
-    const slider = document.getElementById('regimeControl');
-    updateVisualization(parseFloat(slider.value));
-    slider.addEventListener('input', (e) => updateVisualization(parseFloat(e.target.value)));
-});
-</script>
+        const slider = document.getElementById('regimeControl');
+        if (slider) {
+            updateVisualization(parseFloat(slider.value));
+            slider.addEventListener('input', (e) => updateVisualization(parseFloat(e.target.value)));
+        }
+    });
+    </script>
