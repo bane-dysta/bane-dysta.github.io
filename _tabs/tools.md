@@ -138,6 +138,8 @@ sudo systemctl restart docker
 
 [本地草稿纸](http://127.0.0.1:4000/draft)
 
+[解决win11更新后Linux入口消失的问题](https://github.com/microsoft/WSL/releases/tag/2.4.8)
+
 </div>
 </div>
 
