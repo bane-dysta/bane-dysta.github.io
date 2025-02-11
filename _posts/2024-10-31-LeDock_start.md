@@ -132,3 +132,16 @@ Sorted Scores:
 -2.06 Patulin.dok: REMARK Cluster 1 of Poses: 6 Score: -2.06 kcal/mol
 ~~~
 与原文对比，发现AFB1和DON(Vomitoxin)的顺位对调了。可能的原因是对接口袋的位置与原文存在偏移，漏过了适合AFB1结合的位置，却包含了适合DON结合的位置。LeDock打分函数给出的对接能均大约为Autodock的一半，由此可以推知对比对接能必须基于同一个软件的结果。
+
+## 5.罕见报错
+
+```bash
+$ ledock dock.in
+terminate called after throwing an instance of 'std::bad_alloc'
+  what():  std::bad_alloc
+```
+
+成因：常为Binding pocket设置不合法，如xmin ＜ xmax
+解决方法：多吃核桃，必要时重修小学数学
+
+
