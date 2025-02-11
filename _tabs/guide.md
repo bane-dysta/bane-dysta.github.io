@@ -20,6 +20,8 @@ order: 1
 - [构象搜索](https://bane-dysta.github.io/posts/molclus/)
 - [激发能](https://bane-dysta.github.io/posts/excitation_energy/)
 - [旋轨耦合](https://bane-dysta.github.io/posts/SOCME/)
+- [Huang-Rhys](https://bane-dysta.github.io/posts/Huang-Rhys/)
+- [圆锥交叉](https://bane-dysta.github.io/posts/CIopt/)
 </div>
 </div>
 
@@ -44,6 +46,9 @@ order: 1
 <div class="collapsible-section">
 <button class="collapsible-btn">软件安装</button>
 <div class="collapsible-content" markdown="1">
+- [Ledock](https://bane-dysta.github.io/posts/LeDock_start/)
 - [MOKIT](https://bane-dysta.github.io/posts/MOKIT/)
+- [ollama+AnythingLLM](https://bane-dysta.github.io/posts/ollama/)
+- [molOCR](https://bane-dysta.github.io/posts/23/)
 </div>
 </div>
