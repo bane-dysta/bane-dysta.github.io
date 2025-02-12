@@ -7,7 +7,7 @@ order: 1
 
 ## 文章导航
 <div class="collapsible-section">
-<button class="collapsible-btn">Gaussian教程</button>
+<button class="collapsible-btn">Gaussian使用</button>
 <div class="collapsible-content" markdown="1">
 - [计算基态](https://bane-dysta.github.io/posts/Gaussian_opt/)
 - [计算激发态](https://bane-dysta.github.io/posts/Gaussian_td/)
@@ -43,12 +43,23 @@ order: 1
 </div>
 </div>
 
+
 <div class="collapsible-section">
 <button class="collapsible-btn">软件安装</button>
 <div class="collapsible-content" markdown="1">
 - [Ledock](https://bane-dysta.github.io/posts/LeDock_start/)
-- [MOKIT](https://bane-dysta.github.io/posts/MOKIT/)
-- [ollama+AnythingLLM](https://bane-dysta.github.io/posts/ollama/)
+- [MOKIT、GAMESS、ORCA](https://bane-dysta.github.io/posts/MOKIT/)
+- [ollama、AnythingLLM](https://bane-dysta.github.io/posts/ollama/)
 - [molOCR](https://bane-dysta.github.io/posts/23/)
+</div>
+</div>
+
+
+<div class="collapsible-section">
+<button class="collapsible-btn">解决小问题</button>
+<div class="collapsible-content" markdown="1">
+- [C盘清理](https://bane-dysta.github.io/posts/24/)
+- [同步blog](https://bane-dysta.github.io/posts/Set_Blog/)
+- [杂项合集]
 </div>
 </div>
