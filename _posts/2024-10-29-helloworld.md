@@ -8,3 +8,6 @@ tags: [tools]
 
 test
 
+<script src="https://sinacloud.net/egg-lib/hit-kounter/hit-kounter-lc-0.4.1.js"></script>
+
+<span data-hk-page="current"> - </span>

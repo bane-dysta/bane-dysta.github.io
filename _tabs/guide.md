@@ -60,6 +60,6 @@ order: 1
 <div class="collapsible-content" markdown="1">
 - [C盘清理](https://bane-dysta.github.io/posts/24/)
 - [同步blog](https://bane-dysta.github.io/posts/Set_Blog/)
-- [杂项合集]
+- [杂项合集](https://bane-dysta.github.io/draft/lit.html)
 </div>
 </div>
