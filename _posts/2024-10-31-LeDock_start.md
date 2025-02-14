@@ -2,7 +2,7 @@
 title: Study note：使用LeDock(Linux)进行批量对接
 date: 2024-10-31 19:00:00 +0800
 categories: [Molecular simulation]
-tags: [LeDock]     
+tags: [docking]     
 ---
 分子对接是一种计算生物学技术，用于预测两个或多个分子（通常是蛋白质和配体或小分子药物）之间的相互作用方式。流行的分子对接软件有Autodock、Autodock vina、Discovery Studio、glide、rDock、GOLD、LeDock等。笔者是从Autodock入手的，结合ADT的UI界面大致学习了一下如何进行分子对接。起初对接CHNO的有机分子还挺顺利，但开始自己的课题后光速遇到麻烦。
 ```
@@ -133,7 +133,9 @@ Sorted Scores:
 ~~~
 与原文对比，发现AFB1和DON(Vomitoxin)的顺位对调了。可能的原因是对接口袋的位置与原文存在偏移，漏过了适合AFB1结合的位置，却包含了适合DON结合的位置。LeDock打分函数给出的对接能均大约为Autodock的一半，由此可以推知对比对接能必须基于同一个软件的结果。
 
-## 5.罕见报错
+## 5. 问题记录
+
+### terminate called after throwing an instance of 'std::bad_alloc'
 
 ```bash
 $ ledock dock.in
@@ -142,6 +144,13 @@ terminate called after throwing an instance of 'std::bad_alloc'
 ```
 
 成因：常为Binding pocket设置不合法，如xmin ＜ xmax
+
 解决方法：多吃核桃，必要时重修小学数学
+
+### dok文件中所有对接能都是0
+
+成因：*也许是*pdb文件中没有ATOM字段，直接用于对接了。ledock只认ATOM字段，且只认氨基酸残基，非氨基酸残基没内置参数。
+
+解决方法：运行前首先用lepro处理pdb文件。
 
 
