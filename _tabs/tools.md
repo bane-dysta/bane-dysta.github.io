@@ -128,9 +128,13 @@ sudo systemctl restart docker
 
 [Chripy官网](https://chirpy.cotes.page/)
 
+别人的blog好牛哎
+
 [Marvin](https://winxuan.github.io/posts/creat-blog/)
 
 [MsEspeon](https://ittousei.github.io/posts/customize-my-blog/)
+
+[masterke](https://masterke.cn/)
 
 [草稿纸](https://bane-dysta.github.io/draft)
 
