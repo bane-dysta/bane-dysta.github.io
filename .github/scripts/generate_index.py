@@ -14,15 +14,18 @@ def extract_yaml_title(content):
     return None
 
 def parse_filename(filename):
-    """解析文件名，返回日期和序号"""
-    pattern = r'(\d{4}-\d{2}-\d{2})-(\d+)'
+    """解析文件名，返回日期"""
+    # 修改正则表达式以匹配 YYYY-M-D 和 YYYY-MM-DD 两种格式
+    pattern = r'(\d{4})-(\d{1,2})-(\d{1,2})-(.+?)\.md$'
     match = re.match(pattern, filename)
     if match:
-        date_str, number = match.groups()
+        year, month, day, slug = match.groups()
         try:
+            # 构建标准化的日期字符串
+            date_str = f"{year}-{int(month):02d}-{int(day):02d}"
             date = datetime.strptime(date_str, '%Y-%m-%d')
-            print(f"Parsed filename {filename}: date={date}, number={number}")
-            return date, int(number)
+            print(f"Parsed filename {filename}: date={date}, slug={slug}")
+            return date, slug
         except ValueError as e:
             print(f"Error parsing date from filename {filename}: {e}")
     print(f"Filename {filename} doesn't match expected pattern")
@@ -41,7 +44,7 @@ def generate_index():
         return
     
     # 遍历所有文章
-    for filename in os.listdir(posts_dir):
+    for filename in sorted(os.listdir(posts_dir), reverse=True):
         print(f"\nProcessing file: {filename}")
         # 跳过索引文件本身
         if filename == '1970-01-01-PostIndex.md':
@@ -52,7 +55,7 @@ def generate_index():
             print(f"Skipping non-markdown file: {filename}")
             continue
             
-        date, number = parse_filename(filename)
+        date, slug = parse_filename(filename)
         if not date:
             continue
             
@@ -70,16 +73,16 @@ def generate_index():
         if title:
             posts.append({
                 'date': date,
-                'number': number,
+                'slug': slug,
                 'filename': filename,
                 'title': title
             })
-            print(f"Added post: {date} - {number} - {title}")
+            print(f"Added post: {date} - {slug} - {title}")
     
     print(f"\nTotal posts found: {len(posts)}")
     
-    # 按日期和序号排序
-    posts.sort(key=lambda x: (x['date'], x['number']), reverse=True)
+    # 按日期排序
+    posts.sort(key=lambda x: x['date'], reverse=True)
     
     # 生成索引文件
     output_file = os.path.join(posts_dir, '1970-01-01-PostIndex.md')
@@ -98,13 +101,12 @@ def generate_index():
         
         f.write('# 博客文章索引\n\n')
         f.write('> 最后更新时间: {}\n\n'.format(datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        f.write('| 日期 | 序号 | 标题 | 文件名 |\n')
-        f.write('|------|------|------|--------|\n')
+        f.write('| 发布日期 | 文章标题 | 文件名 |\n')
+        f.write('|----------|----------|--------|\n')
         
         for post in posts:
-            line = '| {} | {:04d} | {} | {} |\n'.format(
+            line = '| {} | {} | {} |\n'.format(
                 post['date'].strftime('%Y-%m-%d'),
-                post['number'],
                 post['title'],
                 post['filename']
             )
