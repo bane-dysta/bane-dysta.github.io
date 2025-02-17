@@ -9,17 +9,12 @@ on:
       - master
   workflow_dispatch:
 
-# 添加必要的权限
 permissions:
   contents: write
 
 jobs:
-  generate-index:
+  update-index:
     runs-on: ubuntu-latest
-    concurrency:
-      group: "post-index"
-      cancel-in-progress: true
-    
     steps:
     - uses: actions/checkout@v4
       with:
@@ -32,18 +27,20 @@ jobs:
     
     - name: Generate Posts Index
       run: |
-        mkdir -p .github/scripts
-        echo "Current directory contents:"
-        ls -la
-        echo "\n_posts directory contents:"
-        ls -la _posts/
         python .github/scripts/generate_index.py
     
+    - name: Check for changes
+      id: check_changes
+      run: |
+        git diff --quiet _posts/1970-01-01-PostIndex.md || echo "has_changes=true" >> $GITHUB_OUTPUT
+    
     - name: Commit and Push Index
+      if: steps.check_changes.outputs.has_changes == 'true'
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add _posts/1970-01-01-PostIndex.md
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Update posts index [skip ci]" && git push)
+        git commit --amend --no-edit
+        git push -f
