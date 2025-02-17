@@ -33,6 +33,10 @@ jobs:
     - name: Generate Posts Index
       run: |
         mkdir -p .github/scripts
+        echo "Current directory contents:"
+        ls -la
+        echo "\n_posts directory contents:"
+        ls -la _posts/
         python .github/scripts/generate_index.py
     
     - name: Commit and Push Index
@@ -41,5 +45,5 @@ jobs:
       run: |
         git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
-        git add 1970-1-1-PostIndex.md
+        git add _posts/1970-01-01-PostIndex.md
         git diff --quiet && git diff --staged --quiet || (git commit -m "Update posts index [skip ci]" && git push)
