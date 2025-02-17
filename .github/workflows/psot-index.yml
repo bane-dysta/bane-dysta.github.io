@@ -1,0 +1,40 @@
+name: Generate Posts Index
+
+on:
+  push:
+    paths:
+      - '_posts/**'
+    branches:
+      - main
+      - master
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  generate-index:
+    runs-on: ubuntu-latest
+    # 确保不会与页面部署冲突
+    concurrency:
+      group: "post-index"
+      cancel-in-progress: true
+    
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+    
+    - name: Generate Posts Index
+      run: |
+        mkdir -p .github/scripts
+        python .github/scripts/generate_index.py
+    
+    - name: Commit and Push Index
+      run: |
+        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.name "github-actions[bot]"
+        git add 1970-1-1-PostIndex.md
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Update posts index [skip ci]" && git push)
