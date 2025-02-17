@@ -7,12 +7,15 @@ on:
     branches:
       - main
       - master
-  workflow_dispatch:  # 允许手动触发
+  workflow_dispatch:
+
+# 添加必要的权限
+permissions:
+  contents: write
 
 jobs:
   generate-index:
     runs-on: ubuntu-latest
-    # 确保不会与页面部署冲突
     concurrency:
       group: "post-index"
       cancel-in-progress: true
@@ -33,8 +36,10 @@ jobs:
         python .github/scripts/generate_index.py
     
     - name: Commit and Push Index
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        git config --local user.email "github-actions[bot]@users.noreply.github.com"
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
         git config --local user.name "github-actions[bot]"
         git add 1970-1-1-PostIndex.md
         git diff --quiet && git diff --staged --quiet || (git commit -m "Update posts index [skip ci]" && git push)
