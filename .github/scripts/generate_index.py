@@ -6,67 +6,46 @@ from datetime import datetime
 def extract_yaml_title(content):
     """从文章内容中提取 YAML front matter 中的 title"""
     match = re.search(r'^---\s*$.*?^title:\s*(.+?)\s*$.*?^---\s*$', content, re.MULTILINE | re.DOTALL)
-    if match:
-        title = match.group(1).strip('"\'')
-        print(f"Found title: {title}")
-        return title
-    print("No title found in content")
-    return None
+    return match.group(1).strip('"\'') if match else None
 
 def parse_filename(filename):
     """解析文件名，返回日期"""
-    # 修改正则表达式以匹配 YYYY-M-D 和 YYYY-MM-DD 两种格式
     pattern = r'(\d{4})-(\d{1,2})-(\d{1,2})-(.+?)\.md$'
     match = re.match(pattern, filename)
     if match:
         year, month, day, slug = match.groups()
         try:
-            # 构建标准化的日期字符串
             date_str = f"{year}-{int(month):02d}-{int(day):02d}"
-            date = datetime.strptime(date_str, '%Y-%m-%d')
-            print(f"Parsed filename {filename}: date={date}, slug={slug}")
-            return date, slug
-        except ValueError as e:
-            print(f"Error parsing date from filename {filename}: {e}")
-    print(f"Filename {filename} doesn't match expected pattern")
+            return datetime.strptime(date_str, '%Y-%m-%d'), slug
+        except ValueError:
+            return None, None
     return None, None
+
+def get_post_link(filename):
+    """生成文章链接"""
+    # 移除 .md 后缀
+    name_without_ext = os.path.splitext(filename)[0]
+    return f"https://bane-dysta.github.io/posts/{name_without_ext}/"
 
 def generate_index():
     posts_dir = '_posts'
     posts = []
     
-    print(f"Current working directory: {os.getcwd()}")
-    print(f"Looking for posts in: {os.path.abspath(posts_dir)}")
-    
-    # 确保目录存在
     if not os.path.exists(posts_dir):
-        print(f"Error: Directory {posts_dir} does not exist!")
         return
     
-    # 遍历所有文章
     for filename in sorted(os.listdir(posts_dir), reverse=True):
-        print(f"\nProcessing file: {filename}")
-        # 跳过索引文件本身
-        if filename == '1970-01-01-PostIndex.md':
-            print("Skipping index file itself")
-            continue
-            
-        if not filename.endswith('.md'):
-            print(f"Skipping non-markdown file: {filename}")
+        if filename == '1970-01-01-PostIndex.md' or not filename.endswith('.md'):
             continue
             
         date, slug = parse_filename(filename)
         if not date:
             continue
             
-        # 读取文件内容
-        file_path = os.path.join(posts_dir, filename)
         try:
-            with open(file_path, 'r', encoding='utf-8') as f:
+            with open(os.path.join(posts_dir, filename), 'r', encoding='utf-8') as f:
                 content = f.read()
-                print(f"Successfully read file: {filename}")
-        except Exception as e:
-            print(f"Error reading file {filename}: {e}")
+        except Exception:
             continue
             
         title = extract_yaml_title(content)
@@ -75,43 +54,36 @@ def generate_index():
                 'date': date,
                 'slug': slug,
                 'filename': filename,
-                'title': title
+                'title': title,
+                'link': get_post_link(filename)
             })
-            print(f"Added post: {date} - {slug} - {title}")
     
-    print(f"\nTotal posts found: {len(posts)}")
-    
-    # 按日期排序
     posts.sort(key=lambda x: x['date'], reverse=True)
     
-    # 生成索引文件
     output_file = os.path.join(posts_dir, '1970-01-01-PostIndex.md')
-    print(f"\nGenerating index file: {output_file}")
     
     with open(output_file, 'w', encoding='utf-8') as f:
-        # 添加 YAML front matter
         f.write('---\n')
         f.write('title: 博客文章索引\n')
         f.write('author: github-actions[bot]\n')
         f.write('date: 1970-01-01 00:00:00 +0800\n')
         f.write('categories: [Blog]\n')
         f.write('tags: [index]\n')
-        f.write('pin: true\n')  # 固定到顶部
+        f.write('pin: true\n')
         f.write('---\n\n')
         
-        f.write('# 博客文章索引\n\n')
+        f.write('>index由脚本生成\n\n')
         f.write('> 最后更新时间: {}\n\n'.format(datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
-        f.write('| 发布日期 | 文章标题 | 文件名 |\n')
-        f.write('|----------|----------|--------|\n')
+        f.write('| 发布日期 | 文章标题 | 文件名 | 链接 |\n')
+        f.write('|----------|----------|--------|------|\n')
         
         for post in posts:
-            line = '| {} | {} | {} |\n'.format(
+            f.write('| {} | {} | {} | [链接]({}) |\n'.format(
                 post['date'].strftime('%Y-%m-%d'),
                 post['title'],
-                post['filename']
-            )
-            f.write(line)
-            print(f"Added line to index: {line.strip()}")
+                post['filename'],
+                post['link']
+            ))
 
 if __name__ == '__main__':
     generate_index()
