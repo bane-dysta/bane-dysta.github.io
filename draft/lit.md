@@ -4,7 +4,7 @@ title: 杂项问题的解决办法
 date: 2024-11-1 12:00:00 +0800
 ---
 
-## chemdraw2020链接Microsoft Office软件
+## chemdraw2020链接Microsoft Office软件(Word，PowerPoint)
 描述：使用*慈禧付款版*ChemOffice2020会出现复制出去的对象双击不能链接到chemdraw的问题
 
 原因：多数*慈禧付款版*没有修改注册表，本地服务地址填的不对
@@ -53,5 +53,12 @@ date: 2024-11-1 12:00:00 +0800
   sudo systemctl daemon-reload
   sudo systemctl restart docker
   ```
+
+# OpenBabel
+描述：使用pybel转换smiles式时提示``smi is not a recognised Open Babel format``
+
+原因：使用pybel时必须激活对应conda环境，不能只用对应环境的python
+
+解决办法：为此类脚本写个启动器
 
 
