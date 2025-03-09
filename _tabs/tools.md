@@ -122,6 +122,22 @@ sudo systemctl daemon-reload
 sudo systemctl restart docker
 ```
 [Docker 镜像加速列表](https://www.coderjia.cn/archives/dba3f94c-a021-468a-8ac6-e840f85867ea)
+
+解压命令：
+
+| 压缩文件格式 | 解压命令 | 命令参数解释 |
+|--------------|----------|--------------|
+| .tar | tar -xvf filename.tar | x: 解压，v: 显示详细信息，f: 指定文件 |
+| .tar.gz / .tgz | tar -zxvf filename.tar.gz | z: 支持gzip压缩，x: 解压，v: 显示详细信息，f: 指定文件 |
+| .tar.bz2 | tar -jxvf filename.tar.bz2 | j: 支持bzip2压缩，x: 解压，v: 显示详细信息，f: 指定文件 |
+| .tar.xz | tar -Jxvf filename.tar.xz | J: 支持xz压缩，x: 解压，v: 显示详细信息，f: 指定文件 |
+| .gz | gzip -d filename.gz | -d: 解压 |
+| .zip | unzip filename.zip | 直接解压 |
+| .rar | unrar x filename.rar | x: 解压到当前目录 |
+| .7z | 7z x filename.7z | x: 解压 |
+| .bz2 | bzip2 -d filename.bz2 | -d: 解压 |
+| .xz | xz -d filename.xz | -d: 解压 |
+
 </div>
 </div>
 
