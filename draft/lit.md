@@ -54,11 +54,12 @@ date: 2024-11-1 12:00:00 +0800
   sudo systemctl restart docker
   ```
 
-# OpenBabel
+## OpenBabel
 描述：使用pybel转换smiles式时提示``smi is not a recognised Open Babel format``
 
 原因：使用pybel时必须激活对应conda环境，不能只用对应环境的python
 
 解决办法：为此类脚本写个启动器
+
 
 
