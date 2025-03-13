@@ -1,0 +1,101 @@
+---
+layout: default
+---
+
+{% include lang.html %}
+
+<div class="container mt-4">
+    <h2 class="text-center mb-4">溶液计算器</h2>
+    
+    <div class="form-group row">
+        <label for="molecularWeight" class="col-sm-3 col-form-label">分子量:</label>
+        <div class="col-sm-9">
+            <div class="input-group">
+                <input type="text" class="form-control" id="molecularWeight">
+                <button class="btn btn-outline-secondary" type="button" id="openSmilesButton">输入SMILES或CAS号</button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <label for="concentration" class="col-sm-3 col-form-label">目标浓度:</label>
+        <div class="col-sm-9">
+            <div class="input-group">
+                <input type="text" class="form-control" id="concentration" value="2">
+                <select class="form-select" id="concentrationUnit" style="max-width: 120px;">
+                    <option value="mmol/L">mmol/L</option>
+                    <option value="mol/L">mol/L</option>
+                    <option value="g/L">g/L</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <label for="mass" class="col-sm-3 col-form-label">称量的质量:</label>
+        <div class="col-sm-9">
+            <div class="input-group">
+                <input type="text" class="form-control" id="mass">
+                <select class="form-select" id="massUnit" style="max-width: 120px;">
+                    <option value="g">g</option>
+                    <option value="mg">mg</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="form-group row">
+        <label for="volume" class="col-sm-3 col-form-label">需要的体积:</label>
+        <div class="col-sm-9">
+            <div class="input-group">
+                <input type="text" class="form-control" id="volume">
+                <select class="form-select" id="volumeUnit" style="max-width: 120px;">
+                    <option value="mL">mL</option>
+                    <option value="L">L</option>
+                </select>
+            </div>
+        </div>
+    </div>
+    
+    <div class="text-center mt-3">
+        <button class="btn btn-primary" id="calculateButton">计算</button>
+    </div>
+    
+    <div id="resultLabel" class="text-center mt-3" style="display: none;"></div>
+</div>
+
+<!-- SMILES Input Modal -->
+<div class="modal fade" id="smilesModal" tabindex="-1" aria-labelledby="smilesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="smilesModalLabel">输入SMILES或CAS号</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="smilesInput" class="form-label">请输入 SMILES 或 CAS号:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="smilesInput">
+                        <button class="btn btn-outline-secondary" type="button" id="processInputButton">处理输入</button>
+                    </div>
+                </div>
+                <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+                <div id="structureContainer" class="text-center" style="display: none;">
+                    <div id="structureImage"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirmSelectionButton" style="display: none;">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript dependencies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://unpkg.com/openchemlib/dist/openchemlib-full.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<!-- Custom scripts -->
+<script src="{{ '/assets/js/solvent-calculator.js' | relative_url }}"></script>
