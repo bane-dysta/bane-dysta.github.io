@@ -6,6 +6,11 @@
     <script src="https://unpkg.com/openchemlib/dist/openchemlib-full.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/css/bootstrap.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+    <!-- 禁用可能干扰的外部JS -->
+    <script>
+        // 防止与页面上的其他JS冲突
+        window.solventCalculatorNamespace = {}; 
+    </script>
     <style>
         /* Chirpy-compatible styles */
         :root {
@@ -258,34 +263,84 @@
         let currentSmiles = null;
         let smilesModal;
         
-        // 在文档加载完成后初始化
-        document.addEventListener('DOMContentLoaded', function() {
+        // 初始化函数 - 可以被多次调用但只会执行一次
+        function initializeCalculator() {
+            if (window.calculatorInitialized) return;
+            
+            console.log("初始化溶液计算器...");
+            
             // 初始化模态框
-            smilesModal = new bootstrap.Modal(document.getElementById('smilesModal'));
-            
-            // 事件监听器设置
-            document.getElementById('openSmilesButton').addEventListener('click', () => {
-                document.getElementById('smilesInput').value = '';
-                document.getElementById('errorMessage').style.display = 'none';
-                document.getElementById('structureContainer').style.display = 'none';
-                document.getElementById('confirmSelectionButton').style.display = 'none';
-                smilesModal.show();
-            });
-            
-            document.getElementById('processInputButton').addEventListener('click', processInput);
-            document.getElementById('confirmSelectionButton').addEventListener('click', confirmSelection);
-            document.getElementById('calculateButton').addEventListener('click', calculate);
-            
-            // 监听分子量输入框失去焦点事件
-            document.getElementById('molecularWeight').addEventListener('blur', onMolecularWeightChange);
-            
-            // 监听输入框键盘事件
-            document.getElementById('smilesInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    processInput();
+            try {
+                if (document.getElementById('smilesModal')) {
+                    smilesModal = new bootstrap.Modal(document.getElementById('smilesModal'));
+                    console.log("模态框初始化成功");
+                } else {
+                    console.error("找不到模态框元素");
+                    return;
                 }
-            });
-        });
+                
+                // 事件监听器设置
+                if (document.getElementById('openSmilesButton')) {
+                    document.getElementById('openSmilesButton').addEventListener('click', () => {
+                        document.getElementById('smilesInput').value = '';
+                        document.getElementById('errorMessage').style.display = 'none';
+                        document.getElementById('structureContainer').style.display = 'none';
+                        document.getElementById('confirmSelectionButton').style.display = 'none';
+                        smilesModal.show();
+                        console.log("打开SMILES输入模态框");
+                    });
+                    console.log("SMILES按钮事件监听器已设置");
+                }
+                
+                if (document.getElementById('processInputButton')) {
+                    document.getElementById('processInputButton').addEventListener('click', processInput);
+                    console.log("处理输入按钮事件监听器已设置");
+                }
+                
+                if (document.getElementById('confirmSelectionButton')) {
+                    document.getElementById('confirmSelectionButton').addEventListener('click', confirmSelection);
+                    console.log("确认选择按钮事件监听器已设置");
+                }
+                
+                if (document.getElementById('calculateButton')) {
+                    document.getElementById('calculateButton').addEventListener('click', calculate);
+                    console.log("计算按钮事件监听器已设置");
+                }
+                
+                // 监听分子量输入框失去焦点事件
+                if (document.getElementById('molecularWeight')) {
+                    document.getElementById('molecularWeight').addEventListener('blur', onMolecularWeightChange);
+                    console.log("分子量输入框事件监听器已设置");
+                }
+                
+                // 监听输入框键盘事件
+                if (document.getElementById('smilesInput')) {
+                    document.getElementById('smilesInput').addEventListener('keypress', function(e) {
+                        if (e.key === 'Enter') {
+                            processInput();
+                        }
+                    });
+                    console.log("SMILES输入框键盘事件监听器已设置");
+                }
+                
+                window.calculatorInitialized = true;
+                console.log("溶液计算器初始化完成");
+            } catch (error) {
+                console.error("初始化过程中出错:", error);
+            }
+        }
+        
+        // 使用多种方法确保初始化函数被调用
+        // 1. DOMContentLoaded
+        document.addEventListener('DOMContentLoaded', initializeCalculator);
+        
+        // 2. 立即尝试初始化（针对已加载完成的页面）
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            setTimeout(initializeCalculator, 100);
+        }
+        
+        // 3. window.onload 备用
+        window.addEventListener('load', initializeCalculator);
         
         // 从CAS号获取SMILES
         async function getSmilesFromCas(casNumber) {
@@ -419,23 +474,45 @@
         // 显示错误消息
         function showError(message) {
             const errorElement = document.getElementById('errorMessage');
+            if (!errorElement) {
+                console.error('错误: 找不到错误消息元素');
+                alert('错误: ' + message);
+                return;
+            }
             errorElement.textContent = message;
             errorElement.style.display = 'block';
+            console.warn('显示错误: ' + message);
         }
         
         // 显示结果
         function showResult(message, isSuccess = true) {
             const resultElement = document.getElementById('resultLabel');
+            if (!resultElement) {
+                console.error('错误: 找不到结果标签元素');
+                alert(message);
+                return;
+            }
             resultElement.textContent = message;
             resultElement.className = isSuccess ? 'success' : 'error';
             resultElement.style.display = 'block';
+            console.log('显示结果: ' + message);
         }
         
         // 计算函数
         function calculate() {
+            console.log("执行计算函数...");
             try {
-                const molecularWeight = parseFloat(document.getElementById('molecularWeight').value);
-                const concentration = parseFloat(document.getElementById('concentration').value);
+                const mwElement = document.getElementById('molecularWeight');
+                const concElement = document.getElementById('concentration');
+                
+                if (!mwElement || !concElement) {
+                    console.error("找不到必要的输入元素");
+                    alert("页面元素加载不完整，请刷新页面重试");
+                    return;
+                }
+                
+                const molecularWeight = parseFloat(mwElement.value);
+                const concentration = parseFloat(concElement.value);
                 
                 if (isNaN(molecularWeight) || molecularWeight <= 0) {
                     showResult("请输入有效的分子量", false);
