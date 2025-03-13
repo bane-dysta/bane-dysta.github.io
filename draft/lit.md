@@ -61,5 +61,39 @@ date: 2024-11-1 12:00:00 +0800
 
 解决办法：为此类脚本写个启动器
 
+## filesystem编译失败
+描述：使用了filesystem的C++脚本在集群编译时离奇报错。本地gcc 11.4.0编译通过，集群12.2.0和9.3.0统统失败，报错：
+```
+error: ‘__str_codecvt_in_all’ was not declared in this scope
+```
 
+原因：这是 GCC 实现中 std::filesystem 的一个已知问题（来自：Claude）
+
+解决办法：我太菜了解决不了。写脚本时避免使用filesystem即可。
+
+## gtest被make install安装
+描述：本来只想装写好的工具，明明intsall没写gtest部分，结果make install还是搞了一堆垃圾到/usr/local
+```
+...
+
+-- Installing: /usr/local/include/gmock
+-- Installing: /usr/local/include/gmock/gmock-function-mocker.h
+-- Installing: /usr/local/include/gmock/gmock.h
+-- Installing: /usr/local/include/gmock/gmock-nice-strict.h
+-- Installing: /usr/local/include/gmock/gmock-more-actions.h
+-- Installing: /usr/local/include/gmock/gmock-cardinalities.h
+-- Installing: /usr/local/include/gmock/gmock-matchers.h
+-- Installing: /usr/local/include/gmock/gmock-spec-builders.h
+-- Installing: /usr/local/include/gmock/gmock-actions.h
+
+...
+```
+
+原因：GoogleTest的CMakeLists.txt默认会包含安装指令
+
+解决办法：在启用测试之前设置GoogleTest变量，覆盖GoogleTest的行为
+```
+set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of googletest" FORCE)
+set(INSTALL_GMOCK OFF CACHE BOOL "Disable installation of googlemock" FORCE)
+```
 
