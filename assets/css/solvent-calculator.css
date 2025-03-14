@@ -1,0 +1,267 @@
+/* 溶液计算器 - 优化样式 */
+.calculator-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    max-width: 800px;
+    margin: 2rem auto;
+    transition: all 0.3s ease;
+}
+
+.calculator-container h2 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 2px solid #e7f0fd;
+    padding-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    color: #34495e;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.form-control {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    transition: all 0.2s;
+    background-color: #f8fafc;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    background-color: #fff;
+}
+
+.input-group {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-group .form-select {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: none;
+}
+
+.input-group-append .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.btn-outline-secondary {
+    color: #3498db;
+    border-color: #e2e8f0;
+    background-color: #f8fafc;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #edf2f7;
+    color: #2980b9;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+    box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(52, 152, 219, 0.25);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    border-color: #95a5a6;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+    border-color: #7f8c8d;
+}
+
+/* 模态框样式 */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid #edf2f7;
+    padding: 1.25rem 1.5rem;
+    background-color: #f8fafc;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.modal-title {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #edf2f7;
+    padding: 1.25rem 1.5rem;
+    background-color: #f8fafc;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.btn-close {
+    color: #64748b;
+}
+
+/* 结构图像容器 */
+#structureContainer {
+    padding: 15px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+}
+
+#structureImage {
+    max-width: 320px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* 错误和成功消息样式 */
+#errorMessage {
+    border-radius: 8px;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+}
+
+#resultLabel {
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.success {
+    background-color: #d1f5ea;
+    color: #0d6e4d;
+    border-left: 4px solid #10b981;
+}
+
+.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .calculator-container {
+        padding: 20px 15px;
+        margin: 1rem 10px;
+    }
+    
+    .form-group {
+        margin-bottom: 1rem;
+    }
+    
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+
+/* 暗色模式支持 */
+@media (prefers-color-scheme: dark) {
+    .calculator-container {
+        background-color: #1a202c;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+    
+    .calculator-container h2 {
+        color: #e2e8f0;
+        border-bottom-color: #2d3748;
+    }
+    
+    .form-label {
+        color: #e2e8f0;
+    }
+    
+    .form-control, .form-select, .btn-outline-secondary {
+        background-color: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+    
+    .form-control:focus {
+        background-color: #2d3748;
+        border-color: #3498db;
+    }
+    
+    .modal-header, .modal-footer {
+        background-color: #2d3748;
+        border-color: #4a5568;
+    }
+    
+    .modal-content {
+        background-color: #1a202c;
+    }
+    
+    .modal-title {
+        color: #e2e8f0;
+    }
+    
+    #structureContainer {
+        background-color: #2d3748;
+    }
+    
+    #structureImage {
+        background-color: #1a202c;
+    }
+    
+    .success {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #d1fae5;
+    }
+    
+    .error {
+        background-color: rgba(239, 68, 68, 0.2);
+        color: #fee2e2;
+    }
+}
