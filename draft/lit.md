@@ -97,3 +97,14 @@ set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of googletest" FORCE)
 set(INSTALL_GMOCK OFF CACHE BOOL "Disable installation of googlemock" FORCE)
 ```
 
+## wsl不能同步windows的代理
+描述：``wsl: 检测到 localhost 代理配置，但未镜像到 WSL。NAT 模式下的 WSL 不支持 localhost 代理。``
+
+原因：需要打开mirrored模式
+
+解决：在Windows的根目录下创建.wslconfig，内容为：
+```
+[wsl2]
+networkingMode=mirrored
+```
+完成后，使用``wsl --shutdown``关闭wsl，然后重新进入wsl即可
