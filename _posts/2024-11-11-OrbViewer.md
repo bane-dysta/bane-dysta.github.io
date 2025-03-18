@@ -70,11 +70,20 @@ Orbital Viewer是一个主要由java与python写成的简易轨道查看器，�
 | Ctrl+C(命令行) | 返回主菜单 |
 
 ## 🔰下载地址
-打包好的可执行文件：[Orbital Viewer.exe](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/Orbital%20Viewer.exe)
 
-源码：[github](https://github.com/bane-dysta/Orb_Viewer)
+Release:
+[Orbital Viewer.exe](https://github.com/bane-dysta/Orbital_Viewer/releases/tag/v1.0.1)
+
+GitHub:
+[Orbital_Viewer](https://github.com/bane-dysta/Orbital_Viewer)
 
 ## 📋 更新日志
+
+### v1.0.1 (2024-3-18)
+- 支持一键截图
+- 支持读取Note字段的内容并附加进截图，以更好地展示tasker解析的信息(匹配到单行内"="号时会以表格形式列出在图下方)
+- 支持轨道映射规则，用于显示静电势表面分布图等上色的等值面
+
 
 ### v1.0.0 (2024-11-11)
 - 初始版本发布
