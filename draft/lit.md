@@ -54,6 +54,28 @@ date: 2024-11-1 12:00:00 +0800
   sudo systemctl restart docker
   ```
 
+## pip超时
+描述：pip下载包时报错
+```
+  WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by 
+  ...
+```
+
+原因：访问外国网站日常抽风，类似于github
+
+解决办法：pip install [package] -i [镜像源] --trusted-host [hostname]
+
+```
+http://mirrors.aliyun.com/pypi/simple/
+https://pypi.tuna.tsinghua.edu.cn/simple/
+http://pypi.mirrors.ustc.edu.cn/simple/
+```
+
+http镜像源拉取时需要加``--trusted-host``，比如：
+```
+pip install flask -i http://mirrors.aliyun.com/pypi/simple/ --trusted-host mirrors.aliyun.com
+```
+
 ## OpenBabel
 描述：使用pybel转换smiles式时提示``smi is not a recognised Open Babel format``
 
@@ -108,3 +130,4 @@ set(INSTALL_GMOCK OFF CACHE BOOL "Disable installation of googlemock" FORCE)
 networkingMode=mirrored
 ```
 完成后，使用``wsl --shutdown``关闭wsl，然后重新进入wsl即可
+
