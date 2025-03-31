@@ -131,3 +131,10 @@ networkingMode=mirrored
 ```
 完成后，使用``wsl --shutdown``关闭wsl，然后重新进入wsl即可
 
+## cursor占据VScode的code命令
+描述：code打开的是cursor
+
+原因：path里cursor在VScode上面
+
+解决：把VScode的路径移上去即可
+
