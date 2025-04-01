@@ -52,6 +52,8 @@ PBEQIDH IOP(3/74=1001009,3/78=0666606666,3/107=0270000000,
 
 [TDDFT](https://www.faccts.de/docs/orca/6.0/manual/contents/detailed/tddft.html)
 
+[Delta SCF](https://www.faccts.de/docs/orca/6.0/manual/contents/typical/energygradients.html#scf-and-symmetry)
+
 [输入文件](https://sites.google.com/site/orcainputlibrary/)
 
 </div>
