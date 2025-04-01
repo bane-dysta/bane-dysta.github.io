@@ -1,15 +1,103 @@
 ---
 layout: page
-title: "orca任务记录"
+title: orca输入文件
 date: 2024-11-1 12:00:00 +0800
 ---
+
+## 输入文件结构
+- `$new_job`类似于Gaussian的--link1--，使用`%base "job1"`来重定向输出文件名称
+- 使用`#`开启注释，另一个`#`关闭注释继续输入。
+  ```
+  TolE=1e-5;    #Energy conv.#  TolMaxP=1e-6; #Density conv.#
+  ```
+- 几何结构从文件末尾如下格式的块读取：
+  ```
+  * CroodType Charge Multiplicity
+  ... 
+  coordinate specifications 
+  ...
+  *
+  ```
+  CroodType可以是xyz(笛卡尔坐标)，internal(内坐标)，gzmt(Gaussian Z矩阵内坐标)。一般用xyz格式，就是最常见那种`Atom x y z`，具体格式在[手册](https://www.faccts.de/docs/orca/6.0/manual/contents/input.html#reading-coordinates-from-the-input-file)中有介绍。
+
+  也可以从xyz文件中读取：
+  ```
+  * xyzfile Charge Multiplicity Filename
+
+  ```
+
+### 关键词
+"!"起头的行表示本行为关键词行，可以用关键词(空格隔开)来快速调用一些常用的设置。完整的关键词表在[ORCA手册](https://www.faccts.de/docs/orca/6.0/manual/contents/structure.html#keyword-lines)上可以找到。列举一些笔者常用的：
+
+**Runtypes**：
+- `OPT`：类似Gaussian的opt，只是不能使用opt=xxx设置
+- `OptTS`：TS法寻找过渡态
+- `ScanTS`：结合柔性扫描和过渡态搜索
+- `IRC`：类似Gaussian的IRC
+- `SurfCrossOpt`：搜索势能面交叉点
+- `CI-OPT`：搜索圆锥交叉点
+- `FREQ`/`NumFreq`：计算解析频率/数值频率
+- `NEB`/`NEB-TS`/`NEB-CI`：使用NEB插值计算最小能量路径。可以结合过渡态搜索和圆锥交叉计算。
+- `GOAT`：全局几何优化
+
+**Methods(半经验，[DFT](https://www.faccts.de/docs/orca/6.0/manual/contents/structure.html#density-functional-methods)与波函数方法)**
+- `B3LYP/G`：使用与Gaussian一样的B3LYP
+- `PBE0`/`BHANDHLYP`/`M062X`/`wB97X-D4`/`wB97M-V`/`CAM-B3LYP`：一些常用的杂化泛函与范围分离泛函
+- `DSD-PBEP86`/`wB2GP-PLYP`/`RSX-QIDH`：一些常用的双杂化泛函与范围分离双杂化泛函。DSD-PBEP86不包括D3BJ校正
+- `HF-3c`/`B97-3c`/`R2SCAN-3c`/`PBEh-3c`/`wB97X-3c`：Grimme的组合方法，比较便宜的选择。
+- `CCSD`/`CCSD(T)`/`DLPNO-CCSD`/`DLPNO-CCSD(T)`/`EOM-CCSD`/`STEOM-CCSD`/`STEOM-DLPNO-CCSD`：一些耦合簇方法
+- `NEVPT2`/`RI-NEVPT2`/`DLPNO-NEVPT2`/`CASPT2`/`RI-CASPT2`：一些多参考方法。不建议用这个，优先考虑用MOKIT黑箱化计算
+- `XTB`：使用grimme的gfn-xtb系列方法，需要先将bin/xtb复制到ORCA可执行文件目录并重命名为`otool_xtb`。Windows还需要同时复制`libiomp5md.dll`
+
+**[Basis sets](https://www.faccts.de/docs/orca/6.0/manual/contents/structure.html#basis-sets)**
+- `def2-SVP`/`def2-TZVP`/`def2-TZVP(-f)`/`def2-TZVPP`/`def2-QZVP`/`def2-QZVPP`：def系列基组，可以用`ma-`前缀或`D`后缀加弥散。`def2-TZVP(-f)`移除了主族元素的f极化
+- `cc-pVDZ`/`cc-pVTZ`/`cc-pVQZ`：相关一致性基组，可以用`aug-`加弥散
+- `Def2/J`/`Def2/JK`：RI计算中适用于所有def2类型基组的辅助基组，`Def2/JK`比`Def2/J`大
+- `Def2-SVP/C`/`Def2-TZVP/C`/`Def2-TZVPP/C`：更大的辅助基组。
+- `SARC/J`：适用于全电子相对论计算的辅助基组。
+
+
+**Others**
+- `CPCM(solvent)`：使用CPCM溶剂。SMD溶剂需要在%solvents里设置
+- `D4`/`D3BJ`/`D3ZERO`：DFT-D校正
+- `TIGHTSCF`/`VERYTIGHTSCF`：SCF收敛限设置
+- `(NO)DIIS`/`KDIIS`/`(NO)TRAH`/`(NO)SOSCF`/`(NO)LSHIFT`：SCF收敛策略设置
+- `TIGHTOPT`/`VERYTIGHTOPT`：OPT收敛限设置
+- `MOREAD`：从文件中读取波函数，必须搭配`%moinp "myorbitals.gbw"`使用(没有END)
+- `AUTOSTART`/`NOAUTOSTART`：在计算单点能时，默认会尝试从inp同名gbw中读取波函数，使用`NOAUTOSTART`关闭
+- `(NO)UseSym`：开启/关闭对称性
+- `LoosePNO`/`NormalPNO`/`TightPNO`：切换DLPNO类方法的精度
+- `(NO)RI`/`RIJCOSX`/`RI-JK`：开启RI加速。`RI`默认是RIJ
+- `DKH2`/`X2C`：开启相对论计算
+
+### Blocks
+精细控制计算设置，非必须，若无需详细控制程序行为则只使用关键词也可以完成计算设置。东西非常多，
+
+
+## 杂项
+
+### 混合基组
+```
+# CuCl$_4$
+! HF 
+%basis  basis  "SV" # 先初始化基组为SV
+        newGTO Cl "DUNNING-DZP" end # 把氯原子改成SVP
+        end
+* xyz -2 2
+  Cu  0     0     0  newGTO "TZVPP" end # 把铜改成TZVPP
+  Cl  2.25  0     0
+  Cl -2.25  0     0
+  Cl  0     2.25  0
+  Cl  0    -2.25  0
+*
+```
 
 ### SF-TDDFT找MECI
 
 输入文件示例：
 
 ~~~
-! ci-opt WB97X-D3 def2-SVP rijcosx def2-SVP/c miniprint # 话说def2-tzvp/c能加速tddft吗？输出文件里面好像并没有体现tddft应用了/C辅助基组。
+! ci-opt WB97X-D3 def2-SVP rijcosx def2-SVP/c miniprint 
 %maxcore 4000
 %pal
  nproc 40
@@ -44,17 +132,82 @@ end
 *xyzfile 0 1 abs_benzene-kun-ToneTo2CN-probe.xyz
 ~~~
 
-## 2. Coupled Cluster系列
+## DFT计算
+- 纯泛函默认开启RIJ、使用def2/J辅助基组，杂化泛函默认开启RIJCOSX(NOCOSX可以关闭这个近似)。小体系RIJK表现优于RIJCOSX。
 
-### 1. CCSD
+wB97M(2)的使用方法：
+```
+*xyz 0 1
+  H 0.0 0.0 0.0
+  F 0.0 0.0 0.9
+*
+%compound
+  Variable EwB97MV, EwB97M2; # Output variables
+  # Step 1: wB97M-V calculation to obtain the orbitals
+  New_Step
+    ! wB97M-V SCNL def2-TZVP
+  Step_End
+  # Step 2: single iteration with the wB97M(2) functional 
+  #         + MP2 correlation to get the final energy
+  ReadMOs(1);
+  New_Step
+    ! wB97M(2) SCNL NoFrozenCore def2-TZVP def2-TZVP/C
+    %scf
+      MaxIter    1
+      IgnoreConv 1 # prevent the "not converged" error
+    end
+  Step_End
+  Read EwB97MV = DFT_Total_En[1];     # wB97M-V energy
+  Read EwB97M2 = MP2_Total_Energy[2]; # wB97M(2) energy
+End
+```
 
-ORCA的CCSD有解析梯度，做几何优化示例：
+## XTB计算
+方法关键词
+```
+! XTB0  # for GFN0-xTB. Synonym: GFN0-XTB
+! XTB1  # for GFN1-xTB. Synonym: GFN-XTB
+! XTB2  # for GFN2-xTB. Synonym: GFN2-XTB
+! XTBFF # for GFN-FF. Synonym: GFN-FF
+```
+
+隐式溶剂模型
+```
+! ALPB(solvent) # use ALPB
+! DDCOSMO(solvent) # use ddCOSMO
+! CPCMX(solvent) # use CPCMX
+```
+
+
+## Coupled Cluster计算
+
+可以用于RHF或UHF参考，手册有[示例](https://www.faccts.de/docs/orca/6.0/manual/contents/typical/energygradients.html#coupled-cluster-and-coupled-pair-methods)。
+
+### CCSD
+正版耦合簇能处理的体系非常小，400以上就比较费劲了。
+- 默认冻芯，关键词`! (No)FrozenCore`
+
+ORCA的CCSD有解析梯度：
 ~~~
 ! CCSD cc-pVDZ tightSCF opt noautostart miniprint nopop
 %maxcore  3000
-%pal nprocs  32 end
-*xyzfile 0 1 YMT-.xyz
+%pal nprocs 32 end
+*xyzfile 0 1 YMT.xyz
 ~~~
+
+### DLPNO-CCSD
+- **适用于闭壳层以及高自旋开壳层体系，但不适用于自旋极化体系，后者应当采用UHF-LPNO-CCSD或Mk-LPNO-CCSD。**
+- 必须使用RI近似，要提供一个/C辅助基组
+- 通过(Loose,Normal,Tight)PNO关键词来更改精度
+- 
+
+可以处理较大的体系：
+```
+! cc-pVTZ cc-pVTZ/C DLPNO-CCSD TightSCF
+%maxcore  3000
+%pal nprocs 32 end
+```
+
 
 ### STEOM-DLPNO-CCSD
 高精度计算激发能的方法，对双激发和三激发有一定描述。对内存和IO的需求很大，对高于1500个基函数的分子，计算消耗指数增长。基组用到def2-TZVP(-f)就够
@@ -70,7 +223,7 @@ end
 * xyzfile -1 1 YMT-.xyz
 ~~~
 
-### SOC计算
+## SOC计算
 输入文件示例：
 ~~~
 ! WB97X-D3 def2-SVP miniprint tightSCF
@@ -89,12 +242,60 @@ end
 ~~~
 
 
+## MM
+```
+! L-Opt
+! MM
+%mm
+  ORCAFFFILENAME "CHMH.ORCAFF.prms"
+end
+*pdbfile 0 1 CHMH.pdb
+```
+
+```
+! L-OptH
+%mm
+  ORCAFFFILENAME "CHMH.ORCAFF.prms"
+end
+*pdbfile 0 1 CHMH.pdb
+%geom
+ Frags
+  2 {8168:8614} end     # First the fragments need to be defined
+  3 {8615:8699} end     #  Note that all other atoms belong to
+  4 {8700:8772} end     #  fragment 1 by default
+  5 {8773:8791} end     #
+ RelaxFrags {2} end     # Fragment 2 is fully relaxed
+ RigidFrags {3 4 5} end # Fragments 3, 4 and 5 are treated as rigid bodies each.
+end
+```
 
 ###
 
 double check
 
 http://bbs.keinsci.com/forum.php?mod=viewthread&tid=49196&highlight=DSD
+
+
+## NEB插值
+用来找最低能量路径的算法，多用于过渡态，输入文件
+```
+! NEB-TS PBEh-3c # 粗算时可以使用组合方法
+%maxcore 3000
+%pal
+ nproc 32
+end
+%neb 
+ NEB_END_XYZFILE "IM.xyz" # 末态结构
+ NEB_TS_XYZFILE "TS-C2.xyz" # 猜测的TS结构，不用很精确，会随着计算一起优化
+end
+%tddft # 可以用于激发态时能面任务
+ NRoots 1 # 计算几个激发态
+ IRoot 1 # Follow第几个根，即在选择Sn势能面上进行计算
+end
+
+* XYZFILE 0 1 Raw.xyz # 初态结构
+
+```
 
 
 

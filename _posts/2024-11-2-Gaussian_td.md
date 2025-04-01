@@ -4,7 +4,7 @@ date: 2024-11-2 12:00:00 +0800
 categories: [Quantum Chemistry,Gaussian]
 tags: [Optimization]
 ---
-计算激发态的理论方法很多，上至EOM-CCSD，下至sTDA-xtb，各有特色，不过目前最常用的计算方法还要属TD-DFT。截至目前，ORCA 6.0.0版本仍未支持TD-DFT的解析Hessian，而且在溶剂模型的支持上做的不尽人意，因此当下Gaussian仍然是进行TD-DFT任务最好的软件，也是研究激发态首先应当掌握的软件。总之，本文将简单介绍如何用Gaussian进行TD-DFT水平的结构优化以及单点能计算。
+计算激发态的理论方法很多，上至ADC(3)，下至sTDA-xtb，各有特色，不过目前最常用的计算方法还要属TD-DFT。截至目前，ORCA 6.0.0版本仍未支持TD-DFT的解析Hessian，而且在溶剂模型的支持上做的不尽人意，因此当下Gaussian仍然是进行TD-DFT任务最好的软件，也是研究激发态首先应当掌握的软件。总之，本文将简单介绍如何用Gaussian进行TD-DFT水平的结构优化以及单点能计算。
 
 进阶的激发能计算笔记：[Study notes：精确计算激发能的方法](https://bane-dysta.github.io/posts/excitation_energy/)
 ## 1. 结构准备
