@@ -162,3 +162,17 @@ AllowTcpForwarding yes
 ```bash
 sudo systemctl restart sshd
 ```
+
+## gjf无法拖进gview
+描述：宿舍的电脑中，gjf拖上去显示的是禁止符号，没法打开，只能用软件内`file-open`打开
+
+可能原因：
+- 1. 安装在了受保护的文件夹内，添加了默认管理员权限
+- 2. UAC策略被调整至最低级，所有程序被默认使用管理员打开
+- 3. 注册表中禁用了管理员窗口的拖放策略
+
+解决：
+- 1. 右键文件夹-属性-安全-编辑，找到自己的用户，勾选完全控制并保存。
+- 2. win+r打开gepedit.msc，计算机配置-windows设置-安全设置-本地策略-安全选项-用户账户控制：管理员批准模式xxxxx。确保这个通知级别不在最低档。
+- 3. win+r打开regedit，找到计算机配置`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\policies\system`，将EnableLUA 设置成0
+

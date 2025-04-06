@@ -1,8 +1,0 @@
-## gjf无法拖进gview
-描述：gjf拖上去显示的是禁止符号，没法打开，只能用软件内`file-open`打开
-
-原因：注册表中禁用了拖放策略
-
-解决：win+r打开regedit找到`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\policies\system`
-
-EnableLUA 设置成0
