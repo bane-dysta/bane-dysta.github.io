@@ -6,6 +6,8 @@ date: 1970-1-1 12:00:00 +0800
 
 | 序号 | 文章标题 | 发布日期 | 源文件 |
 |:------:|----------|----------|--------|
+| 29 | Study notes：ΔSCF | 2025-04-09 | [2025-4-9-29.md](https://bane-dysta.github.io/posts/29) |
+| 28 | Study notes：芳香性的计算 | 2025-04-07 | [2025-4-7-28.md](https://bane-dysta.github.io/posts/28) |
 | 27 | Study notes：docker | 2025-03-31 | [2025-3-31-27.md](https://bane-dysta.github.io/posts/27) |
 | 26 | 一些化学库的从头编译 | 2025-03-05 | [2025-3-5-26.md](https://bane-dysta.github.io/posts/26) |
 | 25 | Study note：Autodock对接 | 2025-02-14 | [2025-2-14-25.md](https://bane-dysta.github.io/posts/25) |
