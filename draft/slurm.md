@@ -6,7 +6,8 @@ date: 2025-4-18 12:00:00 +0800
 
 ## wsl内单节点安装
 参考：[Ubuntu20.04单机安装slurm教程](https://wxyh.notion.site/Ubuntu20-04-slurm-28f03eec6bd04428a059ab47103d0756)
-笔者wsl安装的是ubuntu22.04，直接用apt进行安装：
+
+笔者wsl的系统是ubuntu22.04，直接用apt进行安装：
 ```
 sudo apt install slurm-wlm slurm-wlm-doc
 ```
@@ -20,19 +21,13 @@ slurm-wlm 21.08.5
 ```
 ClusterName=cool
 ControlMachine=[user]
-#ControlAddr=
-#BackupController=
-#BackupAddr=
-#
+
 MailProg=/usr/bin/s-nail
 SlurmUser=root
-#SlurmdUser=root
 SlurmctldPort=6817
 
 SlurmdPort=6818
 AuthType=auth/munge
-#JobCredentialPrivateKey=
-#JobCredentialPublicCertificate=
 StateSaveLocation=/var/spool/slurmctld
 SlurmdSpoolDir=/var/spool/slurmd
 SwitchType=switch/none
@@ -40,26 +35,8 @@ MpiDefault=none
 SlurmctldPidFile=/var/run/slurmctld.pid
 SlurmdPidFile=/var/run/slurmd.pid
 ProctrackType=proctrack/pgid
-#PluginDir=
-#FirstJobId=
 ReturnToService=0
-#MaxJobCount=
-#PlugStackConfig=
-#PropagatePrioProcess=
-#PropagateResourceLimits=
-#PropagateResourceLimitsExcept=
-#Prolog=
-#Epilog=
-#SrunProlog=
-#SrunEpilog=
-#TaskProlog=
-#TaskEpilog=
-#TaskPlugin=
-#TrackWCKey=no
-#TreeWidth=50
-#TmpFS=
-#UsePAM=
-#
+
 # TIMERS
 SlurmctldTimeout=300
 SlurmdTimeout=300
@@ -67,20 +44,10 @@ InactiveLimit=0
 MinJobAge=300
 KillWait=30
 Waittime=0
-#
+
 # SCHEDULING
 SchedulerType=sched/backfill
-#SchedulerAuth=
-#SelectType=select/linear
-#PriorityType=priority/multifactor
-#PriorityDecayHalfLife=14-0
-#PriorityUsageResetPeriod=14-0
-#PriorityWeightFairshare=100000
-#PriorityWeightAge=1000
-#PriorityWeightPartition=10000
-#PriorityWeightJobSize=1000
-#PriorityMaxAge=1-0
-#
+
 # LOGGING
 
 SlurmctldDebug=info
@@ -88,18 +55,7 @@ SlurmctldLogFile=/var/log/slurm-llnl/slurmctld.log
 SlurmdDebug=info
 SlurmdLogFile=/var/log/slurm-llnl/slurmd.log
 JobCompType=jobcomp/none
-#JobCompLoc=
-#
-# ACCOUNTING
-#JobAcctGatherType=jobacct_gather/linux
-#JobAcctGatherFrequency=30
-#
-#AccountingStorageType=accounting_storage/slurmdbd
-#AccountingStorageHost=
-#AccountingStorageLoc=
-#AccountingStoragePass=
-#AccountingStorageUser=
-#
+
 # COMPUTE NODES
 
 PartitionName=[user] Nodes=[user] Default=NO MaxTime=INFINITE State=UP
