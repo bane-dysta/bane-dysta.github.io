@@ -1,0 +1,138 @@
+---
+layout: page
+title: slurm的安装
+date: 2025-4-18 12:00:00 +0800
+---
+
+## wsl内单节点安装
+参考：[Ubuntu20.04单机安装slurm教程](https://wxyh.notion.site/Ubuntu20-04-slurm-28f03eec6bd04428a059ab47103d0756)
+笔者wsl安装的是ubuntu22.04，直接用apt进行安装：
+```
+sudo apt install slurm-wlm slurm-wlm-doc
+```
+检查版本：
+```
+(rdkitenv) root@user:~# slurmd --version
+slurm-wlm 21.08.5
+(rdkitenv) root@user:~# 
+```
+在`/etc/slurm`里建立`slurm.conf`:
+```
+ClusterName=cool
+ControlMachine=[user]
+#ControlAddr=
+#BackupController=
+#BackupAddr=
+#
+MailProg=/usr/bin/s-nail
+SlurmUser=root
+#SlurmdUser=root
+SlurmctldPort=6817
+
+SlurmdPort=6818
+AuthType=auth/munge
+#JobCredentialPrivateKey=
+#JobCredentialPublicCertificate=
+StateSaveLocation=/var/spool/slurmctld
+SlurmdSpoolDir=/var/spool/slurmd
+SwitchType=switch/none
+MpiDefault=none
+SlurmctldPidFile=/var/run/slurmctld.pid
+SlurmdPidFile=/var/run/slurmd.pid
+ProctrackType=proctrack/pgid
+#PluginDir=
+#FirstJobId=
+ReturnToService=0
+#MaxJobCount=
+#PlugStackConfig=
+#PropagatePrioProcess=
+#PropagateResourceLimits=
+#PropagateResourceLimitsExcept=
+#Prolog=
+#Epilog=
+#SrunProlog=
+#SrunEpilog=
+#TaskProlog=
+#TaskEpilog=
+#TaskPlugin=
+#TrackWCKey=no
+#TreeWidth=50
+#TmpFS=
+#UsePAM=
+#
+# TIMERS
+SlurmctldTimeout=300
+SlurmdTimeout=300
+InactiveLimit=0
+MinJobAge=300
+KillWait=30
+Waittime=0
+#
+# SCHEDULING
+SchedulerType=sched/backfill
+#SchedulerAuth=
+#SelectType=select/linear
+#PriorityType=priority/multifactor
+#PriorityDecayHalfLife=14-0
+#PriorityUsageResetPeriod=14-0
+#PriorityWeightFairshare=100000
+#PriorityWeightAge=1000
+#PriorityWeightPartition=10000
+#PriorityWeightJobSize=1000
+#PriorityMaxAge=1-0
+#
+# LOGGING
+
+SlurmctldDebug=info
+SlurmctldLogFile=/var/log/slurm-llnl/slurmctld.log
+SlurmdDebug=info
+SlurmdLogFile=/var/log/slurm-llnl/slurmd.log
+JobCompType=jobcomp/none
+#JobCompLoc=
+#
+# ACCOUNTING
+#JobAcctGatherType=jobacct_gather/linux
+#JobAcctGatherFrequency=30
+#
+#AccountingStorageType=accounting_storage/slurmdbd
+#AccountingStorageHost=
+#AccountingStorageLoc=
+#AccountingStoragePass=
+#AccountingStorageUser=
+#
+# COMPUTE NODES
+
+PartitionName=[user] Nodes=[user] Default=NO MaxTime=INFINITE State=UP
+#NodeName=[user] State=UNKNOWN
+NodeName=[user] Sockets=[Sockets] CoresPerSocket=[cpus] ThreadsPerCore=[tpc] State=UNKNOWN
+```
+[user]=`hostname`的输出
+[Sockets]=`cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l`的输出
+[cpus]=`cat /proc/cpuinfo| grep "cpu cores"| uniq`的输出
+[tpc]=执行如下脚本的输出:
+```
+#!/bin/bash
+cpunum=`cat /proc/cpuinfo| grep "physical id"| sort| uniq| wc -l`
+echo "CPU 个数: $cpunum";
+cpuhx=`cat /proc/cpuinfo | grep "cores" | uniq | awk -F":" '{print $2}'`
+echo "CPU 核心数：$cpuhx" ; 
+cpuxc=`cat /proc/cpuinfo | grep "processor" | wc -l`
+echo "CPU 线程数：$cpuxc" ;
+
+if [[ `expr $cpunum\*$[cpuhx*2] ` -eq $cpuxc ]];
+then
+    echo "2"
+else
+    echo "1"
+fi
+```
+编辑完成后启动systemctl服务
+```
+sudo systemctl enable slurmctld --now
+sudo systemctl enable slurmd --now
+```
+查看sinfo：
+```
+sinfo
+```
+看到自己的节点是idie，说明安装已经成功。
