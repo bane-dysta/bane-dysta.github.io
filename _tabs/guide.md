@@ -22,6 +22,7 @@ order: 1
 - [旋轨耦合](https://bane-dysta.github.io/posts/SOCME/)
 - [Huang-Rhys](https://bane-dysta.github.io/posts/Huang-Rhys/)
 - [圆锥交叉](https://bane-dysta.github.io/posts/CIopt/)
+- [ΔSCF](https://bane-dysta.top/posts/29/)
 </div>
 </div>
 
@@ -31,6 +32,7 @@ order: 1
 - [弱相互作用](https://bane-dysta.github.io/posts/weak_interaction/)
 - [氢键+AIM](https://bane-dysta.github.io/posts/weak_interaction/)
 - [VMD绘制密度图](https://bane-dysta.github.io/posts/VMD_render/)
+- [芳香性](https://bane-dysta.top/posts/28/)
 </div>
 </div>
 
@@ -51,6 +53,9 @@ order: 1
 - [MOKIT、GAMESS、ORCA](https://bane-dysta.github.io/posts/MOKIT/)
 - [ollama、AnythingLLM](https://bane-dysta.github.io/posts/ollama/)
 - [molOCR](https://bane-dysta.github.io/posts/23/)
+- [OpenBabel & RDkit](https://bane-dysta.top/posts/31/)
+- [slurm](https://bane-dysta.top/posts/31/)
+- [AICD](https://bane-dysta.top/posts/31/)
 </div>
 </div>
 
