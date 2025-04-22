@@ -105,4 +105,18 @@ set cbrange [-0.035:0.02]
 # 绘图命令
 plot 'output.txt' u 4:5:4 with points pointtype 31 pointsize 0.3 palette t  ''
 ```
+## 3.经验
 
+### 未必需要把体系中每个原子都划分进片段
+比如研究水杨酸的分子内氢键，如果把羟基划分成片段A，苯甲酸划分为片段B，在羟基与苯相连的地方会有一个巨大的红+蓝等值面鼓包。
+
+此时可以只把酚羟基和羧基部分定义片段，丢掉苯，避免化学键部分产生的巨大等值面。
+
+参考：[通过独立梯度模型(IGM)考察分子内和分子间的弱相互作用](http://sobereva.com/407)
+
+### 可以屏蔽某一段不需要显示的等值面
+如果待分析的两个片段实在离得太近，也可以来切掉一部分等值面，操作方法：
+
+- 使用`1 Save the scatter graph to file`导出散点图，观察$sign(\lambda_2)\rho$函数的取值，找到待屏蔽范围
+- 使用` 7 Set delta-g where value of sign(lambda2)rho is out of a certain range`(具体选项号随函数不同而不同)输入要屏蔽的$sign(\lambda_2)\rho$范围
+- 定义值100以下不显示
