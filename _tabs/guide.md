@@ -9,8 +9,11 @@ order: 1
 <div class="collapsible-section">
 <button class="collapsible-btn">Gaussian使用</button>
 <div class="collapsible-content" markdown="1">
-- [计算基态](https://bane-dysta.github.io/posts/Gaussian_opt/)
-- [计算激发态](https://bane-dysta.github.io/posts/Gaussian_td/)
+- Gaussian
+  - [计算基态](https://bane-dysta.github.io/posts/Gaussian_opt/)
+  - [计算激发态](https://bane-dysta.github.io/posts/Gaussian_td/)
+- ORCA
+  - [输入文件格式记录](https://bane-dysta.github.io/posts/34/)
 </div>
 </div>
 
@@ -53,9 +56,10 @@ order: 1
 - [MOKIT、GAMESS、ORCA](https://bane-dysta.github.io/posts/MOKIT/)
 - [ollama、AnythingLLM](https://bane-dysta.github.io/posts/ollama/)
 - [molOCR](https://bane-dysta.github.io/posts/23/)
-- [OpenBabel & RDkit](https://bane-dysta.top/posts/31/)
-- [slurm](https://bane-dysta.top/posts/31/)
+- [OpenBabel & RDkit](https://bane-dysta.top/posts/26/)
+- [slurm](https://bane-dysta.top/posts/30/)
 - [AICD](https://bane-dysta.top/posts/31/)
+- [SMB](https://bane-dysta.github.io/posts/32)
 </div>
 </div>
 
