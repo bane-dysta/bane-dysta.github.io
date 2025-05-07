@@ -176,3 +176,16 @@ sudo systemctl restart sshd
 - 2. win+r打开gepedit.msc，计算机配置-windows设置-安全设置-本地策略-安全选项-用户账户控制：管理员批准模式xxxxx。确保这个通知级别不在最低档。
 - 3. win+r打开regedit，找到计算机配置`HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\policies\system`，将EnableLUA 设置成0
 
+## 无法设置默认打开应用
+描述：有些格式的文件根本没有设置默认打开方式的选项，双击直接就以记事本格式打开了。`HKEY_LOCAL_ROOT`注册表里也没有注册对应后缀，即使手动添加，也不管用。
+
+原因：
+- 在`计算机\HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts`目录下还有一个注册表，优先级比`HKEY_LOCAL_ROOT`高。
+
+解决：
+- `win+R`进入`regedit`，找到目录`计算机\HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts`，删掉对应后缀名的注册项。如果是此原因导致的，应当可以为对应后缀名选择默认应用了。
+
+
+
+
+
