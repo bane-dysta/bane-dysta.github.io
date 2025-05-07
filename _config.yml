@@ -228,10 +228,6 @@ jekyll-archives:
 htmlproofer:
   allow_http: true
   url_ignore:
-    - http://sobereva.com
-    - http://bbs.keinsci.com
-    - http://www.keinsci.com
-    - http://www.fftw.org
 
 external_links:
   target: "_blank"
