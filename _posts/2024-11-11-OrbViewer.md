@@ -72,7 +72,7 @@ Orbital Viewer是一个主要由JavaScript与python写成的简易轨道查看�
 ## 🔰下载地址
 
 Release:
-[Orbital Viewer.exe](https://github.com/bane-dysta/Orbital_Viewer/releases/tag/v1.0.1)
+[Orbital Viewer.exe](https://github.com/bane-dysta/Orbital_Viewer/releases)
 
 GitHub:
 [Orbital_Viewer](https://github.com/bane-dysta/Orbital_Viewer)
