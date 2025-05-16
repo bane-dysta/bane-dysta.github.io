@@ -7,13 +7,22 @@ order: 1
 
 ## 文章导航
 <div class="collapsible-section">
-<button class="collapsible-btn">Gaussian使用</button>
+<button class="collapsible-btn">QC计算</button>
 <div class="collapsible-content" markdown="1">
 - Gaussian
   - [计算基态](https://bane-dysta.github.io/posts/Gaussian_opt/)
   - [计算激发态](https://bane-dysta.github.io/posts/Gaussian_td/)
 - ORCA
   - [输入文件格式记录](https://bane-dysta.github.io/posts/34/)
+</div>
+</div>
+
+<div class="collapsible-section">
+<button class="collapsible-btn">动力学计算</button>
+<div class="collapsible-content" markdown="1">
+- Gromacs
+  - [sobtop](https://bane-dysta.github.io/posts/36)
+
 </div>
 </div>
 
@@ -26,6 +35,7 @@ order: 1
 - [Huang-Rhys](https://bane-dysta.github.io/posts/Huang-Rhys/)
 - [圆锥交叉](https://bane-dysta.github.io/posts/CIopt/)
 - [ΔSCF](https://bane-dysta.top/posts/29/)
+- [ONIOM](https://bane-dysta.github.io/posts/35)
 </div>
 </div>
 

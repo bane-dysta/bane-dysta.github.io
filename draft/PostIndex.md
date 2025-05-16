@@ -6,6 +6,8 @@ date: 1970-1-1 12:00:00 +0800
 
 | 序号 | 文章标题 | 发布日期 | 源文件 |
 |:------:|----------|----------|--------|
+| 36 | Gromacs-初识 | 2025-05-15 | [2025-5-15-36.md](https://bane-dysta.github.io/posts/36) |
+| 35 | 运行oniom计算 | 2025-05-14 | [2025-5-14-35.md](https://bane-dysta.github.io/posts/35) |
 | 34 | orca输入文件格式记录 | 2025-04-26 | [2025-4-26-34.md](https://bane-dysta.github.io/posts/34) |
 | 33 | 不使用ssh连接到服务器进行科学计算的工作流设计 | 2025-04-25 | [2025-4-25-33.md](https://bane-dysta.github.io/posts/33) |
 | 32 | 为Linux服务器安装SMB服务 | 2025-04-24 | [2025-4-24-32.md](https://bane-dysta.github.io/posts/32) |
@@ -14,7 +16,7 @@ date: 1970-1-1 12:00:00 +0800
 | 29 | Study notes：ΔSCF | 2025-04-09 | [2025-4-9-29.md](https://bane-dysta.github.io/posts/29) |
 | 28 | Study notes：芳香性的计算 | 2025-04-07 | [2025-4-7-28.md](https://bane-dysta.github.io/posts/28) |
 | 27 | Study notes：docker | 2025-03-31 | [2025-3-31-27.md](https://bane-dysta.github.io/posts/27) |
-| 26 | 一些化学库的从头编译 | 2025-03-05 | [2025-3-5-26.md](https://bane-dysta.github.io/posts/26) |
+| 26 | 一些库的从头编译 | 2025-03-05 | [2025-3-5-26.md](https://bane-dysta.github.io/posts/26) |
 | 25 | Study note：Autodock对接 | 2025-02-14 | [2025-2-14-25.md](https://bane-dysta.github.io/posts/25) |
 | 24 | C盘空间清理 | 2025-02-10 | [2025-2-10-24.md](https://bane-dysta.github.io/posts/24) |
 | 23 | 利用molOCR截图识别文献中的结构 | 2025-02-08 | [2025-2-8-23.md](https://bane-dysta.github.io/posts/23) |
