@@ -46,8 +46,16 @@
 
     {{ site.data.locales[include.lang].meta | replace: ':PLATFORM', _platform | replace: ':THEME', _theme }}
   </p>
+  
+  <p>
+    <i class="fas fa-eye fa-fw"></i>
+    <span id="busuanzi_value_site_pv"></span>
+    <i class="fas fa-users fa-fw ml-2"></i>
+    <span id="busuanzi_value_site_uv"></span>
+  </p>
 </footer>
 
 <script src="{{ '/assets/js/custom.js' | relative_url }}"></script>
+<script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 

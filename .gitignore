@@ -27,4 +27,4 @@ _sass/dist
 # assets/js/dist
 
 _posts/.obsidian
-
+*.bat
