@@ -6,6 +6,8 @@ date: 1970-1-1 12:00:00 +0800
 
 | 序号 | 文章标题 | 发布日期 | 源文件 |
 |:------:|----------|----------|--------|
+| 38 | 部署https服务 | 2025-05-26 | [2025-5-26-38.md](https://bane-dysta.github.io/posts/38) |
+| 37 | BaneTop：Gaussian力场参数生成器 | 2025-05-20 | [2025-5-20-37.md](https://bane-dysta.github.io/posts/37) |
 | 36 | Gromacs-初识 | 2025-05-15 | [2025-5-15-36.md](https://bane-dysta.github.io/posts/36) |
 | 35 | 运行oniom计算 | 2025-05-14 | [2025-5-14-35.md](https://bane-dysta.github.io/posts/35) |
 | 34 | orca输入文件格式记录 | 2025-04-26 | [2025-4-26-34.md](https://bane-dysta.github.io/posts/34) |
