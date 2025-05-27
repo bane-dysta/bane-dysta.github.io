@@ -31,48 +31,21 @@ docker-compose up -d
 
 ## https部署
 
-# Gitea HTTPS 自动续签部署完整指南
-
-## 前置条件
-
-1. **服务器要求**：
-   - Ubuntu/Debian/CentOS 等 Linux 系统
-   - 至少 1GB RAM，2GB 推荐
-   - 已安装 Docker 和 Docker Compose
-
-2. **域名要求**：
-   - 拥有一个域名（如 `www.example.com`）
-   - 域名已正确解析到服务器 IP 地址
-
-3. **端口要求**：
-   - 确保以下端口未被占用或可以使用：
-     - `1080`（HTTP）
-     - `10443`（HTTPS）
-     - `2222`（SSH）
-     - `3000`（Gitea 直接访问，可选）
-
-4. **防火墙设置**：
+###　防火墙配置规则
    ```bash
    # Ubuntu/Debian
    sudo ufw allow 1080
    sudo ufw allow 10443
    sudo ufw allow 2222
-   sudo ufw allow 3000  # 可选
-   
-   # CentOS/RHEL
-   sudo firewall-cmd --permanent --add-port=1080/tcp
-   sudo firewall-cmd --permanent --add-port=10443/tcp
-   sudo firewall-cmd --permanent --add-port=2222/tcp
-   sudo firewall-cmd --permanent --add-port=3000/tcp  # 可选
-   sudo firewall-cmd --reload
+   sudo ufw allow 3000
    ```
 
-## 步骤 1：准备工作目录
+### 准备工作目录
 
 ```bash
 # 创建项目目录
-mkdir -p /home/gitea-deploy
-cd /home/gitea-deploy
+mkdir -p ./gitea-deploy
+cd ./gitea-deploy
 
 # 创建必要的子目录
 mkdir -p user_conf.d
@@ -80,7 +53,7 @@ mkdir -p certbot-webroot
 mkdir -p gitea
 ```
 
-## 步骤 2：创建 Docker Compose 配置文件
+### 创建 Docker Compose 配置文件
 
 创建 `docker-compose.yml`：
 
@@ -128,9 +101,7 @@ networks:
     driver: bridge
 ```
 
-**重要**：将 `your-email@example.com` 替换为你的真实邮箱地址。
-
-## 步骤 3：创建初始 Nginx 配置（HTTP 模式）
+### 配置Nginx
 
 创建 `user_conf.d/gitea.conf`：
 
@@ -157,10 +128,9 @@ server {
     }
 }
 ```
+这里暂时使用http，来配置gitea界面。
 
-**重要**：将 `www.example.com` 替换为你的真实域名。
-
-## 步骤 4：启动服务并进行初始配置
+### 启动服务
 
 ```bash
 # 启动服务
@@ -168,9 +138,6 @@ docker-compose up -d
 
 # 检查服务状态
 docker-compose ps
-
-# 等待几分钟让服务完全启动
-sleep 30
 ```
 
 访问 `http://你的域名:1080` 或 `http://你的IP:1080` 进行 Gitea 初始设置：
@@ -190,9 +157,9 @@ sleep 30
 
 完成设置后，确认可以正常登录和使用。
 
-## 步骤 5：申请 SSL 证书
+### 申请 SSL 证书
 
-使用 DNS 验证方式申请证书（推荐，因为更稳定）：
+使用 DNS 验证方式申请证书：
 
 ```bash
 docker exec -it nginx-certbot certbot certonly --manual --preferred-challenges dns --email your-email@example.com -d www.example.com --agree-tos
@@ -209,7 +176,7 @@ docker exec -it nginx-certbot certbot certonly --manual --preferred-challenges d
 
 如果申请成功，会显示证书保存路径。
 
-## 步骤 6：更新 Nginx 配置启用 HTTPS
+### 更新 Nginx 配置启用 HTTPS
 
 修改 `user_conf.d/gitea.conf`：
 
@@ -255,23 +222,13 @@ server {
 }
 ```
 
-**重要**：将所有 `www.example.com` 替换为你的真实域名。
+### 更新 Gitea 配置
 
-## 步骤 7：更新 Gitea 配置
-
-更新 Gitea 的 ROOT_URL 设置：
-
+更新 Gitea 的 ROOT_URL 设置
 ```bash
-# 方法 1：直接编辑配置文件
-docker exec gitea sed -i 's|ROOT_URL = http://.*|ROOT_URL = https://www.example.com:10443/|g' /data/gitea/conf/app.ini
-
-# 方法 2：手动编辑（如果上面的命令不工作）
-docker exec -it gitea vi /data/gitea/conf/app.ini
-# 找到 ROOT_URL 行，修改为：ROOT_URL = https://你的域名:10443/
+ROOT_URL = https://你的域名:10443/
 ```
-
-## 步骤 8：重启服务
-
+然后重启服务：
 ```bash
 # 重启所有服务
 docker-compose restart
@@ -282,16 +239,12 @@ docker-compose ps
 # 检查 nginx 日志确认 SSL 正常
 docker logs nginx-certbot 2>&1 | tail -20
 ```
-
-## 步骤 9：验证 HTTPS 访问
-
-1. 访问 `https://你的域名:10443`
-2. 确认：
+访问 `https://你的域名:10443`，确认：
    - SSL 证书有效（浏览器显示锁图标）
    - HTTP 自动重定向到 HTTPS
    - Gitea 功能正常
 
-## 步骤 10：设置自动续签
+### 设置自动续签
 
 nginx-certbot 镜像会自动处理证书续签，但我们需要确保配置正确。
 
@@ -356,29 +309,6 @@ netstat -tlnp | grep -E ':80|:443|:1080|:10443'
 
 # 停止占用端口的服务或修改 docker-compose.yml 中的端口映射
 ```
-
-## 安全建议
-
-1. **定期备份**：
-   ```bash
-   # 备份 Gitea 数据
-   docker exec gitea tar czf /data/gitea-backup-$(date +%Y%m%d).tar.gz /data/gitea
-   
-   # 复制到宿主机
-   docker cp gitea:/data/gitea-backup-$(date +%Y%m%d).tar.gz ./
-   ```
-
-2. **限制注册**：在 Gitea 管理界面中禁用公开注册
-
-3. **启用 2FA**：为管理员账户启用双因素认证
-
-4. **定期更新**：
-   ```bash
-   docker-compose pull
-   docker-compose up -d
-   ```
-
-5. **监控日志**：定期检查访问日志和错误日志
 
 ## 文件结构总览
 
