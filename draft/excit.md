@@ -2,6 +2,7 @@
 layout: page
 title: 激发态的分析
 date: 2024-11-1 12:00:00 +0800
+math: true  
 ---
 使用Gaussian与Multiwfn做一些激发态分析。
 ## 跃迁密度
@@ -42,13 +43,13 @@ Ref:
 - [请问跃迁密度与电荷转移跃迁的关系](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=1467&fromuid=63020)
 
 ## 跃迁偶极矩密度
-跃迁密度展示了偶极的雏形。回忆偶极矩的计算方法$ \mu = \bm{r} \times e $，要描述跃迁偶极，我们还需要引入位置和电荷两个量。这里我们首先对跃迁密度引入位置矢量$\bm{r}$，得到跃迁偶极矩密度: 
+跃迁密度展示了偶极的雏形。回忆偶极矩的计算方法$ \mu = \boldsymbol{r} \times e $，要描述跃迁偶极，我们还需要引入位置和电荷两个量。这里我们首先对跃迁密度引入位置矢量$\boldsymbol{r}$，得到跃迁偶极矩密度: 
 
 $$
-\bm{\rho}_{ij}^{dip(r)}(r) = \psi_{i}^*(r)  \bm{r}  \psi_{j}(r)
+\boldsymbol{\rho}_{ij}^{dip(r)}(r) = \psi_{i}^*(r) {\boldsymbol{r}} \psi_{j}(r)
 $$
 
-跃迁偶极矩密度反映了体系位置$\bm{r}$处对跃迁偶极矩的贡献。绘制跃迁偶极矩密度等值面时，Gaussian计算与前述一致。使用Multiwfn分析：
+跃迁偶极矩密度反映了体系位置$\boldsymbol{r}$处对跃迁偶极矩的贡献。绘制跃迁偶极矩密度等值面时，Gaussian计算与前述一致。使用Multiwfn分析：
 ```
 transden.fchk
 18
@@ -61,35 +62,51 @@ transden.log
 {1,2,3,4}       // 根据需求选择绘制的分量
 ```
 为了在三维空间展示出跃迁偶极矩密度等值面，我们每次只能绘制一个分量。假设乙烯双键的方向为X，垂直于双键方向为Y，垂直于乙烯平面的方向为Z，那么对于X分量，X=0平面将横穿乙烯分子，上侧的跃迁偶极矩乘以负值坐标，于是对应等值面发生了变号：
-[]!(https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250604224446.png)
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250604224446.png)
 由于跃迁密度关于Y=0平面反对称，Y分量的跃迁偶极矩是这样的：
-[]!(https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250604224841.png)
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250604224841.png)
 而Z方向跃迁密度与X方向一样关于Z=0对称，因此Z分量的分布也产生了变号：
-[]!(https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/ethene_z_trimmed.png)
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/ethene_z_trimmed.png)
 
-跃迁偶极矩密度等值面的对称性影响着跃迁是否禁阻，我们在下一节中讨论。
+跃迁偶极矩密度是定义跃迁偶极矩的中间概念，可以单独考察XYZ三个分量跃迁偶极矩贡献分布情况，实际用的比较少。
+
 ## 跃迁偶极矩
 对跃迁偶极矩密度积分，并引入电荷，得到跃迁电偶极矩$\mu_{ij}^e$：
 
 $$
-\bm{\mu}_{ij}^e = -e \int \bm{\rho}_{ij}^{dip}(\bm{r}) d^3r
+\boldsymbol{\mu}_{ij}^e = -e \int \boldsymbol{\rho}_{ij}^{dip}(\boldsymbol{r}) d^3r
 $$
 
-或者定义跃迁电偶极算符$\hat{\mu^e}$：
+或者定义跃迁电偶极算符：
+
 $$
-\hat{\bm{\mu}^e} = −e \hat{\bm{r}}
+\hat{\boldsymbol{\mu}^e} = −e \hat{\boldsymbol{r}}
 $$
 
 则跃迁偶极矩表达式为：
 
 $$
-\bm{\mu}_{ij}^e = \langle \psi_i|\hat{\bm{\mu}^e}|\psi_j \rangle
+\boldsymbol{\mu}_{ij}^e = \langle \psi_i|\hat{\boldsymbol{\mu}^e}|\psi_j \rangle
 $$
 
-$\mu_{ij}^e$反映了分子吸收电磁辐射的能力。
+$\mu_{ij}^e$反映了分子吸收电磁辐射的能力，只有当$\mu_{ij}^e ≠ 0$时，跃迁才是电偶极允许的。若$\mu_{ij}^e = 0$，跃迁电偶极禁阻，意味着跃迁很难(也许能通过磁偶极跃迁、电四极跃迁)发生或根本不发生。
 
-由于位置矢量r本身是奇对称的，当跃迁偶极矩密度等值面呈现偶对称时(即$\psi_{i}^*(r) \times \psi_{j}(r)$为偶函数)，则被积函数为奇×偶=奇函数，积分结果为0，引起跃迁禁阻。
+> 注意到跃迁偶极矩对跃迁偶极矩密度进行了积分。当跃迁偶极矩密度等值面呈现奇对称时，积分结果为0，则跃迁禁阻，反之跃迁允许；
+> 
+> 由于跃迁偶极矩密度来自于跃迁密度，进一步反推可知当跃迁密度关于YZ平面对称时，由于$\boldsymbol{x}$是奇对称的，最终被积函数为奇×偶=奇函数，积分得到的X分量跃迁偶极矩将为0，对Y、Z分量同理；
+> 
+> 跃迁密度被定义为两个电子态波函数的积，可知两个电子态波函数的对称性可能最终影响跃迁是否能发生，这是对称性选择定则的来源。
+{: .prompt-tip }
 
+跃迁偶极矩的计算只需要Gaussian进行TD-DFT计算即可，在输出文件中将直接打印：
+```
+ Ground to excited state transition electric dipole moments (Au):
+       state          X           Y           Z        Dip. S.      Osc.
+         1         0.0000     -1.5153      0.0000      2.2960      0.4369
+         2         0.0000      0.0000      0.3430      0.1176      0.0255
+         3         0.0000      0.0000      0.0000      0.0000      0.0000
+```
+可以看到，只有
 # Hole-Electron Analysis
 
 
