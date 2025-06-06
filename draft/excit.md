@@ -7,7 +7,22 @@ math: true
 记录下使用Gaussian与Multiwfn如何做激发态分析。
 
 > 注意：理论部分内容是一位初学者的思考，未必完全正确，会随笔者学习理解过程随时更新。如果读者发现任何地方与已有认识不符，不要怀疑，一定是笔者理解有误，请务必在评论区指出！
-# 前线轨道(Frontier Molecular Orbital, FMO)
+
+# 目录
+<!-- TOC tocDepth:2..3 chapterDepth:2..6 -->
+
+- [前线轨道(Frontier Molecular Orbital, FMO)](#前线轨道frontier-molecular-orbital-fmo)
+- [跃迁密度(Transition Density)](#跃迁密度transition-density)
+- [跃迁偶极矩密度(Transition Dipole Moment Density)](#跃迁偶极矩密度transition-dipole-moment-density)
+- [跃迁偶极矩(Transition Dipole Moment, TDM)](#跃迁偶极矩transition-dipole-moment-tdm)
+- [自然跃迁轨道(Natural Transition Orbital, NTO)](#自然跃迁轨道natural-transition-orbital-nto)
+- [空穴-电子分析(Hole-Electron Analysis)](#空穴-电子分析hole-electron-analysis)
+- [电子-空穴热图](#电子-空穴热图)
+- [片段电荷转移分析(Interfragment Charge Transfer Analysis, IFCT)](#片段电荷转移分析interfragment-charge-transfer-analysis-ifct)
+
+<!-- /TOC -->
+
+## 前线轨道(Frontier Molecular Orbital, FMO)
 由于荧光通常感兴趣的激发态都是较低的价层激发，前线轨道常常是激发的主要参与者。我们可以利用Gaussian布居分析和TD-HF/TD-DFT计算打印的组态系数来检查参与激发的轨道，从而推断电子的流向。以乙烯为例，我们首先需要进行结构优化：
 ```
 %chk=ethene.chk
@@ -158,18 +173,18 @@ frag.txt
 
 图片横坐标对应空穴位置，纵坐标对应电子位置。从图中可以看到主要出现在片段5，其余片段只有少部分分布；而电子则几乎只分布在片段1处，由此我们可以推测此处主要是片段5向片段1转移了电子。
 
-# 自然跃迁轨道(Natural Transition Orbital, NTO)
-在TD-HF/TD-DFT中，激发态通常写作多个基态MO对的线性组合：
+## 自然跃迁轨道(Natural Transition Orbital, NTO)
+在TD-HF/TD-DFT中，激发态通常写作多个基态MO对的线性组合(此处将激发和去激发简写在一起了)：
 
 $$
-|\Psi_{\text{exc}}\rangle = \sum_{ia} c_{ia} \hat{a}^\dagger_a \hat{a}_i |\Psi_0\rangle
+|\Psi_{\text{exc}}\rangle = \sum_{ia} w_{ia} \hat{a}^\dagger_a \hat{a}_i |\Psi_0\rangle
 $$
 
 式中：
 - $i$: 占据轨道（occupied）
 - $a$: 未占轨道（virtual）
-- $c_{ia}$: 组态系数
-- $\hat{a}^\dagger_a \hat{a}_i$: 从轨道 $i$ 激发到 $a$
+- $w_{ia}$: 组态系数
+- $\hat{a}^\dagger_a \hat{a}_i$: 表示从轨道 $i$ 激发到 $a$
 
 这里的MO是从基态自洽场计算得到的，适合描述基态电子分布，却不一定最适合描述激发态的电子跃迁。因此在一些情况下，电子激发是没有主导的MO对的：
 ```
@@ -222,8 +237,8 @@ Ref:
 - [*J. Chem. Phys. 2003, 118, 4775*](https://pubs.aip.org/aip/jcp/article/118/11/4775/535868/Natural-transition-orbitals)
 - [自然跃迁轨道分析](https://cloud.tencent.com/developer/article/1794302)
 
-# 空穴-电子分析(Hole-Electron Analysis)
-有时候，仅仅对跃迁密度矩阵进行SVD分解仍然不能构造出一对主导的轨道，此时NTO变换就失去了本身的意义。这种情况下，可以采用空穴-电子分析来
+## 空穴-电子分析(Hole-Electron Analysis)
+有时候，仅仅对跃迁密度矩阵进行SVD分解仍然不能构造出一对主导的轨道，此时NTO变换就失去了本身的意义。这种情况下，可以采用空穴-电子分析来研究激发态。
 
 空穴-电子分析是一种相较于NTO更激进的约化方法，思想是是舍弃掉波函数相位信息，单独构造一对"轨道"将所有轨道跃迁纳入考虑，使得电子与空穴均可以通过这对"轨道"进行描述。本节记录的是在Multiwfn中实现，基于TDDFT/CIS的空穴-电子定义。
 
@@ -282,9 +297,31 @@ ethene.log
 ![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/electron_trimmed.png)
 我们看到空穴形状像乙烯的$π$成键轨道，而电子像$π$反键轨道，与MO的结果是一致的。
 
-# 电子-空穴热图
+电子空穴分析还支持使用高斯函数将空穴和电子分布平滑化描述，在图形上展示的更清楚，这里就不放图了
 
-# 片段电荷转移分析(Interfragment Charge Transfer Analysis, IFCT)
+Ref: [使用Multiwfn做空穴-电子分析全面考察电子激发特征](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=10775&fromuid=63020)
+
+## 空穴-电子热图
+Multiwfn里的空穴-电子分析模块实现了计算原子或片段贡献的功能。同样地，乙烯太小了，这里用其他体系进行演示：
+```
+othersys.fchk
+18
+1
+othersys.log    
+1             // 到此为止与上一致  
+3             // 绘制热图
+1             // Mulliken
+-1            // 定义片段
+0
+frag.txt      // 此时屏幕上会打印每个片段的电子与空穴占比
+1             // 显示填色图
+```
+得到如下图形：
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250606222445.png)
+
+可以看到，空穴主要在片段5，其他片段略有分布；而电子则集中在片段1上；同时，片段1上部分空穴与电子存在重叠。因此该激发态产生了片段5向片段1的电荷转移，也混合了小部分片段1的局域激发。
+
+## 片段电荷转移分析(Interfragment Charge Transfer Analysis, IFCT)
 
 
 
