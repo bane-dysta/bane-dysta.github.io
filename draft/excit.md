@@ -17,7 +17,7 @@ math: true
 - [跃迁偶极矩(Transition Dipole Moment, TDM)](#跃迁偶极矩transition-dipole-moment-tdm)
 - [自然跃迁轨道(Natural Transition Orbital, NTO)](#自然跃迁轨道natural-transition-orbital-nto)
 - [空穴-电子分析(Hole-Electron Analysis)](#空穴-电子分析hole-electron-analysis)
-- [电子-空穴热图](#电子-空穴热图)
+- [空穴-电子热图](#空穴-电子热图)
 - [片段电荷转移分析(Interfragment Charge Transfer Analysis, IFCT)](#片段电荷转移分析interfragment-charge-transfer-analysis-ifct)
 
 <!-- /TOC -->
