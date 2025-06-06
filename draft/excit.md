@@ -8,14 +8,14 @@ math: true
 
 > 注意：理论部分内容是一位初学者的思考，未必完全正确，会随笔者学习理解过程随时更新。如果读者发现任何地方与已有认识不符，不要怀疑，一定是笔者理解有误，请务必在评论区指出！
 
-## 跃迁密度
-一个比较简单的抽象概念，定义：
+## 跃迁密度(Transition Density)
+一个比较简单的抽象概念。如果假设激发态可以用单对MO跃迁来描述，则可以表示为：
 
 $$
 \rho_{ij}(r) = \psi_{i}^*(r)\psi_{j}(r)
 $$
 
-跃迁密度描述的是在空间位置r处态i与态j波函数的重叠程度，可以反映态i跃迁到态j的贡献权重。为了让Multiwfn绘制出跃迁密度等值面，我们需要进行TD-DFT计算：
+跃迁密度描述的是在空间位置r处态i与态j电子与空穴的重叠。为了让Multiwfn绘制出跃迁密度等值面，我们需要进行TD-DFT计算：
 ```
 %chk=ethene.chk
 # td HF/def2TZVP
@@ -45,7 +45,7 @@ Ref:
 - [Gaussian中用TDDFT计算激发态和吸收、荧光、磷光光谱的方法](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=2413&fromuid=63020)
 - [请问跃迁密度与电荷转移跃迁的关系](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=1467&fromuid=63020)
 
-## 跃迁偶极矩密度
+## 跃迁偶极矩密度(Transition Dipole Moment Density)
 跃迁密度展示了偶极的雏形。回忆偶极矩的计算方法$ \mu = \boldsymbol{r} \times e $，要描述跃迁偶极，我们还需要引入位置和电荷两个量。这里我们首先对跃迁密度引入位置矢量$\boldsymbol{r}$，得到跃迁偶极矩密度: 
 
 $$
@@ -65,33 +65,15 @@ ethene.log
 {1,2,3,4}       // 根据需求选择绘制的分量
 ```
 为了在三维空间展示出跃迁偶极矩密度等值面，我们每次只能绘制一个分量。假设乙烯双键的方向为X，垂直于双键方向为Y，垂直于乙烯平面的方向为Z，那么对于X分量，X=0平面将横穿乙烯分子，上侧的跃迁偶极矩乘以负值坐标，于是对应等值面发生了变号：
-![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250604224446.png)
+[]!(https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250604224446.png)
 由于跃迁密度关于Y=0平面反对称，Y分量的跃迁偶极矩是这样的：
-![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250604224841.png)
+[]!(https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250604224841.png)
 而Z方向跃迁密度与X方向一样关于Z=0对称，因此Z分量的分布也产生了变号：
-![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/ethene_z_trimmed.png)
+[]!(https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/ethene_z_trimmed.png)
 
-跃迁偶极矩密度可以单独考察XYZ三个分量跃迁偶极矩贡献分布情况，实际用的比较少。除了绘制等值面图，还可以绘制矩阵热图：
+跃迁偶极矩密度可以单独考察XYZ三个分量跃迁偶极矩贡献分布情况，实际用的比较少。
 
-```
-ethene.fchk
-18
-2         // 绘制原子/片段跃迁矩阵的热图
-ethene.log  
-1
-n
-1         // 收缩模式1
--1        // 定义片段
-0         // 读入外部文件
-frag.txt  // 为了演示随便定义的，两个碳是片段1和3，两头氢原子是2和4
-2         // 也可以用选项1来观看，5来改色彩刻度
-```
-此时当前目录下保存了刚刚绘制的热图
-![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/dislin.png)
-
-看到对跃迁起贡献的是1和3，就是两个碳，因为是对称的所以没什么电荷转移。这里为了演示随便定义了一下，实际体系中可以按照需要进行划分。
-
-## 跃迁偶极矩(TDM)
+## 跃迁偶极矩(Transition Dipole Moment, TDM)
 对跃迁偶极矩密度积分，并引入电荷，得到跃迁电偶极矩$\mu_{ij}^e$：
 
 $$
@@ -119,7 +101,7 @@ $\mu_{ij}^e$反映了分子吸收电磁辐射的能力，只有当$\mu_{ij}^e �
 > 跃迁密度被定义为两个电子态波函数的积，可知两个电子态波函数的对称性可能最终影响跃迁是否能发生，这是对称性选择定则的来源。
 {: .prompt-tip }
 
-TDM的计算只需要Gaussian进行TD-DFT计算即可，在输出文件中将直接打印：
+TDM本身的计算只需要Gaussian进行TD-DFT计算即可，在输出文件中将直接打印：
 ```
  Ground to excited state transition electric dipole moments (Au):
        state          X           Y           Z        Dip. S.      Osc.
@@ -129,6 +111,159 @@ TDM的计算只需要Gaussian进行TD-DFT计算即可，在输出文件中将直
 ```
 可以看到，S1只有Y分量的有非零TDM，与前面看到Y分量的跃迁偶极矩密度偶对称相符。
 
-# Hole-Electron Analysis
+利用Gaussian输出文件，可以使用Multiwfn绘制矩阵热图。因为乙烯就俩重原子，画出来没啥意义，展示的是笔者做的其他体系。
+```
+othersys.fchk
+18
+2         // 绘制原子/片段跃迁矩阵的热图
+othersys.log  
+1
+n
+1         // 收缩模式1
+-1        // 定义片段
+0         // 读入外部文件
+frag.txt  
+2         // 也可以用选项1来观看，5来改色彩刻度
+```
+此时当前目录下保存了刚刚绘制的热图
+[]!(https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/transdipden.png)
+
+图片横坐标对应空穴位置，纵坐标对应电子位置。从图中可以看到主要出现在片段5，其余片段只有少部分分布；而电子则几乎只分布在片段1处，由此我们可以推测此处主要是片段5向片段1转移了电子。
+
+# 自然跃迁轨道(Natural Transition Orbital, NTO)
+在TD-DFT/CIS中，激发态通常写作多个基态MO对的线性组合：
+
+$$
+|\Psi_{\text{exc}}\rangle = \sum_{ia} c_{ia} \hat{a}^\dagger_a \hat{a}_i |\Psi_0\rangle
+$$
+
+式中：
+- $i$: 占据轨道（occupied）
+- $a$: 未占轨道（virtual）
+- $c_{ia}$: 激发振幅（通常来自TDDFT或CIS等）
+- $\hat{a}^\dagger_a \hat{a}_i$: 从轨道 $i$ 激发到 $a$
+
+这里的MO是从基态自洽场计算得到的，适合描述基态电子分布，却不一定最适合描述激发态的电子跃迁。因此一些情况下，电子激发是没有主导的MO对的：
+```
+ Excitation energies and oscillator strengths:
+ 
+ Excited State   1:      Singlet-A      2.1855 eV  567.31 nm  f=1.4596  <S**2>=0.000
+     209 -> 211        0.50093
+     210 -> 211       -0.46903
+ This state for optimization and/or second-order correction.
+ Total Energy, E(TD-HF/TD-DFT) =  -2799.53472176    
+ Copying the excited state density for this state as the 1-particle RhoCI density.
+```
+此时，基于MO进行分析并不直观。为了解决这个问题，首先定义跃迁密度矩阵：
+
+$$
+T_{ia} = c_{ia}
+$$
+
+它记录了从每个占据轨道激发到每个虚轨道的权重。随后，对其进行奇异值分解：
+
+$$
+T = U \, \Lambda \, V^\dagger
+$$
+
+式中：
+* $U$：可以将正则占据轨道变换为占据NTO的神奇妙妙矩阵
+* $V$：可以将正则虚轨道变换为虚NTO的神奇妙妙矩阵
+* $\Lambda$：对角矩阵，包含奇异值，描述了跃迁的强度
+
+奇异值分解的目的是找到一个投影方向，使得激发态可以尽可能由一对轨道描述：
+
+$$
+|\Psi_{\text{exc}}\rangle \approx \lambda_1 \, |\phi^{\text{NTOocc}}_1 \rightarrow \phi^{\text{NTOvir}}_1\rangle
+$$
+
+NTO的产生方式见[从量子化学软件中产生波函数](https://bane-dysta.top/posts/40/)。以Gaussian输出为例，使用`pop=(NTO,saveNTO)`进行计算后，原本是占据数的地方写入的是NTO对的本征值，乘以100%就是该NTO对占激发的百分比。
+```
+ Alpha  occ. eigenvalues --    0.00018   0.00021   0.00022   0.00022   0.00026
+ Alpha  occ. eigenvalues --    0.00027   0.00027   0.00028   0.00029   0.00035
+ Alpha  occ. eigenvalues --    0.00049   0.00092   0.00293   0.01679   0.97920
+ Alpha virt. eigenvalues --    0.97920   0.01679   0.00293   0.00092   0.00049
+ Alpha virt. eigenvalues --    0.00035   0.00029   0.00028   0.00027   0.00027
+ Alpha virt. eigenvalues --    0.00026   0.00022   0.00022   0.00021   0.00018
+```
+可以看到，原本必须要两个轨道对才能描述的跃迁现在可以通过单对NTO轨道来描述了(HONTO→LUNTO=97.92%)，如此讨论时就方便多了。
+
+另外，NTO本身也是一种自然轨道，可以仿照MO进行可视化。
+
+Ref:
+- [*J. Chem. Phys. 2003, 118, 4775*](https://pubs.aip.org/aip/jcp/article/118/11/4775/535868/Natural-transition-orbitals)
+- [自然跃迁轨道分析](https://cloud.tencent.com/developer/article/1794302)
+
+# 空穴-电子分析(Hole-Electron Analysis)
+空穴-电子分析是一种相较于NTO更激进的约化方法，思想是是舍弃掉波函数相位信息，单独构造一对"轨道"将所有轨道跃迁纳入考虑，使得电子与空穴均可以通过这对"轨道"进行描述。本节记录的是在Multiwfn中实现，基于TDDFT/CIS的空穴-电子定义。
+
+总空穴密度：
+
+$$
+\rho^{\text{hole}}(\mathbf{r}) = \rho^{\text{hole}}_{\text{loc}}(\mathbf{r}) + \rho^{\text{hole}}_{\text{cross}}(\mathbf{r})
+$$
+
+其中，局域空穴密度是组态函数自身的贡献，定义为：
+
+$$
+\rho^{\text{hole}}_{\text{loc}}(\mathbf{r}) = \sum_{i \to a} (w_i^a)^2 \varphi_i \varphi_i - \sum_{i \leftarrow a} (w_i'^{a})^2 \varphi_i \varphi_i
+$$
+
+式中：
+- $w_i^a$：从占据轨道 $i$ 到虚轨道 $a$ 的激发组态系数
+- $\varphi_i$：占据轨道
+- $(w_i^a)^2$、$(w_i'^a)^2$：激发组态的权重
+- $i \to a$：表示激发贡献
+- $i \leftarrow a$：表示去激发贡献
+
+交叉空穴密度体现组态函数之间的耦合对空穴和电子分布的影响，定义为：
+
+$$
+\rho^{\text{hole}}_{\text{cross}}(\mathbf{r}) = \sum_{i \to a} \sum_{j \neq i \to a} w_i^a w_j^a \varphi_i \varphi_j - \sum_{i \leftarrow a} \sum_{j \neq i \leftarrow a} w_i'^{a} w_j'^a \varphi_i \varphi_j
+$$
+
+式中：
+- $i \neq j$：不同的占据轨道
+- $w_i^a w_j^a$：不同激发组态间的交叉权重
+- $\varphi_i \varphi_j$：不同轨道间的交叉项
+
+电子项形式跟空穴类似：
+
+$$\rho^{\text{ele}}(\mathbf{r}) = \rho^{\text{ele}}_{\text{loc}}(\mathbf{r}) + \rho^{\text{ele}}_{\text{cross}}(\mathbf{r})$$
+
+$$\rho^{\text{ele}}_{\text{loc}}(\mathbf{r}) = \sum_{i \to a} (w_i^a)^2 \varphi_a \varphi_a - \sum_{i \leftarrow a} (w_i'^{a})^2 \varphi_a \varphi_a$$
+
+$$\rho^{\text{ele}}_{\text{cross}}(\mathbf{r}) = \sum_{i \to a} \sum_{i \to b \neq a} w_i^a w_i^b \varphi_a \varphi_b - \sum_{i \leftarrow a} \sum_{i \leftarrow b \neq a} w_i'^{a} w_i'^{b} \varphi_a \varphi_b$$
+
+进行空穴-电子分析需要进行TD-DFT计算，与前述一致。然后使用Multiwfn进行分析：
+```
+ethene.fchk
+18
+1
+ethene.log    
+1               
+1               
+1               // 到此为止与跃迁密度等值面一致
+{1,2,3}         // 可视化电子-空穴
+```
+空穴：
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/hole_trimmed.png)
+电子：
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/electron_trimmed.png)
+
+
+
+# 片段电荷转移分析(Interfragment Charge Transfer Analysis, IFCT)
+
+
+
+
+
+
+
+
+
+
+
 
 
