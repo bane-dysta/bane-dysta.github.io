@@ -11,14 +11,16 @@ math: true
 # 目录
 <!-- TOC tocDepth:2..3 chapterDepth:2..6 -->
 
-- [前线轨道(Frontier Molecular Orbital, FMO)](#前线轨道frontier-molecular-orbital-fmo)
-- [跃迁密度(Transition Density)](#跃迁密度transition-density)
-- [跃迁偶极矩密度(Transition Dipole Moment Density)](#跃迁偶极矩密度transition-dipole-moment-density)
-- [跃迁偶极矩(Transition Dipole Moment, TDM)](#跃迁偶极矩transition-dipole-moment-tdm)
-- [自然跃迁轨道(Natural Transition Orbital, NTO)](#自然跃迁轨道natural-transition-orbital-nto)
-- [空穴-电子分析(Hole-Electron Analysis)](#空穴-电子分析hole-electron-analysis)
-- [空穴-电子热图](#空穴-电子热图)
-- [片段电荷转移分析(Interfragment Charge Transfer Analysis, IFCT)](#片段电荷转移分析interfragment-charge-transfer-analysis-ifct)
+
+- [目录](#目录)
+  - [前线轨道(Frontier Molecular Orbital, FMO)](#前线轨道frontier-molecular-orbital-fmo)
+  - [跃迁密度(Transition Density)](#跃迁密度transition-density)
+  - [跃迁偶极矩密度(Transition Dipole Moment Density)](#跃迁偶极矩密度transition-dipole-moment-density)
+  - [跃迁偶极矩(Transition Dipole Moment, TDM)](#跃迁偶极矩transition-dipole-moment-tdm)
+  - [自然跃迁轨道(Natural Transition Orbital, NTO)](#自然跃迁轨道natural-transition-orbital-nto)
+  - [空穴-电子分析(Hole-Electron Analysis)](#空穴-电子分析hole-electron-analysis)
+  - [空穴-电子热图](#空穴-电子热图)
+  - [片段电荷转移分析(Interfragment Charge Transfer Analysis, IFCT)](#片段电荷转移分析interfragment-charge-transfer-analysis-ifct)
 
 <!-- /TOC -->
 
@@ -127,7 +129,7 @@ $$
 \boldsymbol{\mu}_{ij}^e = \langle \psi_i|\hat{\boldsymbol{\mu}^e}|\psi_j \rangle
 $$
 
-$\mu_{ij}^e$反映了分子吸收电磁辐射的能力，只有当$\mu_{ij}^e ≠ 0$时，跃迁才是电偶极允许的。若$\mu_{ij}^e = 0$，跃迁电偶极禁阻，意味着跃迁很难(也许能通过磁偶极跃迁、电四极跃迁)发生或根本不发生。
+$\mu_{ij}^e$反映了分子吸收电磁辐射的能力，只有当$\mu_{ij}^e ≠ 0$时，跃迁才是电偶极允许的。若$\mu_{ij}^e = 0$，跃迁电偶极禁阻，意味着跃迁很难(也许能通过磁偶极跃迁、电四极跃迁等)发生或根本不发生。
 
 > 注意到计算TDM时对跃迁偶极矩密度进行了积分。当跃迁偶极矩密度等值面呈现奇对称时，积分结果为0，则跃迁禁阻，反之跃迁允许；
 > 
@@ -166,15 +168,15 @@ frag.txt
 图片横坐标对应空穴位置，纵坐标对应电子位置。从图中可以看到主要出现在片段5，其余片段只有少部分分布；而电子则几乎只分布在片段1处，由此我们可以推测此处主要是片段5向片段1转移了电子。
 
 ## 自然跃迁轨道(Natural Transition Orbital, NTO)
-在TD-HF/TD-DFT中，激发态通常写作多个基态MO对的线性组合(此处将激发和去激发简写在一起了)：
+在中，激发态通常写作多个基态MO对的线性组合(此处将激发和去激发简写在一起了)：
 
 $$
 |\Psi_{\text{exc}}\rangle = \sum_{ia} w_{ia} \hat{a}^\dagger_a \hat{a}_i |\Psi_0\rangle
 $$
 
 式中：
-- $i$: 占据轨道（occupied）
-- $a$: 未占轨道（virtual）
+- $i$: 占据轨道
+- $a$: 虚轨道
 - $w_{ia}$: 组态系数
 - $\hat{a}^\dagger_a \hat{a}_i$: 表示从轨道 $i$ 激发到 $a$
 
@@ -192,7 +194,7 @@ $$
 此时，基于MO进行分析并不直观。为了解决这个问题，首先定义跃迁密度矩阵：
 
 $$
-T_{ia} = c_{ia}
+T_{ia} = w_{ia}
 $$
 
 它记录了从每个占据轨道激发到每个虚轨道的权重。随后，对其进行奇异值分解：
@@ -223,16 +225,14 @@ NTO的产生方式见[从量子化学软件中产生波函数](https://bane-dyst
 ```
 可以看到，原本必须要两个轨道对才能描述的跃迁现在可以通过单对NTO轨道来描述了(HONTO→LUNTO=97.92%)，如此讨论时就方便多了。
 
-另外，NTO本身也是一种自然轨道，可以仿照MO进行可视化。
+另外，NTO本身也是一种自然轨道，可以进行各种轨道分析。
 
 Ref:
 - [*J. Chem. Phys. 2003, 118, 4775*](https://pubs.aip.org/aip/jcp/article/118/11/4775/535868/Natural-transition-orbitals)
 - [自然跃迁轨道分析](https://cloud.tencent.com/developer/article/1794302)
 
 ## 空穴-电子分析(Hole-Electron Analysis)
-有时候，仅仅对跃迁密度矩阵进行SVD分解仍然不能构造出一对主导的轨道，此时NTO变换就失去了本身的意义。这种情况下，可以采用空穴-电子分析来研究激发态。
-
-空穴-电子分析是一种相较于NTO更激进的约化方法，思想是是舍弃掉波函数相位信息，单独构造一对"轨道"将所有轨道跃迁纳入考虑，使得电子与空穴均可以通过这对"轨道"进行描述。本节记录的是在Multiwfn中实现，基于TDDFT/CIS的空穴-电子定义。
+有时候，仅仅对跃迁密度矩阵进行SVD分解仍然不能构造出一对主导的轨道，此时进行酉变换得到的NTO价值大大削减了。讨论这类体系时，可以使用空穴-电子分析。空穴-电子分析是一种相较于NTO更激进的约化方法，思想是舍弃掉波函数相位信息，单独构造一对"轨道"将所有轨道跃迁纳入考虑，使得电子与空穴均可以通过这对"轨道"进行描述。本节记录的是在Multiwfn中实现，基于TD-DFT/CIS的空穴-电子定义。
 
 总空穴密度：
 
