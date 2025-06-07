@@ -11,14 +11,17 @@ math: true
 # 目录
 <!-- TOC tocDepth:2..3 chapterDepth:2..6 -->
 
-
-- [目录](#目录)
-  - [前线轨道(Frontier Molecular Orbital, FMO)](#前线轨道frontier-molecular-orbital-fmo)
-  - [跃迁密度(Transition Density)](#跃迁密度transition-density)
-  - [跃迁偶极矩密度(Transition Dipole Moment Density)](#跃迁偶极矩密度transition-dipole-moment-density)
-  - [跃迁偶极矩(Transition Dipole Moment, TDM)](#跃迁偶极矩transition-dipole-moment-tdm)
-  - [自然跃迁轨道(Natural Transition Orbital, NTO)](#自然跃迁轨道natural-transition-orbital-nto)
-  - [空穴-电子分析(Hole-Electron Analysis)](#空穴-电子分析hole-electron-analysis)
+- [前线轨道(Frontier Molecular Orbital, FMO)](#前线轨道frontier-molecular-orbital-fmo)
+- [跃迁密度(Transition Density)](#跃迁密度transition-density)
+- [跃迁偶极矩密度(Transition Dipole Moment Density)](#跃迁偶极矩密度transition-dipole-moment-density)
+- [跃迁偶极矩(Transition Dipole Moment, TDM)](#跃迁偶极矩transition-dipole-moment-tdm)
+- [自然跃迁轨道(Natural Transition Orbital, NTO)](#自然跃迁轨道natural-transition-orbital-nto)
+- [空穴-电子分析(Hole-Electron Analysis)](#空穴-电子分析hole-electron-analysis)
+- [密度差](#密度差)
+  - [电子密度差(Electron Density Difference)](#电子密度差electron-density-difference)
+  - [电荷密度差(Charge Density Difference, CDD)](#电荷密度差charge-density-difference-cdd)
+- [定量电荷转移分析](#定量电荷转移分析)
+  - [片段原子电荷](#片段原子电荷)
   - [空穴-电子热图](#空穴-电子热图)
   - [片段电荷转移分析(Interfragment Charge Transfer Analysis, IFCT)](#片段电荷转移分析interfragment-charge-transfer-analysis-ifct)
 
@@ -90,7 +93,7 @@ Ref:
 跃迁密度展示了偶极的雏形。回忆偶极矩的计算方法$ \mu = \boldsymbol{r} \times e $，要描述跃迁偶极，我们还需要引入位置和电荷两个量。这里我们首先对跃迁密度引入位置矢量$\boldsymbol{r}$，得到跃迁偶极矩密度: 
 
 $$
-\boldsymbol{\rho}_{ij}^{dip(r)}(r) = \psi_{i}^*(r) {\boldsymbol{r}} \psi_{j}(r)
+\boldsymbol{\rho}_{ij}^{dip(\boldsymbol{r})}(r) = \psi_{i}^*(r) {\boldsymbol{r}} \psi_{j}(r)
 $$
 
 跃迁偶极矩密度反映了体系位置$\boldsymbol{r}$处对跃迁偶极矩的贡献。绘制跃迁偶极矩密度等值面时，Gaussian计算与前述一致。使用Multiwfn分析：
@@ -197,16 +200,16 @@ $$
 T_{ia} = w_{ia}
 $$
 
-它记录了从每个占据轨道激发到每个虚轨道的权重。随后，对其进行奇异值分解：
+它记录了从每个占据轨道激发到每个虚轨道的权重。随后，进行奇异值分解：
 
 $$
 T = U \, \Lambda \, V^\dagger
 $$
 
 式中：
-* $U$：可以将正则占据轨道变换为占据NTO的神奇妙妙酉矩阵
-* $V$：可以将正则虚轨道变换为虚NTO的神奇妙妙酉矩阵
-* $\Lambda$：对角矩阵，包含奇异值，描述了跃迁的强度
+- $U$：可以将正则占据轨道变换为占据NTO的神奇妙妙酉矩阵
+- $V$：可以将正则虚轨道变换为虚NTO的神奇妙妙酉矩阵
+- $\Lambda$：对角矩阵，包含奇异值，描述了跃迁的强度
 
 奇异值分解的目的是找到一个投影方向，使得激发态可以尽可能由一对轨道描述：
 
@@ -223,7 +226,7 @@ NTO的产生方式见[从量子化学软件中产生波函数](https://bane-dyst
  Alpha virt. eigenvalues --    0.00035   0.00029   0.00028   0.00027   0.00027
  Alpha virt. eigenvalues --    0.00026   0.00022   0.00022   0.00021   0.00018
 ```
-可以看到，原本必须要两个轨道对才能描述的跃迁现在可以通过单对NTO轨道来描述了(HONTO→LUNTO=97.92%)，如此讨论时就方便多了。
+可以看到，原本必须要两个轨道对才能描述的跃迁现在可以通过单对NTO轨道来描述(HONTO→LUNTO=97.92%)，如此讨论时就方便多了。
 
 另外，NTO本身也是一种自然轨道，可以进行各种轨道分析。
 
@@ -291,31 +294,20 @@ ethene.log
 
 Ref: [使用Multiwfn做空穴-电子分析全面考察电子激发特征](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=10775&fromuid=63020)
 
-## 电荷密度差(charge density difference)与电子密度差(electron density difference)
-电荷密度差使用的是非弛豫密度：
-$$
-Δρ_c=ρ_{\text{ele}}-ρ_{\text{hole}}
-$$
-```
-ethene.fchk
-18
-1
-ethene.log    
-1               
-1               
-1               // 到此为止与空穴-电子分析一致
-7               // 作CDD图
-```
-Ref: [使用Multiwfn做空穴-电子分析全面考察电子激发特征](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=10775&fromuid=63020)
+## 密度差
 
-电子密度差可以在任意两个态之间进行，不局限于基态与激发态，同时可以选择弛豫密度：
-$Δρ_e= \rho_{\text{es}} - \rho_{\text{gs}}$
+### 电子密度差(Electron Density Difference)
+电子密度差如其字面意思，就是两个态的自然轨道做差，可以描述激发态与基态的电子分布差异，从而判断激发性质。可以在任意两个态之间进行，不局限于基态与激发态，且可以选择使用弛豫密度：
 
-首先需要在`density`下做一次Gaussian计算：
+$$
+Δρ_e= \rho_{i} - \rho_{j}
+$$
+
+要计算电子密度差，首先需要在`density`下做一次TD-HF/TD-DFT计算：
 ```
 # td HF/def2TZVP density
 ```
-将本计算的fchk文件载入multiwfn，导出基态与激发态自然轨道：
+将本计算的fchk文件载入Multiwfn，导出基态与激发态自然轨道：
 ```
 ethene_density.fchk
 200
@@ -323,13 +315,13 @@ ethene_density.fchk
 SCF               // 载入基态密度
 y                 // 输出到new.mwfn
 ```
-此处暂停，手动把new.mwfn改名，避免接下来操作覆盖
+此处暂停，手动把new.mwfn改名，避免接下来操作覆盖此文件，然后继续：
 ```
 16
 {CI,CI Rho(1)}    // CI/CI Rho(1)对应弛豫/未弛豫激发态密度，通常取弛豫的
 y                 // 输出到new.mwfn
 ```
-随后在主功能5中进行做差：
+随后重新打开Multiwfn，在主功能5中进行做差：
 ```
 CI.mwfn           // 激发态的自然轨道
 5
@@ -340,16 +332,44 @@ CI.mwfn           // 激发态的自然轨道
 1                 // 小分子，低等质量格点即可
 ```
 
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250607172610.png)
+
+可以看到，非弛豫与弛豫密度展现出的性质还是存在一定差异的。
+
 Ref：
 - [使用Multiwfn计算激发态之间的密度差](http://sobereva.com/429)
 - [使用Multiwfn作电子密度差图](http://sobereva.com/113)
 
+### 电荷密度差(Charge Density Difference, CDD)
+CDD是基于空穴与电子定义的：
+
+$$
+Δρ_c(\mathbf{r})=ρ^{\text{ele}}(\mathbf{r})-ρ^{\text{hole}}(\mathbf{r})
+$$
+
+```
+ethene.fchk
+18
+1
+ethene.log    
+1               
+1               
+1               // 到此为止与空穴-电子分析一致
+7               // 作CDD图
+```
 最终效果：
 
 ![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250607110021.png)
 
-## 空穴-电子热图
-Multiwfn里的空穴-电子分析模块实现了计算原子或片段贡献的功能。同样地，乙烯太小了，这里用其他体系进行演示：
+可以看到，由于Multiwfn进行空穴-电子计算基于非弛豫密度，CDD和非弛豫密度差图像上基本一致。
+
+Ref: [使用Multiwfn做空穴-电子分析全面考察电子激发特征](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=10775&fromuid=63020)
+## 定量电荷转移分析
+
+### 片段原子电荷
+
+### 空穴-电子热图
+Multiwfn里的空穴-电子分析模块实现了计算原子或片段贡献的功能，可以绘制空穴-电子热图。同样地，乙烯太小了，这里用其他体系进行演示：
 ```
 othersys.fchk
 18
@@ -368,7 +388,7 @@ frag.txt      // 此时屏幕上会打印每个片段的电子与空穴占比
 
 可以看到，空穴主要在片段5，其他片段略有分布；而电子则集中在片段1上；同时，片段1上部分空穴与电子存在重叠。因此该激发态产生了片段5向片段1的电荷转移，也混合了小部分片段1的局域激发。
 
-## 片段电荷转移分析(Interfragment Charge Transfer Analysis, IFCT)
+### 片段电荷转移分析(Interfragment Charge Transfer Analysis, IFCT)
 
 
 
