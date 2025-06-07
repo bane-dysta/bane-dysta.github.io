@@ -53,12 +53,8 @@ h     // HOMO
 l     // LUMO
 1
 ```
-HOMO是乙烯的$π$成键轨道：
-![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/h_trimmed.png)
-LUMO是乙烯的$π$反键轨道：
-![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/l_trimmed.png)
-
-由此，我们可以知道乙烯的S1激发时，双键会被削弱，此时中央C-C键应当可以自由旋转。
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250607090141.png)
+HOMO是乙烯的$π$成键轨道；LUMO是乙烯的$π$反键轨道。由此，我们可以知道乙烯的S1激发时，双键会被削弱，此时中央C-C键应当可以自由旋转。
 
 ## 跃迁密度(Transition Density)
 一个比较简单的抽象概念。如果假设激发态可以用单对MO跃迁来描述，则跃迁密度可以表示为：
@@ -107,14 +103,10 @@ ethene.log
 6               // 绘制跃迁偶极矩等值面
 {1,2,3,4}       // 根据需求选择绘制的分量
 ```
-为了在三维空间展示出跃迁偶极矩密度等值面，我们每次只能绘制一个分量。假设乙烯双键的方向为X，垂直于双键方向为Y，垂直于乙烯平面的方向为Z，那么对于X分量，X=0平面将横穿乙烯分子，上侧的跃迁偶极矩乘以负值坐标，于是对应等值面发生了变号：
-![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250604224446.png)
-由于跃迁密度关于Y=0平面反对称，Y分量的跃迁偶极矩是这样的：
-![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250604224841.png)
-而Z方向跃迁密度与X方向一样关于Z=0对称，因此Z分量的分布也产生了变号：
-![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/ethene_z_trimmed.png)
+为了在三维空间展示出跃迁偶极矩密度等值面，我们每次只能绘制一个分量。假设乙烯双键的方向为X，垂直于双键方向为Y，垂直于乙烯平面的方向为Z，三个分量跃迁偶极矩密度等值面图形如下：
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250607091200.png)
 
-跃迁偶极矩密度可以单独考察XYZ三个分量跃迁偶极矩贡献分布情况，实际用的比较少。
+我们看到，由于引入了位置矢量，跃迁偶极矩密度相较于跃迁密度发生了部分变号，同时对称性也发生了改变，其造成的影响将在下一节讨论。跃迁偶极矩密度可以单独考察XYZ三个分量跃迁偶极矩贡献分布情况，实际用的比较少。
 
 ## 跃迁偶极矩(Transition Dipole Moment, TDM)
 对跃迁偶极矩密度积分，并引入电荷，得到跃迁电偶极矩$\mu_{ij}^e$：
@@ -291,15 +283,70 @@ ethene.log
 1               // 到此为止与跃迁密度等值面一致
 {1,2,3}         // 可视化电子-空穴
 ```
-空穴：
-![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/hole_trimmed.png)
-电子：
-![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/electron_trimmed.png)
+最终效果：
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250607092124.png)
 我们看到空穴形状像乙烯的$π$成键轨道，而电子像$π$反键轨道，与MO的结果是一致的。
 
 电子空穴分析还支持使用高斯函数将空穴和电子分布平滑化描述，在图形上展示的更清楚，这里就不放图了
 
 Ref: [使用Multiwfn做空穴-电子分析全面考察电子激发特征](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=10775&fromuid=63020)
+
+## 电荷密度差(charge density difference)与电子密度差(electron density difference)
+电荷密度差使用的是非弛豫密度：
+$$
+Δρ_c=ρ_{\text{ele}}-ρ_{\text{hole}}
+$$
+```
+ethene.fchk
+18
+1
+ethene.log    
+1               
+1               
+1               // 到此为止与空穴-电子分析一致
+7               // 作CDD图
+```
+Ref: [使用Multiwfn做空穴-电子分析全面考察电子激发特征](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=10775&fromuid=63020)
+
+电子密度差可以在任意两个态之间进行，不局限于基态与激发态，同时可以选择弛豫密度：
+$Δρ_e= \rho_{\text{es}} - \rho_{\text{gs}}$
+
+首先需要在`density`下做一次Gaussian计算：
+```
+# td HF/def2TZVP density
+```
+将本计算的fchk文件载入multiwfn，导出基态与激发态自然轨道：
+```
+ethene_density.fchk
+200
+16
+SCF               // 载入基态密度
+y                 // 输出到new.mwfn
+```
+此处暂停，手动把new.mwfn改名，避免接下来操作覆盖
+```
+16
+{CI,CI Rho(1)}    // CI/CI Rho(1)对应弛豫/未弛豫激发态密度，通常取弛豫的
+y                 // 输出到new.mwfn
+```
+随后在主功能5中进行做差：
+```
+CI.mwfn           // 激发态的自然轨道
+5
+0                 // 设定自定义运算
+1                 // 只有1个文件要对已读入的波函数进行运算
+-,SCF.mwfn        // 运算符和文件名
+1                 // 电子密度函数
+1                 // 小分子，低等质量格点即可
+```
+
+Ref：
+- [使用Multiwfn计算激发态之间的密度差](http://sobereva.com/429)
+- [使用Multiwfn作电子密度差图](http://sobereva.com/113)
+
+最终效果：
+
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250607110021.png)
 
 ## 空穴-电子热图
 Multiwfn里的空穴-电子分析模块实现了计算原子或片段贡献的功能。同样地，乙烯太小了，这里用其他体系进行演示：
