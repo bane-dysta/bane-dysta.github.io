@@ -11,7 +11,7 @@ math: true
 # 目录
 <!-- TOC tocDepth:2..3 chapterDepth:2..6 -->
 
-- [前线轨道(Frontier Molecular Orbital, FMO)](#前线轨道frontier-molecular-orbital-fmo)
+- [前线轨道(Frontier Molecular Orbitals, FMOs)](#前线轨道frontier-molecular-orbitals-fmos)
 - [跃迁密度(Transition Density)](#跃迁密度transition-density)
 - [跃迁偶极矩密度(Transition Dipole Moment Density)](#跃迁偶极矩密度transition-dipole-moment-density)
 - [跃迁偶极矩(Transition Dipole Moment, TDM)](#跃迁偶极矩transition-dipole-moment-tdm)
@@ -27,14 +27,16 @@ math: true
 
 <!-- /TOC -->
 
-## 前线轨道(Frontier Molecular Orbital, FMO)
+## 前线轨道(Frontier Molecular Orbitals, FMOs)
 由于荧光通常感兴趣的激发态都是较低的价层激发，前线轨道常常是激发的主要参与者。我们可以利用Gaussian布居分析和TD-HF/TD-DFT计算打印的组态系数来检查参与激发的轨道，从而推断电子的流向。以乙烯为例，我们首先需要进行结构优化：
 ```
 %chk=ethene.chk
 # opt freq HF/def2TZVP
 ...
 ```
-由于我们接下来会反复使用分子轨道的概念，这里就使用HF进行演示，避免杂化泛函给出一些偏离分子轨道理论的不美观的图形；实际研究体系时仍然应当根据体系选择合适的泛函。优化结构后，进行TD-HF/TD-DFT计算：
+> 由于我们接下来会反复使用分子轨道的概念，这里就使用HF进行演示，避免杂化泛函影响轨道图像；而在实际研究时，**读者仍然应当根据体系选择合适的泛函，绝对不要照抄本文的TD-HF演示。**
+
+优化结构后，进行TD-HF/TD-DFT计算：
 ```
 %chk=ethene.chk
 # td HF/def2TZVP
@@ -151,7 +153,7 @@ TDM本身的计算只需要Gaussian进行TD-HF/TD-DFT计算即可，在输出文
 ```
 可见S1只有Y分量的有非零TDM，与前面看到Y分量的跃迁偶极矩密度偶对称相符。
 
-利用Gaussian输出文件，可以使用Multiwfn绘制矩阵热图。因为乙烯就俩重原子，画出来没啥意义，展示的是笔者做的其他体系。
+利用Gaussian输出文件，可以使用Multiwfn绘制矩阵热图。因为乙烯就俩重原子，画出来没啥意义，此处以及后续电荷转移分析的部分展示的都是笔者做的其他体系：
 ```
 othersys.fchk
 18
@@ -228,16 +230,16 @@ NTO的产生方式见[从量子化学软件中产生波函数](https://bane-dyst
 ```
 可以看到，原本必须要两个轨道对才能描述的跃迁现在可以通过单对NTO轨道来描述(HONTO→LUNTO=97.92%)，如此讨论时就方便多了。
 
-另外，NTO本身也是一种自然轨道，可以进行各种轨道分析。
+另外，NTO本身也是一种自然轨道，可以进行各种轨道分析，例如[此贴](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=7585&fromuid=63020)中第三节展示的通过考察轨道成份计算电荷转移百分比。
 
 Ref:
 - [*J. Chem. Phys. 2003, 118, 4775*](https://pubs.aip.org/aip/jcp/article/118/11/4775/535868/Natural-transition-orbitals)
 - [自然跃迁轨道分析](https://cloud.tencent.com/developer/article/1794302)
 
 ## 空穴-电子分析(Hole-Electron Analysis)
-有时候，仅仅对跃迁密度矩阵进行SVD分解仍然不能构造出一对主导的轨道，此时进行酉变换得到的NTO价值大大削减了。讨论这类体系时，可以使用空穴-电子分析。空穴-电子分析是一种相较于NTO更激进的约化方法，思想是舍弃掉波函数相位信息，单独构造一对"轨道"将所有轨道跃迁纳入考虑，使得电子与空穴均可以通过这对"轨道"进行描述。本节记录的是在Multiwfn中实现，基于TD-DFT/CIS的空穴-电子定义。
+有时候，对跃迁密度矩阵进行SVD分解也不能构造出一对主导的轨道，此时进行酉变换的价值大大削减了。在讨论这类体系时，可以使用空穴-电子分析。空穴-电子分析是一种相较于NTO更激进的约化方法，思想是舍弃掉波函数相位信息，单独构造一对"轨道"将所有轨道跃迁纳入考虑，使得电子与空穴均可以通过这对"轨道"进行描述。在不需要相位相关信息时，则空穴-电子分析可以完全代替NTO作为一种普适的激发态分析手段。
 
-总空穴密度：
+本节记录的是在Multiwfn中实现，基于TD-DFT/CIS的空穴-电子定义。总空穴密度被定义为：
 
 $$
 \rho^{\text{hole}}(\mathbf{r}) = \rho^{\text{hole}}_{\text{loc}}(\mathbf{r}) + \rho^{\text{hole}}_{\text{cross}}(\mathbf{r})
@@ -275,7 +277,11 @@ $$\rho^{\text{ele}}_{\text{loc}}(\mathbf{r}) = \sum_{i \to a} (w_i^a)^2 \varphi_
 
 $$\rho^{\text{ele}}_{\text{cross}}(\mathbf{r}) = \sum_{i \to a} \sum_{i \to b \neq a} w_i^a w_i^b \varphi_a \varphi_b - \sum_{i \leftarrow a} \sum_{i \leftarrow b \neq a} w_i'^{a} w_i'^{b} \varphi_a \varphi_b$$
 
-进行空穴-电子分析需要进行TD-HF/TD-DFT计算，与前述一致。然后使用Multiwfn进行分析：
+进行空穴-电子分析需要进行TD-HF/TD-DFT计算。由于要在Multiwfn中根据组态系数构造激发态非弛豫密度，在计算时需要使用至少`IOp(9/40=3)`来打印更多组态系数：
+```
+# opt freq HF/def2TZVP IOp(9/40=3)
+```
+然后使用Multiwfn进行分析：
 ```
 ethene.fchk
 18
@@ -315,8 +321,10 @@ ethene_density.fchk
 SCF               // 载入基态密度
 y                 // 输出到new.mwfn
 ```
-此处暂停，手动把new.mwfn改名，避免接下来操作覆盖此文件，然后继续：
+此处暂停，手动把new.mwfn改名，避免接下来操作覆盖此文件，然后重新打开Multiwfn并继续：
 ```
+ethene_density.fchk
+200
 16
 {CI,CI Rho(1)}    // CI/CI Rho(1)对应弛豫/未弛豫激发态密度，通常取弛豫的
 y                 // 输出到new.mwfn
@@ -347,6 +355,7 @@ $$
 Δρ_c(\mathbf{r})=ρ^{\text{ele}}(\mathbf{r})-ρ^{\text{hole}}(\mathbf{r})
 $$
 
+计算参考[空穴-电子分析(Hole-Electron Analysis)](#空穴-电子分析hole-electron-analysis)，Multiwfn同样是由主功能18处理：
 ```
 ethene.fchk
 18
@@ -361,15 +370,47 @@ ethene.log
 
 ![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250607110021.png)
 
-可以看到，由于Multiwfn进行空穴-电子计算基于非弛豫密度，CDD和非弛豫密度差图像上基本一致。
+可以看到，由于Multiwfn进行空穴-电子计算基于非弛豫密度，CDD和非弛豫密度差基本一致，存在细小差异是没有打印较小的组态系数引起的。若想得到更一致的结果，需要使用IOp选项9/40来修改组态系数的打印阈值。
 
 Ref: [使用Multiwfn做空穴-电子分析全面考察电子激发特征](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=10775&fromuid=63020)
 ## 定量电荷转移分析
 
 ### 片段原子电荷
+我们可以基于激发前后原子电荷求差来判断片段间电荷转移情况。需要参考[电子密度差(Electron Density Difference)](#电子密度差electron-density-difference)带density进行一次计算，并导出基态与激发态的自然轨道，随后：
+```
+SCF.mwfn  // 载入基态密度
+7         // 布居分析与原子电荷计算
+-1        // 定义片段
+1-10      // 计算某片段的电荷
+11        // ADCH电荷
+1         // 对称化
+```
+此时程序给出了所有原子的电荷以及片段的ADCH电荷：
+```
+ Fragment charge:   -0.21305560
+ Fragment population:   23.21305560
+```
+如法炮制，计算激发态的片段电荷，得到：
+```
+ Fragment charge:   -0.03060325
+ Fragment population:   40.03060325
+```
+发现电荷减少了，因此激发过程中电子总体是从当前片段中转移出去了。可以如此法继续计算其他片段的电荷，通过片段电荷增减情况来推测电荷转移情况。
+
+Ref: [电子激发过程中片段间电荷转移百分比的计算](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=7585&fromuid=63020)
 
 ### 空穴-电子热图
-Multiwfn里的空穴-电子分析模块实现了计算原子或片段贡献的功能，可以绘制空穴-电子热图。同样地，乙烯太小了，这里用其他体系进行演示：
+根据空穴与电子的定义，我们还可以如下定义出MO对电子与空穴的贡献：
+
+$$\Theta_i^{\text{hole}} = \sum_a [(w_i^a)^2 - (w_i'^{a})^2]$$
+
+$$
+\Theta_a^{\text{ele}} = \sum_i [(w_i^a)^2 - (w_i'^{a})^2]
+$$
+
+通过类Mulliken方式的划分，可以实现原子和基函数对空穴与电子的贡献，据此可以绘制空穴-电子热图。
+
+同样地，乙烯太小了，这里用其他体系进行演示：
 ```
 othersys.fchk
 18
@@ -378,27 +419,121 @@ othersys.log
 1             // 到此为止与上一致  
 3             // 绘制热图
 1             // Mulliken
+```
+此时屏幕上会打印各原子对电子空穴的贡献：
+```
+ Contribution of each non-hydrogen atom to hole and electron:
+    1(C )  Hole:  0.56 %  Electron:  4.20 %  Overlap:  1.53 %  Diff.:   3.64 %
+    2(C )  Hole:  0.32 %  Electron:  3.90 %  Overlap:  1.11 %  Diff.:   3.58 %
+    3(C )  Hole:  1.24 %  Electron:  0.51 %  Overlap:  0.79 %  Diff.:  -0.73 %
+    4(C )  Hole:  0.14 %  Electron:  3.37 %  Overlap:  0.69 %  Diff.:   3.22 %
+    5(C )  Hole:  0.95 %  Electron:  4.07 %  Overlap:  1.97 %  Diff.:   3.11 %
+    ...
+```
+我们继续定义片段，来获得更清晰的划分：
+```
 -1            // 定义片段
 0
-frag.txt      // 此时屏幕上会打印每个片段的电子与空穴占比
-1             // 显示填色图
+frag.txt      
 ```
-得到如下图形：
+此时，屏幕上会打印每个片段的电子与空穴占比。
+```
+ Contribution of each fragment to hole and electron:
+ #  1   Hole:  8.49 %  Electron: 95.39 %  Overlap: 28.46 %  Diff.:  86.90 %
+ #  2   Hole:  0.43 %  Electron:  4.23 %  Overlap:  1.35 %  Diff.:   3.80 %
+ #  3   Hole:  4.22 %  Electron:  0.27 %  Overlap:  1.06 %  Diff.:  -3.96 %
+ #  4   Hole: 19.47 %  Electron:  0.02 %  Overlap:  0.70 %  Diff.: -19.45 %
+ #  5   Hole: 67.39 %  Electron:  0.09 %  Overlap:  2.42 %  Diff.: -67.30 %
+```
+我们看到空穴集中在片段1，而空穴在片段4与5上分布较多。为了更好地可视化，使用选项1显示如下图形：
 ![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/20250606222445.png)
 
-可以看到，空穴主要在片段5，其他片段略有分布；而电子则集中在片段1上；同时，片段1上部分空穴与电子存在重叠。因此该激发态产生了片段5向片段1的电荷转移，也混合了小部分片段1的局域激发。
+可以看到与数值对应的较好。该激发产生了片段5向片段1的电荷转移，与跃迁偶极矩矩阵图给出了相同的结论；但从此图种，我们还能看到此激发态混合了小部分片段1的局域激发。
+
+Ref: [使用Multiwfn做空穴-电子分析全面考察电子激发特征](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=10775&fromuid=63020)
 
 ### 片段电荷转移分析(Interfragment Charge Transfer Analysis, IFCT)
+IFCT仍然使用前述Multiwfn空穴-电子分析定义的量，且也是基于片段对空穴和电子的贡献实现的。定义R→S的电子转移量$Q_{R,S}$：
 
+$$
+Q_{R,S} = \Theta_{R,\text{hole}} \Theta_{S,\text{ele}}
+$$
 
+式中：
+- $\Theta_{R,\text{hole}}$：体现了被激发的电子中来自片段R的有多少
+- $\Theta_{S,\text{ele}}$：体现了电子要去的地方片段S贡献多少
 
+可知当R占空穴越多，S占电子越多，则R→S转移的电子就越多，于是可以求得片段间净电子转移量：
 
+$$
+p_{S→R} = Q_{S,R} - Q_{R,S}
+$$
 
+还可以求得某片段的电子净变化量：
 
+$$
+\Delta p_R = \sum_{S≠R} p_{S→R} = \sum_{S≠R} (Q_{S,R} - Q_{R,S})
+$$
 
+计算参考[空穴-电子分析(Hole-Electron Analysis)](#空穴-电子分析hole-electron-analysis)，使用Multiwfn主功能18的模块8进行IFCT分析：
+```
+othersys.fchk
+18
+8
+othersys.log
+1
+1               // 第二激发态
+0
+frag.txt
+```
+此时，程序会分析出每个片段间的电荷转移情况，并计算此激发态的电荷转移激发、局域激发成分：
 
+```
+ Contribution of each fragment to hole and electron:
+  1  Hole:   8.49 %     Electron:  95.39 %
+  2  Hole:   0.43 %     Electron:   4.23 %
+  3  Hole:   4.22 %     Electron:   0.27 %
+  4  Hole:  19.47 %     Electron:   0.02 %
+  5  Hole:  67.39 %     Electron:   0.09 %
+ Construction of interfragment charger-transfer matrix has finished!
+ ...
 
+ Transferred electrons between fragments:
+  1 ->  2:   0.00359       1 <-  2:   0.00410     Net  1 ->  2:  -0.00051
+  1 ->  3:   0.00023       1 <-  3:   0.04028     Net  1 ->  3:  -0.04005
+  1 ->  4:   0.00002       1 <-  4:   0.18574     Net  1 ->  4:  -0.18572
+  1 ->  5:   0.00007       1 <-  5:   0.64282     Net  1 ->  5:  -0.64275
+  2 ->  3:   0.00001       2 <-  3:   0.00179     Net  2 ->  3:  -0.00177
+  2 ->  4:   0.00000       2 <-  4:   0.00824     Net  2 ->  4:  -0.00824
+  2 ->  5:   0.00000       2 <-  5:   0.02851     Net  2 ->  5:  -0.02850
+  3 ->  4:   0.00001       3 <-  4:   0.00052     Net  3 ->  4:  -0.00051
+  3 ->  5:   0.00004       3 <-  5:   0.00180     Net  3 ->  5:  -0.00176
+  4 ->  5:   0.00017       4 <-  5:   0.00017     Net  4 ->  5:   0.00000
 
+ Intrinsic charge transfer percentage, CT(%):     91.810 %
+ Intrinsic local excitation percentage, LE(%):     8.190 %
+```
+我们看到，片段5向片段1转移电子量达到了0.64282，CT%成分91%，是个比较典型的CT激发。相较于片段原子电荷，IFCT的好处是可以定义任意多的片段，同时与空穴-电子分析的结果严格对应。另外，我们也可以根据IFCT的结果绘制电荷转移矩阵：
+```
+othersys.fchk
+18
+8
+1
+othersys.log
+1   // 第二激发态
+-1  // 导出原子-原子电荷转移矩阵
+```
+此时生成了atmCTmat.txt文件。
+```
+2   // 绘制矩阵填色图
+atmCTmat.txt
+-1  // 定义片段
+0
+frag.txt
+1   // 绘图
+```
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/06/CTmat.png)
 
+Ref：[在Multiwfn中通过IFCT方法计算电子激发过程中任意片段间的电子转移量](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=10774&fromuid=63020)
 
 
