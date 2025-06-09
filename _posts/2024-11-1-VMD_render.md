@@ -19,6 +19,12 @@ py wfn -t ~/scrpts/wfntxts/hole.txt
 ~~~
 py wfn -t ~/scrpts/wfntxts/hole123.txt
 ~~~
+或自定义管道
+```
+cmd /c "(echo td.fchk & echo 18 & type con) | Multiwfn.exe"
+
+(echo td.fchk; echo 18; cat) | Multiwfn
+```
 此时运行目录下输出的文件为``hole_00001.cub``、``hole_00002.cub``、``hole_00003.cub``和``electron_00001.cub``、``electron_00002.cub``、``electron_00003.cub``。
 
 ## 2. VMD可视化
