@@ -14,6 +14,8 @@ order: 1
   - [计算激发态](https://bane-dysta.github.io/posts/Gaussian_td/)
 - ORCA
   - [输入文件格式记录](https://bane-dysta.github.io/posts/34/)
+- 其他
+  - [从量子化学软件中产生波函数](https://bane-dysta.top/posts/40)
 </div>
 </div>
 
@@ -42,6 +44,7 @@ order: 1
 <div class="collapsible-section">
 <button class="collapsible-btn">(波函数)分析</button>
 <div class="collapsible-content" markdown="1">
+- [Study note：激发态的波函数分析方法](https://bane-dysta.top/posts/41/)
 - [弱相互作用](https://bane-dysta.github.io/posts/weak_interaction/)
 - [氢键+AIM](https://bane-dysta.github.io/posts/weak_interaction/)
 - [VMD绘制密度图](https://bane-dysta.github.io/posts/VMD_render/)
