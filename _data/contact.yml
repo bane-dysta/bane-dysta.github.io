@@ -3,6 +3,10 @@
 - type: github
   icon: "fab fa-github"
 
+- type: threads
+  icon: 'fa fa-address-card'
+  url: 'http://bbs.keinsci.com/home.php?mod=space&uid=63020'                   # Fill with your Threads profile link
+
 #- type: twitter
 #  icon: "fa-solid fa-briefcase"
 

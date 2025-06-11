@@ -6,6 +6,8 @@ date: 1970-1-1 12:00:00 +0800
 
 | 序号 | 文章标题 | 发布日期 | 源文件 |
 |:------:|----------|----------|--------|
+| 41 | Study note：激发态的波函数分析方法 | 2025-06-09 | [2025-6-9-41.md](https://bane-dysta.github.io/posts/41) |
+| 40 | 从量子化学软件中产生波函数 | 2025-06-03 | [2025-6-3-40.md](https://bane-dysta.github.io/posts/40) |
 | 39 | 部署gitea | 2025-05-28 | [2025-5-28-39.md](https://bane-dysta.github.io/posts/39) |
 | 38 | 部署https服务 | 2025-05-26 | [2025-5-26-38.md](https://bane-dysta.github.io/posts/38) |
 | 37 | BaneTop：Gaussian力场参数生成器 | 2025-05-20 | [2025-5-20-37.md](https://bane-dysta.github.io/posts/37) |
