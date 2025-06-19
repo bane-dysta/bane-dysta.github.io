@@ -86,18 +86,18 @@ $$
 不难发现，乙烯吸收电磁辐射的能力与其跃迁偶极的正负电荷中心的距离有关，若跃迁距离长，则吸收截面大，可以更高效地吸收电磁辐射。为了衡量分子吸收电磁辐射的能力，我们引入**跃迁偶极矩(Transition Dipole Moment, TDM)**来描述电子密度变化与电磁辐射的相互作用能力：
 
 $$
-\bm{\mu}_{ij}^e = \langle \psi_i|\hat{\bm{\mu}^e}|\psi_j \rangle \tag{2.1}
+\boldsymbol{\mu}_{ij}^e = \langle \psi_i|\hat{\boldsymbol{\mu}^e}|\psi_j \rangle \tag{2.1}
 $$
 
 其中：
-- $\bm{\mu}_{ij}^e$是跃迁电偶极矩；
+- $\boldsymbol{\mu}_{ij}^e$是跃迁电偶极矩；
 - $\psi_i$、$\psi_j$是初态与末态的电子波函数；
-- $\hat{\bm{\mu}^e}$​ 是电偶极矩算符，可以写为：$\hat{\bm{\mu}^e} = -e\sum_j \mathbf{r}_j$。
+- $\hat{\boldsymbol{\mu}^e}$​ 是电偶极矩算符，可以写为：$\hat{\boldsymbol{\mu}^e} = -e\sum_j \mathbf{r}_j$。
 
 除跃迁电偶极矩外，还有跃迁磁偶极矩、跃迁电四极矩等，但通常来说在跃迁电偶极矩未被禁阻时，它们的效应基本可以忽略，因此我们这里只讨论跃迁电偶极矩，我们通常说的跃迁偶极矩指的也就是跃迁电偶极矩。跃迁偶极矩越大，意味着分子与电磁辐射耦合越强，辐射跃迁强度也就越强。事实上，辐射跃迁强度是正比于跃迁偶极矩的模平方的：
 
 $$
-I_{i \leftarrow j} \propto |\bm{\mu}_{ij}^e|^2
+I_{i \leftarrow j} \propto |\boldsymbol{\mu}_{ij}^e|^2
 $$
 
 现在我们来研究一个稍微复杂一些的模型：

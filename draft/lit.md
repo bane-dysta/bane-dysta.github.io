@@ -185,7 +185,11 @@ sudo systemctl restart sshd
 解决：
 - `win+R`进入`regedit`，找到目录`计算机\HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts`，删掉对应后缀名的注册项。如果是此原因导致的，应当可以为对应后缀名选择默认应用了。
 
+## 浏览器阻止http网页使用剪贴板等API功能
+描述：在http网页中，一些API会被浏览器直接阻止，这本来也没啥，是很常见的安全措施。但访问站点权限的设置项你直接给我屏蔽了不让我手动设置，那我看你是**管闲事管的有点宽了**🤗
 
+原因：自不知道啥时候起chrome开始强制限制http网页的权限，这也影响了以chrome为内核的Edge的默认行为，需要在开发者选项中关掉。
 
-
-
+解决：
+- Edge：访问`edge://flags/#unsafely-treat-insecure-origin-as-secure`，把`Insecure origins treated as secure`设置为启用，框里填上你信任的网址即可。
+- Chrome：同上，访问网站为`chrome://flags/#unsafely-treat-insecure-origin-as-secure`
