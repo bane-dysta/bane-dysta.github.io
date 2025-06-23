@@ -42,7 +42,7 @@ PBEQIDH IOP(3/74=1001009,3/78=0666606666,3/107=0270000000,
 <button class="collapsible-btn">ORCA</button>
 <div class="collapsible-content" markdown="1">
 
-[ORCA 6.0 Manual](https://www.faccts.de/docs/orca/6.0/manual/index.html)
+[ORCA 6.1 Manual](https://www.faccts.de/docs/orca/6.1/manual/index.html)
 
 [泛函列表](https://www.faccts.de/docs/orca/6.0/manual/contents/structure.html#density-functional-methods)
 
