@@ -126,13 +126,13 @@ end
 
 #### 使用其他Double Corrections：
 Double Corrections也可以基于ADC(2)来做，但这样产生的双杂化泛函未经广泛测试，可能被审稿人提出comment，也没什么好的办法回答，使用时需要谨慎，最好基于其他研究结果。MRCC可以通过dhexc关键词切换校正形式，除普通的CIS(D)校正外，MRCC还支持ADC(2)以及二者各自的SOS和SCS版本。
-例如，[*J. Chem. Theory Comput. 2022, 18, 2, 865–882*](https://pubs.acs.org/doi/10.1021/acs.jctc.1c01100)提出Double Corrections基于SCS-ADC(2)的范围分离双杂化泛函计算各类激发能都很理想：
+例如，[*J. Chem. Theory Comput. 2022, 18, 2, 865–882*](https://pubs.acs.org/doi/10.1021/acs.jctc.1c01100)提出Double Corrections基于SOS-ADC(2)的范围分离双杂化泛函计算各类激发能都很理想：
 ```
 mem=96GB
 calc=TDDFT
 basis=def2-TZVP
 dft=RS-PBE-P86
-dhexc=scs-adc(2)
+dhexc=sos-adc(2)
 nsing=4
 ntrip=3
 #itol=10
