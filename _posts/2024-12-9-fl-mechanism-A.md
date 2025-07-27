@@ -240,7 +240,7 @@ $$
   \rho(E_j) = \frac{1}{Z}\int \exp(-\frac{E_j(Q)}{k_BT})dQ
   $$
 
-由于$\rho(E_j)$表达式包含了一个对核坐标的积分，不能直观地进行比较，我们需要对该公式进行一些推导。经过一些笔者看不太懂的炫酷数学变换后，态密度这一项被展开，Golden Rule转换成了这样的形式：
+由于$\rho(E_j)$表达式包含了一个对核坐标的积分，不能直观地进行比较，我们需要对该公式进行一些推导。经过一些笔者看不太懂的炫酷数学变换后(似乎有个前提，曲老师讲Marcus公式是Golden Rule的特例)，态密度这一项被展开，Golden Rule转换成了这样的形式：
 
 $$
 k_{n r} = \frac{2\pi}{\hbar} \frac{|V_{i j}|^2}{\sqrt{4\pi \lambda k_B T}} \exp\left(-\frac{(\Delta G + \lambda)^2}{4\lambda k_B T}\right) \tag{5.0.2}
