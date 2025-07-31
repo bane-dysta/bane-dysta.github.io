@@ -26,12 +26,5 @@
   // Run tasks in macOS
   "terminal.integrated.profiles.osx": {
     "zsh": { "path": "/bin/zsh", "args": ["-l", "-i"] }
-  },
-  // Git settings
-  "git.autorefresh": false,
-  "git.autofetch": false,
-  "files.watcherExclude": {
-    "**/.git/**": true,
-    "**/node_modules/**": true
   }
 }
