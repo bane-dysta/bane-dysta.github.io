@@ -6,6 +6,11 @@ date: 1970-1-1 12:00:00 +0800
 
 | 序号 | 文章标题 | 发布日期 | 源文件 |
 |:------:|----------|----------|--------|
+| 46 | Anti-Kasha荧光的ESD计算 | 2025-08-02 | [2025-8-2-46.md](https://bane-dysta.github.io/posts/46) |
+| 45 | 量子化学软件BDF在低版本系统上的运行方案 | 2025-08-01 | [2025-8-1-45.md](https://bane-dysta.github.io/posts/45) |
+| 44 | 量子化学软件BDF探路 | 2025-07-31 | [2025-7-31-44.md](https://bane-dysta.github.io/posts/44) |
+| 43 | 编辑windows右键菜单 | 2025-07-05 | [2025-7-5-43.md](https://bane-dysta.github.io/posts/43) |
+| 42 | Lmod管理环境变量 | 2025-06-19 | [2025-6-19-42.md](https://bane-dysta.github.io/posts/42) |
 | 41 | Study note：激发态的波函数分析方法 | 2025-06-09 | [2025-6-9-41.md](https://bane-dysta.github.io/posts/41) |
 | 40 | 从量子化学软件中产生波函数 | 2025-06-03 | [2025-6-3-40.md](https://bane-dysta.github.io/posts/40) |
 | 39 | 部署gitea | 2025-05-28 | [2025-5-28-39.md](https://bane-dysta.github.io/posts/39) |
