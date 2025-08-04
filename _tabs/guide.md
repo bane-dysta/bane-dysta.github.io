@@ -38,6 +38,7 @@ order: 1
 - [圆锥交叉](https://bane-dysta.github.io/posts/CIopt/)
 - [ΔSCF](https://bane-dysta.top/posts/29/)
 - [ONIOM](https://bane-dysta.github.io/posts/35)
+- [anti-kasha](https://bane-dysta.github.io/posts/46)
 </div>
 </div>
 
@@ -73,6 +74,7 @@ order: 1
 - [slurm](https://bane-dysta.top/posts/30/)
 - [AICD](https://bane-dysta.top/posts/31/)
 - [SMB](https://bane-dysta.github.io/posts/32)
+- [BDF](https://bane-dysta.github.io/posts/45)
 </div>
 </div>
 
