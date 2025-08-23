@@ -1,0 +1,157 @@
+<div class="molecule-container">
+  <div class="canvas-container">
+    {% assign unique_id = include.id | default: 'mol' %}
+    {% unless include.id %}
+      {% assign content_hash = include.xyz | append: include.mol | append: include.smiles | append: include.representation | append: include.bgcolor | size %}
+      {% assign unique_id = unique_id | append: '_' | append: content_hash | append: '_' | append: include.mode %}
+    {% endunless %}
+    
+    {% if include.mode == '2d' %}
+      <canvas id="viewACS_{{ unique_id }}" width="{{ include.width | default: 400 }}" height="{{ include.height | default: 300 }}"></canvas>
+    {% elsif include.mode == '3d' %}
+      <canvas id="transform3d_{{ unique_id }}" width="{{ include.width | default: 400 }}" height="{{ include.height | default: 400 }}"></canvas>
+    {% endif %}
+  </div>
+</div>
+
+<script>
+{% if include.mode == '2d' %}
+// 2D Canvas
+(function() {
+  // Generate truly unique ID at runtime
+  var timestamp = Date.now();
+  var random = Math.floor(Math.random() * 10000);
+  var uniqueCanvasId = 'view2d_' + timestamp + '_' + random;
+  
+  // Update the canvas element ID
+  var originalCanvas = document.getElementById('viewACS_{{ unique_id }}');
+  if (originalCanvas) {
+    originalCanvas.id = uniqueCanvasId;
+    console.log('Canvas ID updated from viewACS_{{ unique_id }} to:', uniqueCanvasId);
+  } else {
+    console.error('Original canvas not found: viewACS_{{ unique_id }}');
+    return;
+  }
+  
+  var canvas = new ChemDoodle.ViewerCanvas(uniqueCanvasId, {{ include.width | default: 400 }}, {{ include.height | default: 300 }});
+  canvas.styles.bonds_width_2D = 0.6;
+  canvas.styles.bonds_saturationWidthAbs_2D = 2.6;
+  canvas.styles.atoms_font_size_2D = 10;
+  
+  {% if include.smiles %}
+  var smiles = '{{ include.smiles }}';
+  var molfile = OCL.Molecule.fromSmiles(smiles).toMolfile();
+  var molecule = ChemDoodle.readMOL(molfile);
+  molecule.scaleToAverageBondLength({{ include.scale | default: 20 }});
+  canvas.loadMolecule(molecule);
+  {% elsif include.mol %}
+  var molData = {{ include.mol | jsonify }};
+  var molecule = ChemDoodle.readMOL(molData);
+  molecule.scaleToAverageBondLength({{ include.scale | default: 20 }});
+  canvas.loadMolecule(molecule);
+  {% endif %}
+})();
+
+{% elsif include.mode == '3d' %}
+// 3D Canvas
+(function() {
+  // Generate truly unique ID at runtime
+  var timestamp = Date.now();
+  var random = Math.floor(Math.random() * 10000);
+  var uniqueCanvasId = 'transform3d_' + timestamp + '_' + random;
+  
+  // Update the canvas element ID
+  var originalCanvas = document.getElementById('transform3d_{{ unique_id }}');
+  if (originalCanvas) {
+    originalCanvas.id = uniqueCanvasId;
+    console.log('Canvas ID updated from transform3d_{{ unique_id }} to:', uniqueCanvasId);
+  } else {
+    console.error('Original canvas not found: transform3d_{{ unique_id }}');
+    return;
+  }
+  
+  console.log('Starting 3D canvas initialization for:', uniqueCanvasId);
+  var canvas = new ChemDoodle.TransformCanvas3D(uniqueCanvasId, {{ include.width | default: 400 }}, {{ include.height | default: 400 }});
+  console.log('3D canvas created:', uniqueCanvasId);
+  
+  canvas.styles.set3DRepresentation('{{ include.representation | default: "Ball and Stick" }}');
+  canvas.styles.backgroundColor = '{{ include.bgcolor | default: "black" }}';
+  // 调整球的大小
+  // canvas.styles.atoms_sphereDiameter_3D = 0.1; // 默认约0.5，可以试试0.8, 1.0, 1.2等
+  // 可选：同时调整键的粗细以保持比例协调
+  canvas.styles.bonds_cylinderDiameter_3D = 0.2; // 默认约0.25
+  console.log('Styles set for:', uniqueCanvasId);
+  
+  {% if include.xyz %}
+  // Parse XYZ coordinate data
+  var xyzData = {{ include.xyz | jsonify }};
+  var lines = xyzData.trim().split('\n');
+  var numAtoms = parseInt(lines[0]);
+  var comment = lines[1]; // Skip comment line
+  
+  var molecule = new ChemDoodle.structures.Molecule();
+  
+  // Parse atoms from XYZ data
+  for (var i = 2; i < 2 + numAtoms; i++) {
+    var parts = lines[i].trim().split(/\s+/);
+    var element = parts[0];
+    var x = parseFloat(parts[1]);
+    var y = parseFloat(parts[2]);
+    var z = parseFloat(parts[3]);
+    
+    molecule.atoms.push(new ChemDoodle.structures.Atom(element, x, y, z));
+  }
+  
+  // Auto-generate bonds based on distance (simple approach)
+  // You may want to customize this based on your needs
+  for (var j = 0; j < molecule.atoms.length; j++) {
+    for (var k = j + 1; k < molecule.atoms.length; k++) {
+      var atom1 = molecule.atoms[j];
+      var atom2 = molecule.atoms[k];
+      
+      var dx = atom1.x - atom2.x;
+      var dy = atom1.y - atom2.y;
+      var dz = atom1.z - atom2.z;
+      var distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
+      
+      // Simple bonding criteria based on atomic radii
+      var maxBondDistance = 2.0; // Adjust as needed
+      if (distance < maxBondDistance) {
+        molecule.bonds.push(new ChemDoodle.structures.Bond(atom1, atom2));
+      }
+    }
+  }
+  
+  console.log('XYZ molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms and', molecule.bonds.length, 'bonds');
+  canvas.loadMolecule(molecule);
+  console.log('XYZ molecule loaded for:', uniqueCanvasId);
+  {% elsif include.mol %}
+  var molData = {{ include.mol | jsonify }};
+  var molecule = ChemDoodle.readMOL(molData);
+  console.log('MOL molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms');
+  canvas.loadMolecule(molecule);
+  console.log('MOL molecule loaded for:', uniqueCanvasId);
+  {% elsif include.smiles %}
+  var smiles = '{{ include.smiles }}';
+  var molfile = OCL.Molecule.fromSmiles(smiles).toMolfile();
+  var molecule = ChemDoodle.readMOL(molData);
+  console.log('SMILES molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms');
+  canvas.loadMolecule(molecule);
+  console.log('SMILES molecule loaded for:', uniqueCanvasId);
+  {% endif %}
+})();
+{% endif %}
+</script>
+
+<style>
+  .molecule-container {
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  .canvas-container {
+    display: inline-block;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+</style>
