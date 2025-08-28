@@ -1,0 +1,166 @@
+<!-- Chemical Structure Renderer for Jekyll Chirpy-->
+
+<style>
+.chemical-structure-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin: 1em 0;
+}
+
+.chemical-structure-image {
+    border: 1px solid #e1e5e9;
+    border-radius: 8px;
+    background: white;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.chemical-structure-error {
+    padding: 1em;
+    background: #fff0f0;
+    border: 2px solid #ffb3b3;
+    border-radius: 8px;
+    margin: 1em 0;
+    font-family: monospace;
+}
+
+.chemical-structure-error strong {
+    color: #d8000c;
+    display: block;
+    margin-bottom: 0.5em;
+}
+
+.chemical-structure-loading {
+    padding: 1em;
+    text-align: center;
+    color: #666;
+    border: 1px dashed #ccc;
+    border-radius: 8px;
+    margin: 1em 0;
+}
+
+.smiles-input {
+    font-family: 'Courier New', monospace;
+    background: #f8f9fa;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    color: #e83e8c;
+}
+</style>
+
+<div class="chemical-structure-wrapper">
+    {% assign smiles_string = include.smiles | default: "CCO" %}
+    {% assign width = include.width | default: "300" %}
+    {% assign format = include.format | default: "svg" %}
+    
+    <!-- Display the SMILES string(s) -->
+    <div style="margin-bottom: 10px;">
+        <strong>SMILES:</strong> <code class="smiles-input">{{ smiles_string }}</code>
+    </div>
+    
+    <!-- Container for rendered structures -->
+    <div id="smiles-container-{{ smiles_string | slugify }}" class="chemical-structure-container">
+        <div class="chemical-structure-loading">
+            🧪 Rendering chemical structure...
+        </div>
+    </div>
+</div>
+
+<script>
+(function() {
+    const smiles = "{{ smiles_string }}";
+    const width = "{{ width }}";
+    const format = "{{ format }}" === "png" ? "image/png;base64" : "image/svg;base64";
+    const containerId = "smiles-container-{{ smiles_string | slugify }}";
+    const container = document.getElementById(containerId);
+    
+    // Configuration
+    const server = "https://lifescience.opensource.epam.com";
+    
+    async function renderChemicalStructure(smilesStr) {
+        try {
+            const response = await fetch(`${server}/v2/indigo/render`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': format
+                },
+                body: JSON.stringify({
+                    struct: smilesStr,
+                    query: "",
+                    output_format: format,
+                    options: {}
+                })
+            });
+            
+            if (!response.ok) {
+                let errorMsg = `Server error: ${response.status}`;
+                try {
+                    const errorData = await response.json();
+                    errorMsg += ` - ${errorData.message || errorData.error}`;
+                } catch (e) {}
+                throw new Error(errorMsg);
+            }
+            
+            const imageData = await response.text();
+            return imageData;
+            
+        } catch (error) {
+            throw new Error(`Rendering failed: ${error.message}`);
+        }
+    }
+    
+    function createErrorElement(error, smilesStr) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'chemical-structure-error';
+        errorDiv.innerHTML = `
+            <strong>🚨 Chemical Structure Rendering Error</strong>
+            <details>
+                <summary>Show error details</summary>
+                <pre>${error.message}</pre>
+                <code>Problematic SMILES: ${smilesStr}</code>
+            </details>
+        `;
+        return errorDiv;
+    }
+    
+    function createImageElement(imageData, smilesStr) {
+        const img = document.createElement('img');
+        const mimeType = format.replace(';base64', '+xml');
+        img.src = `data:${mimeType};base64,${imageData}`;
+        img.style.width = width + 'px';
+        img.className = 'chemical-structure-image';
+        img.alt = `Chemical structure for SMILES: ${smilesStr}`;
+        img.title = `SMILES: ${smilesStr}`;
+        return img;
+    }
+    
+    async function renderStructures() {
+        // Clear loading message
+        container.innerHTML = '';
+        
+        // Split by | for multiple structures
+        const smilesList = smiles.split('|').map(s => s.trim()).filter(s => s);
+        
+        for (const smilesStr of smilesList) {
+            try {
+                const imageData = await renderChemicalStructure(smilesStr);
+                const imgElement = createImageElement(imageData, smilesStr);
+                container.appendChild(imgElement);
+            } catch (error) {
+                console.error('Chemical structure rendering error:', error);
+                const errorElement = createErrorElement(error, smilesStr);
+                container.appendChild(errorElement);
+            }
+        }
+    }
+    
+    // Start rendering when DOM is ready
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', renderStructures);
+    } else {
+        renderStructures();
+    }
+})();
+</script>

@@ -69,6 +69,24 @@ PBEQIDH IOP(3/74=1001009,3/78=0666606666,3/107=0270000000,
 </div>
 
 <div class="collapsible-section">
+<button class="collapsible-btn">GAMESS</button>
+<div class="collapsible-content" markdown="1">
+
+[手册](https://www.msg.chem.iastate.edu/gamess/GAMESS_Manual/docs-input.txt)
+
+</div>
+</div>
+
+<div class="collapsible-section">
+<button class="collapsible-btn">xTB</button>
+<div class="collapsible-content" markdown="1">
+
+[手册](https://xtb-docs.readthedocs.io/en/latest/#)
+
+</div>
+</div>
+
+<div class="collapsible-section">
 <button class="collapsible-btn">论坛</button>
 <div class="collapsible-content" markdown="1">
 
