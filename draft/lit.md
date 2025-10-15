@@ -193,3 +193,10 @@ sudo systemctl restart sshd
 解决：
 - Edge：访问`edge://flags/#unsafely-treat-insecure-origin-as-secure`，把`Insecure origins treated as secure`设置为启用，框里填上你信任的网址即可。
 - Chrome：同上，访问网站为`chrome://flags/#unsafely-treat-insecure-origin-as-secure`
+
+## fatal error: filesystem: No such file or directory
+描述：在旧集群上通过编译安装的新gcc往往找不到filesystem，导致C++17的很多项目编译不过去
+原因：有些来源的filesystem似乎在experimental/filesystem里
+
+解决：
+修改头文件，把`#include <filesystem>`改为`#include <experimental/filesystem>`(命名空间也要改),在编译时添加flag`-lstdc++fs`，大概率解决此问题。
