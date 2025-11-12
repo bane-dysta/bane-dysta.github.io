@@ -6,6 +6,14 @@ date: 1970-1-1 12:00:00 +0800
 
 | 序号 | 文章标题 | 发布日期 | 源文件 |
 |:------:|----------|----------|--------|
+| 54 | banetask | 2025-10-15 | [2025-10-15-54.md](https://bane-dysta.github.io/posts/54) |
+| 53 | banewfn | 2025-10-12 | [2025-10-12-53.md](https://bane-dysta.github.io/posts/53) |
+| 52 | 进行QM计算时，软件在做什么？ | 2025-10-08 | [2025-10-8-52.md](https://bane-dysta.github.io/posts/52) |
+| 51 | 电子耦合积分 | 2025-09-26 | [2025-9-26-51.md](https://bane-dysta.github.io/posts/51) |
+| 50 | NWChem的编译安装 | 2025-09-25 | [2025-9-25-50.md](https://bane-dysta.github.io/posts/50) |
+| 49 | 利用高斯调度xTB完成量子化学计算 | 2025-09-20 | [2025-9-20-49.md](https://bane-dysta.github.io/posts/49) |
+| 48 | 在blog中渲染chem对象 | 2025-08-23 | [2025-8-23-48.md](https://bane-dysta.github.io/posts/48) |
+| 47 | 大体系的激发态波函数分析方案 | 2025-08-05 | [2025-8-5-47.md](https://bane-dysta.github.io/posts/47) |
 | 46 | Anti-Kasha荧光的ESD计算 | 2025-08-02 | [2025-8-2-46.md](https://bane-dysta.github.io/posts/46) |
 | 45 | 量子化学软件BDF在低版本系统上的运行方案 | 2025-08-01 | [2025-8-1-45.md](https://bane-dysta.github.io/posts/45) |
 | 44 | 量子化学软件BDF探路 | 2025-07-31 | [2025-7-31-44.md](https://bane-dysta.github.io/posts/44) |
@@ -38,8 +46,8 @@ date: 1970-1-1 12:00:00 +0800
 | 17 | Study note：量子化学方法 | 2024-11-28 | [2024-11-28-calcmethod.md](https://bane-dysta.github.io/posts/calcmethod) |
 | 16 | Study note：集群环境下MOKIT的部署 | 2024-11-23 | [2024-11-23-MOKIT.md](https://bane-dysta.github.io/posts/MOKIT) |
 | 15 | Citation | 2024-11-22 | [2024-11-22-citation.md](https://bane-dysta.github.io/posts/citation) |
-| 14 | Study note：精确计算激发能的方法 | 2024-11-16 | [2024-11-16-excitation_energy.md](https://bane-dysta.github.io/posts/excitation_energy) |
-| 13 | Tasker：Gaussian计算任务自动化工具集 | 2024-11-16 | [2024-11-16-Tasker.md](https://bane-dysta.github.io/posts/Tasker) |
+| 14 | Tasker：Gaussian计算任务自动化工具集 | 2024-11-20 | [2024-11-20-Tasker.md](https://bane-dysta.github.io/posts/Tasker) |
+| 13 | Study note：精确计算激发能的方法 | 2024-11-16 | [2024-11-16-excitation_energy.md](https://bane-dysta.github.io/posts/excitation_energy) |
 | 12 | Study note：构象搜索 | 2024-11-11 | [2024-11-11-molclus.md](https://bane-dysta.github.io/posts/molclus) |
 | 11 | Orbital Viewer：快速可视化分子轨道工具 | 2024-11-11 | [2024-11-11-OrbViewer.md](https://bane-dysta.github.io/posts/OrbViewer) |
 | 10 | Study note：自旋轨道耦合矩阵元的计算方法 | 2024-11-09 | [2024-11-9-SOCME.md](https://bane-dysta.github.io/posts/SOCME) |
