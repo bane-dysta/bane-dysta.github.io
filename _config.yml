@@ -193,11 +193,9 @@ defaults:
       layout: page
       permalink: /:title/
   - scope:
-      path: _draft
+      path: draft
     values:
-      layout: post
-      comments: true
-      toc: true
+      comments: false
 
 sass:
   style: compressed
