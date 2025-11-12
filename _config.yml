@@ -171,6 +171,9 @@ collections:
   tabs:
     output: true
     sort_by: order
+  draft:
+    output: true
+    permalink: /draft/:title/
 
 defaults:
   - scope:
@@ -184,15 +187,17 @@ defaults:
       # to update the code of all other post links in this project.
       permalink: /posts/:title/
   - scope:
-      path: _drafts
-    values:
-      comments: false
-  - scope:
       path: ""
       type: tabs # see `site.collections`
     values:
       layout: page
       permalink: /:title/
+  - scope:
+      path: _draft
+    values:
+      layout: post
+      comments: true
+      toc: true
 
 sass:
   style: compressed
