@@ -1,5 +1,5 @@
 ---
-title: "Study note：振动分辨光谱+Huang-Rhys因子的计算"
+title: Study note：振动分辨光谱+Huang-Rhys因子(分解重组能)的计算
 date: 2024-12-12 12:00:00 +0800
 categories: [Quantum Chemistry,note]
 tags: [note,Huang-Rhys]   
@@ -57,6 +57,22 @@ initial.chk为含有S1态freq信息的chk文件，final.chk为含有S0态freq信
 得到的txt文件第一部分是跃迁线，第二部分是光谱，使用origin对前两列绘图。
 
 首先用第二部分数据绘制光谱。绘制完毕后，在插入-新图层(轴)中点击右Y轴(关联X轴的刻度和尺寸)建立新图层，在图层2中对第一部分数据绘图，即可得到有振动跃迁指示的振动分辨光谱。
+
+### 将重组能分解为冗余内坐标的贡献
+sob老师在[博文106](http://sobereva.com/106)里介绍过Gaussian中freq=intmodes的功能，它可以打印冗余内坐标对振动模式的贡献。之前曾经注意到过，但是当时理解没到火候，没意识到可以利用起来。最近相关帖子被重新顶起来了，发觉可以利用这个功能做些事情：
+```
+%oldchk=opt_Azulene.chk
+#p geom=allcheck freq(readfc,fcht,readfcht,intmode) IOp(7/75=-1)
+
+initial=source=chk final=source=chk spectroscopy=onephotonemission print=(huangrhys,matrix=JK)
+
+td_Azulene.chk
+opt_Azulene.chk
+```
+其中IOp(7/75=-1)表示取消冗余内坐标贡献的打印阈值。本计算的输出里，将同时有freq、Huang-Rhys与冗余内坐标对振动模式的贡献，如此就有了计算论文里常见的这种图的全部信息：
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2025/11/5a639a306e9d1bc94fb1188cb00569a8.png)
+
+计算程序可以看笔者在公社发的[帖子](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=57134&fromuid=63020)，该贴已被高级班讲义收录。
 
 ## ORCA
 ```
