@@ -171,9 +171,9 @@ collections:
   tabs:
     output: true
     sort_by: order
-  draft:
-    output: true
-    permalink: /draft/:title/
+#  draft:
+#    output: true
+#    permalink: /draft/:title/
 
 defaults:
   - scope:
