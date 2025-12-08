@@ -157,7 +157,8 @@ baseurl: ""
 # Explicitly include downloadable assets under `_file/`.
 include:
   - _file
-
+  - _draft
+  
 # ------------ The following options are not recommended to be modified ------------------
 
 kramdown:
