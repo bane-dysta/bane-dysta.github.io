@@ -153,6 +153,11 @@ paginate: 10
 # The base URL of your site
 baseurl: ""
 
+# Folders/files starting with "_" are ignored by default.
+# Explicitly include downloadable assets under `_file/`.
+include:
+  - _file
+
 # ------------ The following options are not recommended to be modified ------------------
 
 kramdown:
