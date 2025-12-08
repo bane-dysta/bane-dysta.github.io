@@ -1,0 +1,13 @@
+[launch]
+if(run.LoadOC("%@APiecewise Smooth\PiecewiseSmooth.cpp", 16) == 0)
+{
+	PiecewiseSmooth_Run();
+}
+
+[launchQuick]
+// Quick batch version - skip dialog
+if(run.LoadOC("%@APiecewise Smooth\PiecewiseSmooth.cpp", 16) == 0)
+{
+	PiecewiseSmooth_QuickBatch();
+}
+
