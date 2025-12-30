@@ -11,8 +11,8 @@ def extract_title_from_md(content):
 
 def create_post_index():
     # 确保draft目录存在
-    if not os.path.exists('draft'):
-        os.makedirs('draft')
+    if not os.path.exists('_draft'):
+        os.makedirs('_draft')
     
     # 初始化输出内容
     output = """---
@@ -77,10 +77,10 @@ date: 1970-1-1 12:00:00 +0800
         output += f"| {reverse_index} | {post['title']} | {post['date']} | {markdown_link} |\n"
     
     # 写入文件
-    with open('draft/PostIndex.md', 'w', encoding='utf-8') as f:
+    with open('_draft/PostIndex.md', 'w', encoding='utf-8') as f:
         f.write(output)
     
-    print("索引文件已生成到 draft/PostIndex.md")
+    print("索引文件已生成到 _draft/PostIndex.md")
 
 if __name__ == "__main__":
     create_post_index()

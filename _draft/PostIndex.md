@@ -6,6 +6,8 @@ date: 1970-1-1 12:00:00 +0800
 
 | 序号 | 文章标题 | 发布日期 | 源文件 |
 |:------:|----------|----------|--------|
+| 56 | Origin Lab | 2025-12-08 | [2025-12-8-56.md](https://bane-dysta.github.io/posts/56) |
+| 55 | SDNTO | 2025-11-20 | [2025-11-20-55.md](https://bane-dysta.github.io/posts/55) |
 | 54 | banetask | 2025-10-15 | [2025-10-15-54.md](https://bane-dysta.github.io/posts/54) |
 | 53 | banewfn | 2025-10-12 | [2025-10-12-53.md](https://bane-dysta.github.io/posts/53) |
 | 52 | 进行QM计算时，软件在做什么？ | 2025-10-08 | [2025-10-8-52.md](https://bane-dysta.github.io/posts/52) |
@@ -41,7 +43,7 @@ date: 1970-1-1 12:00:00 +0800
 | 22 | ollama + AnythingLLM 本地部署 deepseek-r1 和知识库 | 2025-01-28 | [2025-1-28-ollama.md](https://bane-dysta.github.io/posts/ollama) |
 | 21 | 圆锥交叉点(MECI)的优化 | 2025-01-20 | [2025-1-20-CIopt.md](https://bane-dysta.github.io/posts/CIopt) |
 | 20 | Study note：Fluorescence Probe - part B | 2024-12-24 | [2024-12-24-fl-mechanism-B.md](https://bane-dysta.github.io/posts/fl-mechanism-B) |
-| 19 | Study note：振动分辨光谱+Huang-Rhys因子的计算 | 2024-12-12 | [2024-12-12-Huang-Rhys.md](https://bane-dysta.github.io/posts/Huang-Rhys) |
+| 19 | Study note：振动分辨光谱+Huang-Rhys因子(分解重组能)的计算 | 2024-12-12 | [2024-12-12-Huang-Rhys.md](https://bane-dysta.github.io/posts/Huang-Rhys) |
 | 18 | Study note：Fluorescence Probe - part A | 2024-12-09 | [2024-12-9-fl-mechanism-A.md](https://bane-dysta.github.io/posts/fl-mechanism-A) |
 | 17 | Study note：量子化学方法 | 2024-11-28 | [2024-11-28-calcmethod.md](https://bane-dysta.github.io/posts/calcmethod) |
 | 16 | Study note：集群环境下MOKIT的部署 | 2024-11-23 | [2024-11-23-MOKIT.md](https://bane-dysta.github.io/posts/MOKIT) |

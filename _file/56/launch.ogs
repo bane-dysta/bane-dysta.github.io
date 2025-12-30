@@ -11,3 +11,13 @@ if(run.LoadOC("%@APiecewise Smooth\PiecewiseSmooth.cpp", 16) == 0)
 	PiecewiseSmooth_QuickBatch();
 }
 
+
+[launchColumn]
+// Process specific column by range string
+if(run.LoadOC("%@APiecewise Smooth\PiecewiseSmooth.cpp", 16) == 0)
+{
+	string strRange$ = %1;  // 从参数获取范围
+	if(strRange$.IsEmpty())
+		strRange$ = "%X%Y";  // 如果没有参数，使用当前选中的XY
+	PiecewiseSmooth_Column(strRange$);
+}
