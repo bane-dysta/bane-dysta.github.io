@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VMD 调色盘</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-bg: #0a0e27;
+            --secondary-bg: #151932;
+            --accent-bg: #1e2540;
+            --accent-blue: #00d4ff;
+            --accent-cyan: #00fff5;
+            --accent-purple: #a78bfa;
+            --text-primary: #ffffff;
+            --text-secondary: #8b92b8;
+            --success: #00ff88;
+            --warning: #ffd700;
+            --shadow-strong: 0 20px 60px rgba(0, 212, 255, 0.3);
+            --shadow-medium: 0 10px 30px rgba(0, 0, 0, 0.5);
+            --shadow-soft: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: linear-gradient(135deg, var(--primary-bg) 0%, var(--secondary-bg) 50%, var(--accent-bg) 100%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 40px 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(167, 139, 250, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            animation: bgPulse 15s ease-in-out infinite;
+        }
+
+        @keyframes bgPulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 50px;
+            animation: slideDown 0.8s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 0.95rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+
+        .main-panel {
+            background: rgba(30, 37, 64, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(0, 212, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: var(--shadow-strong);
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .color-pickers {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            gap: 20px;
+            margin-bottom: 40px;
+            align-items: center;
+        }
+
+        .picker-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 25px;
+            background: rgba(10, 14, 39, 0.5);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.3s ease;
+        }
+
+        .picker-group:hover {
+            border-color: rgba(0, 212, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 212, 255, 0.1);
+        }
+
+        .swap-button-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-swap {
+            width: 60px;
+            height: 60px;
+            padding: 0;
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            border: none;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-swap:hover {
+            transform: rotate(180deg) scale(1.1);
+            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
+        }
+
+        .btn-swap:active {
+            transform: rotate(180deg) scale(0.95);
+        }
+
+        .picker-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 100%;
+        }
+
+        .btn-picker-action {
+            padding: 10px 16px;
+            background: rgba(167, 139, 250, 0.15);
+            color: var(--accent-purple);
+            border: 1px solid rgba(167, 139, 250, 0.3);
+            border-radius: 8px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-picker-action:hover {
+            background: rgba(167, 139, 250, 0.25);
+            border-color: rgba(167, 139, 250, 0.5);
+            transform: translateY(-1px);
+        }
+
+        .picker-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        .color-input-wrapper {
+            position: relative;
+            width: 140px;
+            height: 140px;
+        }
+
+        input[type="color"] {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        input[type="color"]:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.6);
+        }
+
+        .color-values {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .color-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.8rem;
+            padding: 10px 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s ease;
+        }
+
+        .color-value:hover {
+            background: rgba(0, 0, 0, 0.5);
+            border-color: rgba(0, 212, 255, 0.3);
+        }
+
+        .value-label {
+            color: var(--text-secondary);
+            font-size: 0.7rem;
+            text-transform: uppercase;
+        }
+
+        .value-text {
+            color: var(--accent-cyan);
+            font-weight: 600;
+        }
+
+        .section-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .utility-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-out 0.5s both;
+        }
+
+        .btn {
+            padding: 14px 20px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn span {
+            position: relative;
+            z-index: 1;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), var(--accent-cyan));
+            color: var(--primary-bg);
+            box-shadow: 0 4px 15px rgba(0, 212, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 6px 25px rgba(0, 212, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(167, 139, 250, 0.2);
+            color: var(--accent-purple);
+            border: 1px solid rgba(167, 139, 250, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(167, 139, 250, 0.3);
+            border-color: rgba(167, 139, 250, 0.6);
+            transform: translateY(-2px);
+        }
+
+        .btn-tertiary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-secondary);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-tertiary:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .paste-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+            animation: fadeIn 1s ease-out 0.7s both;
+        }
+
+        .paste-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .paste-input {
+            flex: 1;
+            padding: 12px 16px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+
+        .paste-input:focus {
+            outline: none;
+            border-color: var(--accent-cyan);
+            background: rgba(0, 0, 0, 0.5);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.2);
+        }
+
+        .paste-input::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .paste-btn {
+            padding: 12px 20px;
+            background: rgba(0, 212, 255, 0.1);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 8px;
+            color: var(--accent-cyan);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .paste-btn:hover {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--accent-cyan);
+            transform: translateY(-1px);
+        }
+
+        .output-section {
+            animation: fadeIn 1s ease-out 0.9s both;
+        }
+
+        .vmd-output {
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(0, 212, 255, 0.3);
+            border-radius: 12px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.85rem;
+            line-height: 1.8;
+            color: var(--accent-cyan);
+            white-space: pre;
+            overflow-x: auto;
+            margin-bottom: 15px;
+            box-shadow: var(--shadow-soft);
+        }
+
+        .notification {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--success), #00cc70);
+            color: var(--primary-bg);
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            box-shadow: 0 8px 30px rgba(0, 255, 136, 0.4);
+            opacity: 0;
+            transform: translateX(400px);
+            transition: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .notification.show {
+            opacity: 1;
+            transform: translateX(0);
+        }
+
+        .notification::before {
+            content: '✓';
+            font-size: 1.2rem;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+
+            .main-panel {
+                padding: 25px;
+            }
+
+            .color-pickers {
+                grid-template-columns: 1fr;
+                grid-template-rows: auto auto auto;
+                gap: 20px;
+            }
+
+            .swap-button-container {
+                order: 2;
+            }
+
+            .picker-group:first-child {
+                order: 1;
+            }
+
+            .picker-group:last-child {
+                order: 3;
+            }
+
+            .btn-swap {
+                width: 50px;
+                height: 50px;
+                font-size: 1.3rem;
+                transform: rotate(90deg);
+            }
+
+            .btn-swap:hover {
+                transform: rotate(270deg) scale(1.1);
+            }
+
+            .utility-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .paste-section {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .info-tooltip {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(0, 212, 255, 0.2);
+            color: var(--accent-cyan);
+            text-align: center;
+            line-height: 16px;
+            font-size: 0.7rem;
+            margin-left: 6px;
+            cursor: help;
+            transition: all 0.3s ease;
+        }
+
+        .info-tooltip:hover {
+            background: rgba(0, 212, 255, 0.4);
+            transform: scale(1.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>VMD 调色盘</h1>
+            <div class="subtitle">Professional Color Picker</div>
+        </header>
+
+        <div class="main-panel">
+            <div class="color-pickers">
+                <div class="picker-group">
+                    <div class="picker-label">负值颜色 (ID 31)</div>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="negativeColor" value="#ff0000">
+                    </div>
+                    <div class="color-values">
+                        <div class="color-value">
+                            <span class="value-label">HEX</span>
+                            <span class="value-text" id="negativeHex">#FF0000</span>
+                        </div>
+                        <div class="color-value">
+                            <span class="value-label">RGB</span>
+                            <span class="value-text" id="negativeRGB">255, 0, 0</span>
+                        </div>
+                    </div>
+                    <div class="picker-actions">
+                        <button class="btn-picker-action" onclick="invertNegative()">🎨 反色</button>
+                        <button class="btn-picker-action" onclick="setNegativeToPositiveInverse()">← 设为正值反色</button>
+                    </div>
+                </div>
+
+                <div class="swap-button-container">
+                    <button class="btn-swap" onclick="swapColors()" title="对调颜色">
+                        ⇄
+                    </button>
+                </div>
+
+                <div class="picker-group">
+                    <div class="picker-label">正值颜色 (ID 32)</div>
+                    <div class="color-input-wrapper">
+                        <input type="color" id="positiveColor" value="#0000ff">
+                    </div>
+                    <div class="color-values">
+                        <div class="color-value">
+                            <span class="value-label">HEX</span>
+                            <span class="value-text" id="positiveHex">#0000FF</span>
+                        </div>
+                        <div class="color-value">
+                            <span class="value-label">RGB</span>
+                            <span class="value-text" id="positiveRGB">0, 0, 255</span>
+                        </div>
+                    </div>
+                    <div class="picker-actions">
+                        <button class="btn-picker-action" onclick="invertPositive()">🎨 反色</button>
+                        <button class="btn-picker-action" onclick="setPositiveToNegativeInverse()">设为负值反色 →</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="paste-section">
+                <div class="paste-group">
+                    <input type="text" class="paste-input" id="pasteNegative" placeholder="粘贴负值颜色代码 (#RRGGBB)">
+                    <button class="paste-btn" onclick="pasteColor('negative')">应用</button>
+                </div>
+                <div class="paste-group">
+                    <input type="text" class="paste-input" id="pastePositive" placeholder="粘贴正值颜色代码 (#RRGGBB)">
+                    <button class="paste-btn" onclick="pasteColor('positive')">应用</button>
+                </div>
+            </div>
+
+            <div class="utility-controls">
+                <button class="btn btn-tertiary" onclick="resetColors()">
+                    <span>↺ 重置为红蓝</span>
+                </button>
+            </div>
+
+            <div class="output-section">
+                <div class="section-title">
+                    VMD 命令输出
+                    <span class="info-tooltip" title="复制后在 VMD 控制台中粘贴执行">?</span>
+                </div>
+                <div class="vmd-output" id="vmdOutput"></div>
+                <button class="btn btn-primary" onclick="copyVMDCommand()">
+                    <span>📋 复制 VMD 命令</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="notification" id="notification">已复制到剪贴板</div>
+
+    <script>
+        // 获取DOM元素
+        const negativeColorInput = document.getElementById('negativeColor');
+        const positiveColorInput = document.getElementById('positiveColor');
+        const negativeHex = document.getElementById('negativeHex');
+        const positiveHex = document.getElementById('positiveHex');
+        const negativeRGB = document.getElementById('negativeRGB');
+        const positiveRGB = document.getElementById('positiveRGB');
+        const vmdOutput = document.getElementById('vmdOutput');
+        const notification = document.getElementById('notification');
+
+        // 初始化
+        updateDisplay();
+
+        // 监听颜色变化
+        negativeColorInput.addEventListener('input', updateDisplay);
+        positiveColorInput.addEventListener('input', updateDisplay);
+
+        // 更新显示
+        function updateDisplay() {
+            const negColor = negativeColorInput.value;
+            const posColor = positiveColorInput.value;
+
+            // 更新Hex显示
+            negativeHex.textContent = negColor.toUpperCase();
+            positiveHex.textContent = posColor.toUpperCase();
+
+            // 更新RGB显示
+            negativeRGB.textContent = hexToRGBDisplay(negColor);
+            positiveRGB.textContent = hexToRGBDisplay(posColor);
+
+            // 更新VMD输出
+            updateVMDOutput(negColor, posColor);
+        }
+
+        // Hex转RGB显示格式
+        function hexToRGBDisplay(hex) {
+            const r = parseInt(hex.substr(1, 2), 16);
+            const g = parseInt(hex.substr(3, 2), 16);
+            const b = parseInt(hex.substr(5, 2), 16);
+            return `${r}, ${g}, ${b}`;
+        }
+
+        // Hex转VMD格式 (0-1范围)
+        function hexToVMD(hex) {
+            const r = parseInt(hex.substr(1, 2), 16) / 255;
+            const g = parseInt(hex.substr(3, 2), 16) / 255;
+            const b = parseInt(hex.substr(5, 2), 16) / 255;
+            return `${r.toFixed(6)} ${g.toFixed(6)} ${b.toFixed(6)}`;
+        }
+
+        // 计算反色
+        function invertColor(hex) {
+            const r = 255 - parseInt(hex.substr(1, 2), 16);
+            const g = 255 - parseInt(hex.substr(3, 2), 16);
+            const b = 255 - parseInt(hex.substr(5, 2), 16);
+            return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+        }
+
+        // 更新VMD输出
+        function updateVMDOutput(negColor, posColor) {
+            const negRGB = hexToVMD(negColor);
+            const posRGB = hexToVMD(posColor);
+            // 添加额外的回车方便粘贴执行
+            vmdOutput.textContent = `color change rgb 31 ${negRGB}\ncolor change rgb 32 ${posRGB}\n`;
+        }
+
+        // 对调颜色
+        function swapColors() {
+            const temp = negativeColorInput.value;
+            negativeColorInput.value = positiveColorInput.value;
+            positiveColorInput.value = temp;
+            updateDisplay();
+        }
+
+        // 负值反色
+        function invertNegative() {
+            negativeColorInput.value = invertColor(negativeColorInput.value);
+            updateDisplay();
+        }
+
+        // 正值反色
+        function invertPositive() {
+            positiveColorInput.value = invertColor(positiveColorInput.value);
+            updateDisplay();
+        }
+
+        // 设置负值为正值的反色
+        function setNegativeToPositiveInverse() {
+            negativeColorInput.value = invertColor(positiveColorInput.value);
+            updateDisplay();
+        }
+
+        // 设置正值为负值的反色
+        function setPositiveToNegativeInverse() {
+            positiveColorInput.value = invertColor(negativeColorInput.value);
+            updateDisplay();
+        }
+
+        // 重置颜色
+        function resetColors() {
+            negativeColorInput.value = '#ff0000';
+            positiveColorInput.value = '#0000ff';
+            updateDisplay();
+        }
+
+        // 粘贴颜色
+        function pasteColor(type) {
+            const inputId = type === 'negative' ? 'pasteNegative' : 'pastePositive';
+            const colorInput = type === 'negative' ? negativeColorInput : positiveColorInput;
+            const pasteInput = document.getElementById(inputId);
+            
+            let colorCode = pasteInput.value.trim();
+            
+            // 处理不同格式的颜色代码
+            if (!colorCode.startsWith('#')) {
+                colorCode = '#' + colorCode;
+            }
+            
+            // 验证颜色代码
+            if (/^#[0-9A-F]{6}$/i.test(colorCode)) {
+                colorInput.value = colorCode;
+                pasteInput.value = '';
+                updateDisplay();
+                showNotification('颜色已应用');
+            } else {
+                alert('无效的颜色代码格式。请使用 #RRGGBB 格式，例如：#FF0000');
+            }
+        }
+
+        // 允许回车键应用颜色
+        document.getElementById('pasteNegative').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') pasteColor('negative');
+        });
+        
+        document.getElementById('pastePositive').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') pasteColor('positive');
+        });
+
+        // 复制VMD命令
+        function copyVMDCommand() {
+            const text = vmdOutput.textContent;
+            navigator.clipboard.writeText(text).then(() => {
+                showNotification('VMD 命令已复制');
+            }).catch(err => {
+                console.error('复制失败:', err);
+                alert('复制失败，请手动选择文本复制');
+            });
+        }
+
+        // 显示通知
+        function showNotification(message = '已复制到剪贴板') {
+            notification.textContent = message;
+            notification.classList.add('show');
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 2500);
+        }
+    </script>
+</body>
+</html>
