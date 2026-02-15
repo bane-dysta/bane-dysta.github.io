@@ -16,14 +16,14 @@
 
 <script>
 {% if include.mode == '2d' %}
-// 2D Canvas
+/* 2D Canvas */
 (function() {
-  // Generate truly unique ID at runtime
+  /* Generate truly unique ID at runtime */
   var timestamp = Date.now();
   var random = Math.floor(Math.random() * 10000);
   var uniqueCanvasId = 'view2d_' + timestamp + '_' + random;
   
-  // Update the canvas element ID
+  /* Update the canvas element ID */
   var originalCanvas = document.getElementById('viewACS_{{ unique_id }}');
   if (originalCanvas) {
     originalCanvas.id = uniqueCanvasId;
@@ -53,14 +53,14 @@
 })();
 
 {% elsif include.mode == '3d' %}
-// 3D Canvas
+/* 3D Canvas */
 (function() {
-  // Generate truly unique ID at runtime
+  /* Generate truly unique ID at runtime */
   var timestamp = Date.now();
   var random = Math.floor(Math.random() * 10000);
   var uniqueCanvasId = 'transform3d_' + timestamp + '_' + random;
   
-  // Update the canvas element ID
+  /* Update the canvas element ID */
   var originalCanvas = document.getElementById('transform3d_{{ unique_id }}');
   if (originalCanvas) {
     originalCanvas.id = uniqueCanvasId;
@@ -76,22 +76,22 @@
   
   canvas.styles.set3DRepresentation('{{ include.representation | default: "Ball and Stick" }}');
   canvas.styles.backgroundColor = '{{ include.bgcolor | default: "black" }}';
-  // 调整球的大小
-  // canvas.styles.atoms_sphereDiameter_3D = 0.1; // 默认约0.5，可以试试0.8, 1.0, 1.2等
-  // 可选：同时调整键的粗细以保持比例协调
-  canvas.styles.bonds_cylinderDiameter_3D = 0.2; // 默认约0.25
+  /* 调整球的大小 */
+  /* canvas.styles.atoms_sphereDiameter_3D = 0.1; // 默认约0.5，可以试试0.8, 1.0, 1.2等 */
+  /* 可选：同时调整键的粗细以保持比例协调 */
+  canvas.styles.bonds_cylinderDiameter_3D = 0.2; /* 默认约0.25 */
   console.log('Styles set for:', uniqueCanvasId);
   
   {% if include.xyz %}
-  // Parse XYZ coordinate data
+  /* Parse XYZ coordinate data */
   var xyzData = {{ include.xyz | jsonify }};
   var lines = xyzData.trim().split('\n');
   var numAtoms = parseInt(lines[0]);
-  var comment = lines[1]; // Skip comment line
+  var comment = lines[1]; /* Skip comment line */
   
   var molecule = new ChemDoodle.structures.Molecule();
   
-  // Parse atoms from XYZ data
+  /* Parse atoms from XYZ data */
   for (var i = 2; i < 2 + numAtoms; i++) {
     var parts = lines[i].trim().split(/\s+/);
     var element = parts[0];
@@ -102,8 +102,8 @@
     molecule.atoms.push(new ChemDoodle.structures.Atom(element, x, y, z));
   }
   
-  // Auto-generate bonds based on distance (simple approach)
-  // You may want to customize this based on your needs
+  /* Auto-generate bonds based on distance (simple approach) */
+  /* You may want to customize this based on your needs */
   for (var j = 0; j < molecule.atoms.length; j++) {
     for (var k = j + 1; k < molecule.atoms.length; k++) {
       var atom1 = molecule.atoms[j];
@@ -114,8 +114,8 @@
       var dz = atom1.z - atom2.z;
       var distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
       
-      // Simple bonding criteria based on atomic radii
-      var maxBondDistance = 2.0; // Adjust as needed
+      /* Simple bonding criteria based on atomic radii */
+      var maxBondDistance = 2.0; /* Adjust as needed */
       if (distance < maxBondDistance) {
         molecule.bonds.push(new ChemDoodle.structures.Bond(atom1, atom2));
       }
