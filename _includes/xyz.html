@@ -15,6 +15,11 @@
 </div>
 
 <script>
+function normalizeMolBlock(rawMol) {
+  if (!rawMol) return '';
+  return String(rawMol).replace(/\r\n?/g, '\n').trim();
+}
+
 {% if include.mode == '2d' %}
 /* 2D Canvas */
 (function() {
@@ -45,10 +50,14 @@
   molecule.scaleToAverageBondLength({{ include.scale | default: 20 }});
   canvas.loadMolecule(molecule);
   {% elsif include.mol %}
-  var molData = {{ include.mol | jsonify }};
+  var molData = normalizeMolBlock({{ include.mol | jsonify }});
   var molecule = ChemDoodle.readMOL(molData);
-  molecule.scaleToAverageBondLength({{ include.scale | default: 20 }});
-  canvas.loadMolecule(molecule);
+  if (molecule && molecule.atoms && molecule.atoms.length > 0) {
+    molecule.scaleToAverageBondLength({{ include.scale | default: 20 }});
+    canvas.loadMolecule(molecule);
+  } else {
+    console.error('Failed to parse MOL data for:', uniqueCanvasId, molData);
+  }
   {% endif %}
 })();
 
@@ -150,11 +159,15 @@
   canvas.loadMolecule(molecule);
   console.log('XYZ molecule loaded for:', uniqueCanvasId);
   {% elsif include.mol %}
-  var molData = {{ include.mol | jsonify }};
+  var molData = normalizeMolBlock({{ include.mol | jsonify }});
   var molecule = ChemDoodle.readMOL(molData);
-  console.log('MOL molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms');
-  canvas.loadMolecule(molecule);
-  console.log('MOL molecule loaded for:', uniqueCanvasId);
+  if (molecule && molecule.atoms && molecule.atoms.length > 0) {
+    console.log('MOL molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms');
+    canvas.loadMolecule(molecule);
+    console.log('MOL molecule loaded for:', uniqueCanvasId);
+  } else {
+    console.error('Failed to parse MOL data for:', uniqueCanvasId, molData);
+  }
   {% elsif include.smiles %}
   var smiles = '{{ include.smiles }}';
   var molfile = OCL.Molecule.fromSmiles(smiles).toMolfile();
