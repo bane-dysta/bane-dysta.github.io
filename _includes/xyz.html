@@ -91,14 +91,38 @@
   
   var molecule = new ChemDoodle.structures.Molecule();
   
+  function normalizeElementSymbol(rawSymbol) {
+    if (!rawSymbol) return null;
+
+    var lettersOnly = rawSymbol.replace(/[^A-Za-z]/g, '');
+    if (!lettersOnly) return null;
+
+    var normalized = lettersOnly.charAt(0).toUpperCase() + lettersOnly.slice(1).toLowerCase();
+    if (ChemDoodle.ELEMENT && ChemDoodle.ELEMENT[normalized]) {
+      return normalized;
+    }
+
+    return null;
+  }
+
   /* Parse atoms from XYZ data */
-  for (var i = 2; i < 2 + numAtoms; i++) {
+  for (var i = 2; i < 2 + numAtoms && i < lines.length; i++) {
     var parts = lines[i].trim().split(/\s+/);
-    var element = parts[0];
+    if (parts.length < 4) {
+      console.warn('Skipping malformed XYZ line at index', i, ':', lines[i]);
+      continue;
+    }
+
+    var element = normalizeElementSymbol(parts[0]);
     var x = parseFloat(parts[1]);
     var y = parseFloat(parts[2]);
     var z = parseFloat(parts[3]);
-    
+
+    if (!element || !Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) {
+      console.warn('Skipping invalid atom entry at line', i, ':', lines[i]);
+      continue;
+    }
+
     molecule.atoms.push(new ChemDoodle.structures.Atom(element, x, y, z));
   }
   
