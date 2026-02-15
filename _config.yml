@@ -177,6 +177,9 @@ collections:
   tabs:
     output: true
     sort_by: order
+  softwares:
+    output: true
+    permalink: /software/:name/
 #  draft:
 #    output: true
 #    permalink: /draft/:title/
@@ -202,6 +205,13 @@ defaults:
     values:
       layout: page
       permalink: /:title/
+  - scope:
+      path: ""
+      type: softwares
+    values:
+      layout: page
+      comments: false
+      toc: false
 
 sass:
   style: compressed

@@ -1,7 +1,7 @@
 ---
 layout: page
 icon: fas fa-cog
-order: 5
+order: 6
 ---
 <div class="collapsible-section">
 <button class="collapsible-btn">量子化学</button>

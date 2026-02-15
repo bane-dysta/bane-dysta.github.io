@@ -1,7 +1,7 @@
 ---
 layout: page
 icon: fa-solid fa-location-dot
-order: 1
+order: 2
 ---
 这里是导航页，由于是手动更新的，未必很及时。categories页上比较全，但是笔者个人感觉有点难翻。
 

@@ -11,3 +11,22 @@ tags: [tools]
 
 
 
+## 新增一个软件入口（模板）
+
+在仓库里新增一个文件，例如：`_softwares/my-tool.md`
+
+```markdown
+---
+title: My Tool
+summary: 一句话说明这个软件页是干什么的。
+---
+
+这里是 My Tool 的 index 页面。
+
+## 教程入口
+- [安装](/posts/xxx/)
+- [使用](/posts/yyy/)
+- [常见问题](/posts/zzz/)
+```
+
+生成后的访问地址会是：`/software/my-tool/`。
