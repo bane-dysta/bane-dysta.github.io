@@ -158,8 +158,8 @@ function parseMolWithFallback(rawMol) {
   canvas.styles.backgroundColor = '{{ include.bgcolor | default: "black" }}';
   canvas.styles.atoms_useVDWDiameters_3D = {{ include.use_vdw_3d | default: false }};
   canvas.styles.atoms_vdwMultiplier_3D = {{ include.vdw_multiplier_3d | default: 1.0 }};
-  canvas.styles.atoms_sphereDiameter_3D = {{ include.atom_diameter_3d | default: 1.2 }};
-  canvas.styles.bonds_cylinderDiameter_3D = {{ include.bond_diameter_3d | default: 0.3 }};
+  canvas.styles.atoms_sphereDiameter_3D = {{ include.atom_diameter_3d | default: 8.0 }};
+  canvas.styles.bonds_cylinderDiameter_3D = {{ include.bond_diameter_3d | default: 1.5 }};
   console.log('Styles set for:', uniqueCanvasId);
   
   {% if include.xyz %}
