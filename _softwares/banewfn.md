@@ -66,7 +66,7 @@ source $env(VMDSCRIPTS)/vcube.tcl
 set style_dir $env(VMDSCRIPTS)\\styles
 ```
 
-最后下载ggdh老师的[vcube](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=18150&fromuid=63020)，并把vcube.tcl和style放进vmd所在目录。公社下载文件要注册，在这里也[提供一份2.0版](/_softwares/banewfn/vcube2.0.rar)。
+最后下载ggdh老师的[vcube](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=18150&fromuid=63020)，并把vcube.tcl和style放进vmd所在目录。公社下载文件要注册，在这里也[提供一份2.0版](/_file/banewfn/vcube2.0.rar)。
 
 ### GitBash
 为了在命令行使用bash脚本，需要安装一个gitbash。可以去[官网](https://git-scm.com/install/windows)下，但是这里走的是GitHub，偶尔会抽风下不下来。此时也可以去国内镜像下载，比如[清华源](https://mirrors.tuna.tsinghua.edu.cn/github-release/git-for-windows/git/)。
