@@ -134,7 +134,7 @@
   {% elsif include.smiles %}
   var smiles = '{{ include.smiles }}';
   var molfile = OCL.Molecule.fromSmiles(smiles).toMolfile();
-  var molecule = ChemDoodle.readMOL(molData);
+  var molecule = ChemDoodle.readMOL(molfile);
   console.log('SMILES molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms');
   canvas.loadMolecule(molecule);
   console.log('SMILES molecule loaded for:', uniqueCanvasId);
