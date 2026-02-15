@@ -15,7 +15,7 @@ banewfn是一个致力于简化Multiwfn使用而设计的程序。本程序原�
     - [VMD](#vmd)
     - [GitBash](#gitbash)
     - [Banewfn本体](#banewfn本体)
-- [脚本示例](#脚本示例)
+- [脚本集](#脚本集)
 - [自定义教程](#自定义教程)
     - [conf文件](#conf文件)
     - [输入文件](#输入文件)
