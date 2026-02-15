@@ -1,0 +1,37 @@
+wfn=*.fchk
+[fmo]
+%process
+    orb index h
+    orb index l
+%command
+#!/bin/bash
+mv h.cub ${input}_oH.cub
+mv l.cub ${input}_oL.cub
+cat << EOF > fmo.bat
+vmd -e fmo.vmd
+EOF
+cat << EOF2 > fmo.vmd
+vcube *.cub
+EOF2
+end
+
+# Bundled by bwpack (banewfn inline conf)
+# ConfDir: D:\MyProgram\banewfn\conf
+
+#>>> BANEWFN_INLINE_CONF_BEGIN fmo
+## bundled module: fmo
+# # 主逻辑
+# [main]
+# 200
+# 
+# [orb]
+# 3
+# ${index:-h}
+# ${grid:-2}
+# 
+# # 退出
+# [quit]
+# 0
+# q
+#<<< BANEWFN_INLINE_CONF_END fmo
+

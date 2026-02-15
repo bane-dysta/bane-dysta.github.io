@@ -6,8 +6,6 @@ summary: banewfn 的教程入口与资源索引。
 banewfn是一个致力于简化Multiwfn使用而设计的程序。本程序原本是banetask的一个组件，但开发过程中发现单拎出来在Windows下用也不错，于是用mingw单独编译了一份。项目原地址：https://github.com/bane-dysta/banewfn
 
 
-
-
 <!-- TOC tocDepth:2..3 chapterDepth:2..6 -->
 
 - [安装](#安装)
@@ -16,7 +14,7 @@ banewfn是一个致力于简化Multiwfn使用而设计的程序。本程序原�
     - [GitBash](#gitbash)
     - [Banewfn本体](#banewfn本体)
 - [脚本集](#脚本集)
-- [自定义教程](#自定义教程)
+- [自定义脚本教程](#自定义脚本教程)
     - [conf文件](#conf文件)
     - [输入文件](#输入文件)
     - [banewfn.rc](#banewfnrc)
@@ -89,11 +87,16 @@ cores=4
 installer版则傻瓜化，跟着提示选路径即可让安装器代你做上述步骤。推荐先装完上面的Multiwfn和gitbash再用installer安装。
 
 ## 脚本集
+此处的脚本默认读者已按上述安装流程安装了所有程序，尤其是gitbash和VMD。
 
 - 脚本集合入口在[这里](/_file/banewfn/scripts/)
 - 配置文件集合入口在[这里](/_file/banewfn/confs/)
 
-## 自定义教程
+如果想要一键的，可以看内联配置的bwc脚本集，这些脚本同bw文件一样是双击即用的，同时无需配置文件：
+
+- bwc脚本集在[这里](/_file/banewfn/bwc/)
+
+## 自定义脚本教程
 公社介绍贴：[[辅助/分析程序] 模板化Multiwfn运行的一种途径](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=56646&fromuid=63020)
 
 banewfn的方便之处在于可以用一个通用的bw文件完成复杂波函数分析。安装banewfn后，只要把conf文件写好，就可以随意组合操作拼成脚本。
@@ -198,6 +201,14 @@ end
 - [module]块必须顶格写
 - #后面的所有东西都视为注释，但%command内除外，有时候生成高斯输入文件还是需要写#的。
 - windows下在banewfn.rc中设置gitbash_exec后，可以通过在%command第一行写#!/bin/bash告诉脚本用git bash来执行该脚本
+
+内嵌脚本（bwc）是把所有用到的conf文件全都打包嵌入进输入文件，无需外部conf文件也可以运行。嵌入格式为`#>>> BANEWFN_INLINE_CONF_BEGIN module_name`开启一个conf的内嵌，`#<<< BANEWFN_INLINE_CONF_END module_name`闭合，中间是conf文件原内容加一个`#`：
+```
+#>>> BANEWFN_INLINE_CONF_BEGIN grid
+原conf文件内容，#号起头
+#<<< BANEWFN_INLINE_CONF_END grid
+```
+bwc可以使用bwpack生成，bwpack可以自动搜索相应配置文件进行打包。
 
 ### banewfn.rc
 banewfn.rc虽然是rc后缀，但其实是个toml格式的配置文件，这个名称是设计的时候的历史遗留问题，不要在意。初始化时，程序会在当前目录、自身目录、~/.bane/wfn中依次寻找banewfn.rc。
