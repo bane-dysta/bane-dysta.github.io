@@ -90,6 +90,9 @@ installer版则傻瓜化，跟着提示选路径即可让安装器代你做上�
 
 ## 脚本集
 
+- 脚本集合入口在[这里](/_file/banewfn/scripts/)
+- 配置文件集合入口在[这里](/_file/banewfn/confs/)
+
 ## 自定义教程
 公社介绍贴：[[辅助/分析程序] 模板化Multiwfn运行的一种途径](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=56646&fromuid=63020)
 
