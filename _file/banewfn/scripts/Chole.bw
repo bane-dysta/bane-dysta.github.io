@@ -1,0 +1,9 @@
+wfn=*.fchk
+[hole-ele]
+%process
+Cele
+%command
+#!/bin/bash
+mv Chole.cub cube/${input}_C_ole.cub
+mv Cele.cub cube/${input}_C_ele.cub
+end

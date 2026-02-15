@@ -1,0 +1,24 @@
+#!/home/wal/scripts/bin/banewfn
+wfn=5050.molden
+frag1=e C
+frag2=e O
+frag3=e Th
+frag4=e Eu
+
+[dos]
+%process
+frag fragindex 1 option ${frag1}
+frag fragindex 2 option ${frag2}
+frag fragindex 3 option ${frag3}
+frag fragindex 4 option ${frag4}
+draw
+data
+plot
+end
+
+%command
+#!/bin/bash
+mv dislin.pdf ${input}_pdos.pdf 
+mv DOS_curve.txt ${input}_dos-curve.txt
+mv DOS_line.txt ${input}_dos-line.txt
+end 

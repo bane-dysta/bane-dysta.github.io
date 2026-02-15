@@ -1,0 +1,24 @@
+wfn=*.fchk
+[excit]
+%process
+    holeheatmap fragdef fragdef.txt
+%command
+#!/bin/bash
+mkdir -p IFCT
+mv dislin.pdf HoleHeat.pdf
+mv excit_${input}.out HoleHeat.pdf he_frag.txt IFCT
+end
+
+[excit]
+%process
+    ifctdata
+    ifct fragdef fragdef.txt
+%command
+#!/bin/bash
+sed -n '/Contribution of each fragment to hole and electron/,/Intrinsic local excitation percentage/p' excit_${input}_1.out > ifctdata.txt
+mkdir -p IFCT
+mv dislin.png IFCTHeat.png
+mv ifctdata.txt excit_${input}_1.out IFCTHeat.png atmCTmat.txt tmat.txt IFCT
+end
+
+

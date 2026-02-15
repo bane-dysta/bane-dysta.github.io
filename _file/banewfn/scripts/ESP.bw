@@ -1,0 +1,47 @@
+[grid]
+%process
+    electron
+    esp
+%command
+#!/bin/bash
+    mkdir -p ESP
+    mv density.cub ESP/density1.cub
+    mv totesp.cub ESP/ESP1.cub
+
+    cat << EOF > ESP/esp.bat
+    vmd -e esp.vmd
+EOF
+
+    cat << EOF2 > ESP/esp.vmd
+    source D:/program/VMD/scripts/ESPiso.vmd
+    source D:/program/VMD/scripts/ESPext.vmd
+    set colorlow -20
+    set colorhigh 20
+    mol scaleminmax 0 1 -20 20
+    puts "unit: kcal/mol"
+EOF2
+end
+
+[surface]
+%process
+    espext
+%command
+#!/bin/bash
+    mv vtx.pdb ESP/vtx1.pdb
+    mv mol.pdb ESP/mol1.pdb
+
+    unit=$(grep "REMARK.*Unit of B-factor field" surfanalysis.pdb | awk '{print $NF}')
+    if [ -z "$unit" ]; then unit="unknown"; fi
+    printf "%5s %6s %4s %15s\n" "index" "serial" "type" "Unit($unit)" > index.txt
+    index=0; while IFS= read -r line; do
+        if [[ $line =~ ^HETATM ]]; then
+            serial=$(echo "$line" | awk '{print $2}')      # 第2列：原子编号
+            type=$(echo "$line" | awk '{print $3}')        # 第3列：原子类型
+            value=$(echo "$line" | cut -c61-66 | awk '{print $1}')  # 第11列：B-factor值（固定位置61-66）
+            printf "%5d %6d %4s %8s\n" "$index" "$serial" "$type" "$value" >> index.txt
+            ((index++))
+        fi
+    done < surfanalysis.pdb
+
+    mv index.txt *.out surfanalysis.pdb ESP
+end

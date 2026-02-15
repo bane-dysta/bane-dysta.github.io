@@ -1,0 +1,349 @@
+---
+layout: page
+---
+
+{{ content }}
+
+<style>
+  .dir-index-wrap {
+    margin-top: 1rem;
+  }
+
+  .dir-index-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+  }
+
+  .dir-index-count {
+    font-size: 0.95rem;
+    opacity: 0.85;
+  }
+
+  .dir-index-table-wrap {
+    border: 1px solid var(--main-border-color, #ddd);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+
+  .dir-index-table {
+    width: 100%;
+    border-collapse: collapse;
+    table-layout: fixed;
+  }
+
+  .dir-index-table th,
+  .dir-index-table td {
+    padding: 0.75rem 0.85rem;
+    border-bottom: 1px solid var(--main-border-color, #e5e5e5);
+    vertical-align: middle;
+  }
+
+  .dir-index-table tr:last-child td {
+    border-bottom: none;
+  }
+
+  .dir-index-table th {
+    text-align: left;
+    background: var(--card-bg, #f8f8f8);
+    font-weight: 600;
+  }
+
+  .dir-index-col-path {
+    width: 68%;
+  }
+
+  .dir-index-col-actions {
+    width: 32%;
+  }
+
+  .dir-index-path {
+    word-break: break-all;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.92rem;
+  }
+
+  .dir-index-actions {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+  }
+
+  .dir-index-btn,
+  .dir-index-actions a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--main-border-color, #d8d8d8);
+    border-radius: 8px;
+    padding: 0.28rem 0.62rem;
+    font-size: 0.86rem;
+    line-height: 1.2;
+    text-decoration: none;
+    background: var(--card-bg, #fff);
+    color: inherit;
+    cursor: pointer;
+  }
+
+  .dir-index-btn:hover,
+  .dir-index-actions a:hover {
+    text-decoration: none;
+    filter: brightness(0.97);
+  }
+
+  .dir-index-empty {
+    padding: 0.9rem 1rem;
+    border: 1px dashed var(--main-border-color, #d8d8d8);
+    border-radius: 10px;
+    opacity: 0.9;
+  }
+
+  .dir-index-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    z-index: 9999;
+  }
+
+  .dir-index-modal.is-open {
+    display: flex;
+  }
+
+  .dir-index-modal-panel {
+    width: min(1000px, 95vw);
+    max-height: 88vh;
+    display: flex;
+    flex-direction: column;
+    border-radius: 12px;
+    overflow: hidden;
+    background: var(--card-bg, #fff);
+    border: 1px solid var(--main-border-color, #d8d8d8);
+  }
+
+  .dir-index-modal-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.7rem 0.9rem;
+    border-bottom: 1px solid var(--main-border-color, #e5e5e5);
+  }
+
+  .dir-index-modal-title {
+    margin: 0;
+    font-size: 0.95rem;
+    word-break: break-all;
+  }
+
+  .dir-index-modal-head-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+  }
+
+  .dir-index-modal-copy,
+  .dir-index-modal-close {
+    border: 1px solid var(--main-border-color, #d8d8d8);
+    border-radius: 8px;
+    padding: 0.2rem 0.6rem;
+    cursor: pointer;
+    background: transparent;
+  }
+
+  .dir-index-modal-content {
+    margin: 0;
+    padding: 0.9rem;
+    overflow: auto;
+    white-space: pre;
+    font-size: 0.86rem;
+    line-height: 1.55;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  }
+
+  @media (max-width: 860px) {
+    .dir-index-col-path,
+    .dir-index-col-actions {
+      width: auto;
+    }
+
+    .dir-index-table,
+    .dir-index-table thead,
+    .dir-index-table tbody,
+    .dir-index-table tr,
+    .dir-index-table th,
+    .dir-index-table td {
+      display: block;
+      width: 100%;
+    }
+
+    .dir-index-table thead {
+      display: none;
+    }
+
+    .dir-index-table td {
+      border-bottom: none;
+      padding-top: 0.45rem;
+      padding-bottom: 0.45rem;
+    }
+
+    .dir-index-table tr {
+      border-bottom: 1px solid var(--main-border-color, #e5e5e5);
+      padding: 0.35rem 0;
+    }
+  }
+</style>
+
+{% assign root_dir = page.dir | replace: '//', '/' %}
+{% assign sorted_files = site.static_files | sort: 'path' %}
+{% assign indexed_count = 0 %}
+
+<div class="dir-index-wrap">
+  <div class="dir-index-toolbar">
+    <div class="dir-index-count">索引目录：<code>{{ root_dir }}</code></div>
+    <div class="dir-index-count">共 <span id="dirIndexCount">0</span> 个文件</div>
+  </div>
+
+  <div class="dir-index-table-wrap">
+    <table class="dir-index-table">
+      <thead>
+        <tr>
+          <th class="dir-index-col-path">文件路径</th>
+          <th class="dir-index-col-actions">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for file in sorted_files %}
+          {% assign prefix = file.path | slice: 0, root_dir.size %}
+          {% if prefix == root_dir and file.path != page.url %}
+            {% assign indexed_count = indexed_count | plus: 1 %}
+            <tr>
+              <td class="dir-index-path">{{ file.path }}</td>
+              <td>
+                <div class="dir-index-actions">
+                  <button class="dir-index-btn" type="button" data-preview-path="{{ file.path }}">查看</button>
+                  <a href="{{ file.path }}" download>下载</a>
+                  <a href="{{ file.path }}" target="_blank" rel="noopener">原始</a>
+                </div>
+              </td>
+            </tr>
+          {% endif %}
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  {% if indexed_count == 0 %}
+    <p class="dir-index-empty">当前目录及子目录没有可索引文件。</p>
+  {% endif %}
+</div>
+
+<div class="dir-index-modal" id="dirIndexModal" aria-hidden="true">
+  <div class="dir-index-modal-panel" role="dialog" aria-modal="true" aria-labelledby="dirIndexModalTitle">
+    <div class="dir-index-modal-head">
+      <h3 class="dir-index-modal-title" id="dirIndexModalTitle">文件预览</h3>
+      <div class="dir-index-modal-head-actions">
+        <button class="dir-index-modal-copy" type="button" id="dirIndexModalCopy">复制全文</button>
+        <button class="dir-index-modal-close" type="button" id="dirIndexModalClose">关闭</button>
+      </div>
+    </div>
+    <pre class="dir-index-modal-content" id="dirIndexModalContent">加载中...</pre>
+  </div>
+</div>
+
+<script>
+(function () {
+  const modal = document.getElementById('dirIndexModal');
+  const closeBtn = document.getElementById('dirIndexModalClose');
+  const copyBtn = document.getElementById('dirIndexModalCopy');
+  const title = document.getElementById('dirIndexModalTitle');
+  const content = document.getElementById('dirIndexModalContent');
+  const countEl = document.getElementById('dirIndexCount');
+  const previewButtons = document.querySelectorAll('[data-preview-path]');
+
+  if (countEl) {
+    countEl.textContent = String(previewButtons.length);
+  }
+
+  function openModal() {
+    modal.classList.add('is-open');
+    modal.setAttribute('aria-hidden', 'false');
+  }
+
+  function closeModal() {
+    modal.classList.remove('is-open');
+    modal.setAttribute('aria-hidden', 'true');
+  }
+
+  async function previewFile(path) {
+    title.textContent = `预览：${path}`;
+    content.textContent = '加载中...';
+    openModal();
+
+    try {
+      const resp = await fetch(path, { cache: 'no-store' });
+      if (!resp.ok) {
+        throw new Error(`HTTP ${resp.status}`);
+      }
+
+      const text = await resp.text();
+      content.textContent = text || '[空文件]';
+    } catch (err) {
+      content.textContent = `无法在线预览（${err.message}）。\n你可以使用“原始”或“下载”按钮查看该文件。`;
+    }
+  }
+
+
+
+  async function copyFullText() {
+    const text = content.textContent || '';
+    try {
+      await navigator.clipboard.writeText(text);
+      copyBtn.textContent = '已复制';
+      setTimeout(() => {
+        copyBtn.textContent = '复制全文';
+      }, 1200);
+    } catch (err) {
+      const temp = document.createElement('textarea');
+      temp.value = text;
+      document.body.appendChild(temp);
+      temp.select();
+      document.execCommand('copy');
+      document.body.removeChild(temp);
+      copyBtn.textContent = '已复制';
+      setTimeout(() => {
+        copyBtn.textContent = '复制全文';
+      }, 1200);
+    }
+  }
+
+  previewButtons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const path = btn.getAttribute('data-preview-path');
+      if (path) {
+        previewFile(path);
+      }
+    });
+  });
+
+  copyBtn.addEventListener('click', copyFullText);
+  closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (event) => {
+    if (event.target === modal) {
+      closeModal();
+    }
+  });
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && modal.classList.contains('is-open')) {
+      closeModal();
+    }
+  });
+})();
+</script>
