@@ -1,5 +1,5 @@
 ---
 layout: dir-index
-title: banewfn 脚本集
+title: bwc脚本集
 ---
 
