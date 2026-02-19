@@ -3,6 +3,8 @@ title: banewfn
 summary: banewfn 的教程入口与资源索引。
 ---
 
+Last Update: 26/2/19
+
 banewfn是一个致力于简化Multiwfn使用而设计的程序。本程序原本是banetask的一个组件，但开发过程中发现单拎出来在Windows下用也不错，于是用mingw单独编译了一份。
 
 项目原地址：https://github.com/bane-dysta/banewfn
