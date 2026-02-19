@@ -3,6 +3,8 @@ title: g16loop
 summary: g16loop 的教程入口与资源索引。
 ---
 
+Last Update: 26/2/19
+
 g16loop是g16的套壳脚本，用于自动处理虚频和一些常见笨蛋错误。
 
 公社介绍贴（附下载链接）：[可自动处理虚频的Gaussian结构优化脚本](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=56831&fromuid=63020)
