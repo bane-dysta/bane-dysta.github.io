@@ -191,35 +191,37 @@ end
 
 **基本规则解释：**
 - [module]块告诉程序用的是哪个conf文件，然后跟着变量设定，如state 2设定分析第二个激发态，如果想要高质量格点，可以另起一行再加上grid 3。
-- %process开始，后面调用conf中用方括号定义的后处理。前述conf定义了cub，这里写cub就加载了对应序列。变更变量值的话要在这一行修改，多个变量值之间空格分隔，不能另起一行，因为这里的每一行都会被视为一步独立的后处理。(所以如果你想在一次脚本运行中完成很多后处理，你要保证每次都回到main序列走入的菜单)
-- 随后，你也可以用%command来执行一些命令。这在linux中会被写入sh脚本执行，Windows下会被写入bat脚本执行。最终，一个[module]块应当以end结尾，然后可以继续开[module]块做别的处理。
+- `%process`开始，后面调用conf中用方括号定义的后处理。前述conf定义了cub，这里写cub就加载了对应序列。变更变量值的话要在这一行修改，多个变量值之间空格分隔，不能另起一行，因为这里的每一行都会被视为一步独立的后处理。(所以如果你想在一次脚本运行中完成很多后处理，你要保证每次都回到`main`序列走入的菜单)
+- 随后，你也可以用`%command`来执行一些命令。这在linux中会被写入sh脚本执行，Windows下会被写入bat脚本执行。最终，一个[module]块应当以`end`结尾，然后可以继续开[module]块做别的处理。
+- **若某个[module]块未以`end`结尾而是以`wait`结尾，则程序运行完指定序列后会停住，允许用户继续交互操作Multiwfn。**
 
 **细节：**
-- **若某个[module]块未以end结尾而是以wait结尾，则程序运行完指定序列后会停住，允许用户继续交互操作Multiwfn。**
-- 文件头可以以wfn=xxx的形式指定波函数文件，**允许通配符**。匹配到多个文件时自动批量处理，但应善用${input}以避免覆盖问题
+- 文件头可以以wfn=xxx的形式指定波函数文件，**允许通配符**。匹配到多个文件时自动批量处理，但应善用`${input}`以避免覆盖问题。
 - 可以在文件头以core=xx的形式指定并行核数。
-- ${input}将会被替换为输入给Multiwfn的波函数文件名（不带后缀）
+- 可以在文件头以var=a的形式指定变量值。可以使用bash数组写法var=(a b)，这样将分别执行一次var=a和var=b的工作流。
+- 可以使用var=?来要求程序在启动后交互式请求对应参数
+- `${input}`将会被替换为输入给Multiwfn的波函数文件名（不带后缀）
 - 其他的${name}这种shell变量风格占位符会依次尝试这样确定：1）程序运行时通过命令行参数指定键值 2）输入文件头部的键值定义 3）工作目录名为name的文件里的内容
-- %command可以不依赖[module]块单独写，但要以end结尾
+- `%command`可以不依赖[module]块单独写，但要以end结尾
 - [module]块必须顶格写
-- #后面的所有东西都视为注释，但%command内除外，有时候生成高斯输入文件还是需要写#的。
-- windows下在banewfn.rc中设置gitbash_exec后，可以通过在%command第一行写#!/bin/bash告诉脚本用git bash来执行该脚本
+- #后面的所有东西都视为注释，但`%command`内除外，有时候生成高斯输入文件还是需要写#的。
+- windows下在banewfn.rc中设置`gitbash_exec`后，可以通过在`%command`第一行写shebang`#!/bin/bash`告诉脚本用git bash来执行该脚本
 
-内嵌脚本（bwc）是把所有用到的conf文件全都打包嵌入进输入文件，无需外部conf文件也可以运行。嵌入格式为`#>>> BANEWFN_INLINE_CONF_BEGIN module_name`开启一个conf的内嵌，`#<<< BANEWFN_INLINE_CONF_END module_name`闭合，中间是conf文件原内容加一个`#`：
+内嵌脚本（`.bwc`）是把所有用到的conf文件全都打包嵌入进输入文件，无需外部conf文件也可以运行。嵌入格式为`#>>> BANEWFN_INLINE_CONF_BEGIN module_name`开启一个conf的内嵌，`#<<< BANEWFN_INLINE_CONF_END module_name`闭合，中间是conf文件原内容加一个`#`：
 ```
 #>>> BANEWFN_INLINE_CONF_BEGIN grid
 原conf文件内容，#号起头
 #<<< BANEWFN_INLINE_CONF_END grid
 ```
-bwc可以使用bwpack生成，bwpack可以自动搜索相应配置文件进行打包。
+bwc脚本可以使用bwpack生成，bwpack可以自动搜索相应配置文件进行打包。
 
 ### banewfn.rc
-banewfn.rc虽然是rc后缀，但其实是个toml格式的配置文件，这个名称是设计的时候的历史遗留问题，不要在意。初始化时，程序会在当前目录、自身目录、~/.bane/wfn中依次寻找banewfn.rc。
+`banewfn.rc`虽然是rc后缀，但其实是个toml格式的配置文件，这个名称是设计的时候的历史遗留问题，不要在意。初始化时，程序会在当前目录、自身目录、~/.bane/wfn中依次寻找`banewfn.rc`。
 ```
 gitbash_exec=C:\Program Files\Git\bin\bash.exe
 Multiwfn_exec=Multiwfn.exe
 confpath=D:\MyProgram\banewfn\conf
 cores=4
 ```
-其中，gitbash_exec在Linux无效。这里比较重要的是confpath，需要指向你存conf文件的位置。Multiwfn的话如果在PATH里其实写个Multiwfn.exe就能跑。cores就是默认核数，会被bw文件内、命令行参数覆盖。
+其中，`gitbash_exec`在Linux无效。这里比较重要的是`confpath`，需要指向你存conf文件的位置。Multiwfn如果在PATH的话里其实写个Multiwfn.exe就能跑，否则需要设置`Multiwfn_exec`。`cores`就是默认核数，会被bw文件内、命令行参数覆盖。
 
