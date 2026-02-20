@@ -1,6 +1,6 @@
 ---
 title: baneSNTO
-summary: baneSNTO 的教程入口与资源索引。
+summary: 为SNTO设计的轨道重叠积分计算程序
 ---
 
 这是 **baneSNTO** 的独立软件页。
