@@ -1,6 +1,6 @@
 ---
 title: g16loop
-summary: g16loop 的教程入口与资源索引。
+summary: 可自动处理虚频的g16套壳脚本
 ---
 
 Last Update: 26/2/19

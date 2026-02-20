@@ -1,6 +1,6 @@
 ---
 title: banewfn
-summary: banewfn 的教程入口与资源索引。
+summary: Multiwfn模板框架
 ---
 
 Last Update: 26/2/19
