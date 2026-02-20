@@ -108,6 +108,8 @@ MaxF=6.9e-03 RMSF=7.8e-04 MaxD=2.2e-01 RMSD=5.1e-02 E=-1941.608811
 ## 套壳功能
 xyzTrick可以作为`.log`、`.out`、`.chg`、`.xyz`等后缀的默认打开程序，并为其选择合适的打开方式。
 
+![](/_file/xyztrick/TvRc6WTw_converted.gif)
+
 ### `.xyz`&`.chg`文件
 描述：与前述剪切板行为一致。
 
