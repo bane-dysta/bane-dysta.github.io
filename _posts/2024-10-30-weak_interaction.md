@@ -4,6 +4,11 @@ date: 2024-10-30 19:00:00 +0800
 categories: [Analysis Method, Weak Interaction]
 tags: [H-Bond,RDG,NCI,IGMH,Multiwfn]     
 ---
+
+2026-02-23: banewfn宣传页做好了，比下文手动做更简单，欢迎体验。
+
+{% include embed/bilibili.html id='BV1oTfGBGEDa' %}
+
 ## 1. 分析方法
 - NCI分析：[*JACS,132,6498-6506.*](https://pubs.acs.org/doi/10.1021/ja100936w)一文中提出的可视化研究弱相互作用的方法，又称为RDG方法，需要使用波函数信息进行分析。
 - IRI分析：[*Chemistry-Methods,2021,1,231.*](https://chemistry-europe.onlinelibrary.wiley.com/doi/10.1002/cmtd.202100007#)提出的分析方法，比NCI的优点是可以同时展现弱相互作用和化学键。
