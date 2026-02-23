@@ -5,7 +5,7 @@ categories: [Analysis Method, Weak Interaction]
 tags: [H-Bond,RDG,NCI,IGMH,Multiwfn]     
 ---
 
-2026-02-23: banewfn宣传页做好了，比下文手动做更简单，欢迎体验。
+2026-02-23: banewfn宣传页做好了，用banewfn完成比下文手动做更简单，欢迎体验。
 
 {% include embed/bilibili.html id='BV1oTfGBGEDa' %}
 
