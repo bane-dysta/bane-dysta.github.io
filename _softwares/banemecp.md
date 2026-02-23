@@ -9,6 +9,8 @@ baneMECP 是个用于求解 **MECP（Minimum Energy Crossing Point）** 与 **ME
 
 本程序提供了灵活接口，可以在任意级别搜索MECP，弥补QM软件功能缺陷。如GAMESS不支持同时计算单重态与三重态的Spin-Flip计算，可以通过本程序在MRSF-TDDFT级别搜索MECP。
 
+项目地址：https://github.com/bane-dysta/banemecp
+
 公社介绍贴（部分内容过时，但有例子）：[适用于更多程序的sobMECP修改版](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=55740&fromuid=63020)
 
 本站下载：[banemecp.tgz](/_file/banemecp/banemecp.tgz)

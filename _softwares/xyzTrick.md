@@ -7,7 +7,7 @@ Last Update: 26/2/19
 
 xyzTrick是一个致力于利用剪切板作为媒介传递信息，避免直接从服务器下载log文件的程序，另有一些辅助功能。
 
-项目原地址：https://github.com/bane-dysta/xyzTrickGview2
+项目地址：https://github.com/bane-dysta/xyzTrickGview2
 
 <!-- TOC tocDepth:2..3 chapterDepth:2..6 -->
 
