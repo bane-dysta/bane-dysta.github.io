@@ -7,7 +7,7 @@ Last Update: 25/5/21
 
 BaneTop 是一个命令行工具，用于将 Sobtop 产生/补全的力场信息整理并转换为 **Gaussian 分子力学（Amber）与 ONIOM(QM:MM)** 可直接使用的输入片段与参数段，主要面向配体/非标准残基在 Gaussian 中出现 **缺失参数（Undefined parameters）** 的场景。
 
-项目原地址：https://github.com/bane-dysta/banetop
+项目地址：https://github.com/bane-dysta/banetop
 
 公社介绍贴：[BaneTop：Gaussian力场参数转换器](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=53665&fromuid=63020)
 
