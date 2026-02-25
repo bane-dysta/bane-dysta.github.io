@@ -31,6 +31,9 @@ echo "    nics2d ring ${ring} vector ${vector}" >> nics2.bwc
 echo "wait" >> nics2.bwc
 cat << EOF >> nics2.bwc
 
+# Bundled by bane dysta
+# ConfDir: D:\program\Banewfn\conf
+
 #>>> BANEWFN_INLINE_CONF_BEGIN aromatic
 ## bundled module: aromatic
 # # 主逻辑

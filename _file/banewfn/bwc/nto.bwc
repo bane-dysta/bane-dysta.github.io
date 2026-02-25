@@ -6,10 +6,25 @@ state=(1 2)
 %command
 #!/bin/bash
 mv ex_${state}.fchk ${input}_NTO${state}.fch
+mkdir -p NTOs
+mv excit_${input}.out NTOs
 end
 
-# Bundled by bwpack (banewfn inline conf)
-# ConfDir: D:\MyProgram\banewfn\conf
+wfn_rebase=${input}_NTO${state}.fch
+[fmo]
+%process
+    orb index h
+    orb index l
+%command
+#!/bin/bash
+mkdir -p NTOs
+mv ${input}_NTO${state}.fch fmo_${input}_NTO${state}.out NTOs
+mv h.cub NTOs/${input}_NTO${state}_oH.cub
+mv l.cub NTOs/${input}_NTO${state}_oL.cub
+end
+
+# Bundled by bane dysta
+# ConfDir: D:\program\Banewfn\conf
 
 #>>> BANEWFN_INLINE_CONF_BEGIN excit
 ## bundled module: excit
@@ -72,4 +87,21 @@ end
 # 0
 # q
 #<<< BANEWFN_INLINE_CONF_END excit
+
+#>>> BANEWFN_INLINE_CONF_BEGIN fmo
+## bundled module: fmo
+# # 主逻辑
+# [main]
+# 200
+# 
+# [orb]
+# 3
+# ${index:-h}
+# ${grid:-2}
+# 
+# # 退出
+# [quit]
+# 0
+# q
+#<<< BANEWFN_INLINE_CONF_END fmo
 
