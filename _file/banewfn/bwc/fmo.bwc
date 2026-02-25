@@ -15,8 +15,8 @@ vcube *.cub
 EOF2
 end
 
-# Bundled by bwpack (banewfn inline conf)
-# ConfDir: D:\MyProgram\banewfn\conf
+# Bundled by bane dysta
+# ConfDir: D:\program\Banewfn\conf
 
 #>>> BANEWFN_INLINE_CONF_BEGIN fmo
 ## bundled module: fmo
