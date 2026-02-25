@@ -1,0 +1,127 @@
+wfn=*.fchk
+plane=?
+
+[grid]
+%process
+    elf
+%command
+#!/bin/bash
+mkdir -p ${input}_ELF
+mv ELF.cub ${input}_ELF/${input}_elf.cub
+cat << EOF > ${input}_ELF/elf.bat
+vmd -e elf.vmd
+EOF
+cat << EOF2 > ${input}_ELF/elf.vmd
+vcube ${input}_elf.cub
+EOF2
+mv grid_${input}.out ${input}_ELF
+end
+
+wfn_rebase=${input}_ELF/${input}_elf.cub
+[plane_fromcub]
+%process
+    autoplot plane ${plane}
+%command
+#!/bin/bash
+mv dislin.png plane.txt plane_fromcub_${input}.out ${input}_ELF
+end
+
+
+# Bundled by bane dysta
+# ConfDir: D:\program\Banewfn\conf
+
+#>>> BANEWFN_INLINE_CONF_BEGIN grid
+## bundled module: grid
+# # 主逻辑
+# [main]
+# 5
+# 
+# # density.cub
+# [electron]
+# 1
+# ${grid:-3}
+# 2
+# 0
+# 5
+# 
+# # ELF.cub
+# [elf]
+# 9
+# ${grid:-3}
+# 2
+# 0
+# 5
+# 
+# # LOL.cub
+# [lol]
+# 10
+# ${grid:-3}
+# 2
+# 0
+# 5
+# 
+# # totesp.cub 
+# # 注意：由于需要切换cub文件，esp必须作为最后一个处理步骤使用
+# [esp]
+# 12
+# ${grid:-1}
+# 2
+# 0
+# r
+# totesp.cub
+# 13
+# 11
+# 5
+# 627.51
+# 0
+# totesp.cub
+# -1
+# 5
+# 
+# # 退出
+# [quit]
+# -10
+# q
+#<<< BANEWFN_INLINE_CONF_END grid
+
+#>>> BANEWFN_INLINE_CONF_BEGIN plane_fromcub
+## bundled module: plane_fromcub
+# # 主逻辑
+# [main]
+# 1000
+# 2
+# -1
+# 4
+# 
+# [autoplot]
+# 100
+# 1    # Color-filled map
+# ${grid:-200,200}
+# 4    # Define by three atoms
+# ${plane}
+# 4    # ATOM
+# 5
+# 8    # BOND
+# 14
+# 0
+# -6   # plane.txt
+# -5
+# 4
+# 
+# [drawplot]
+# 100
+# 1    # Color-filled map
+# ${grid:-200,200}
+# 4    # Define by three atoms
+# ${plane}
+# 4    # ATOM
+# 5
+# 8    # BOND
+# 14
+# 0
+# 
+# [quit]
+# -10
+# q
+#<<< BANEWFN_INLINE_CONF_END plane_fromcub
+
