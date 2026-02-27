@@ -1,0 +1,25 @@
+$opt
+    %source origin
+    %keywords "opt freq [func]/[bset] [scrf] [DFT-D]"
+    %archive
+        strucid opt
+
+$td
+    %source opt
+    %keywords "opt freq td [func]/[bset] [scrf] [DFT-D]"
+    %archive
+        strucid td
+
+$opt-solv
+    %source opt
+    %keywords "opt freq [func]/[bset] {CycloHexane,Chloroform,Dichloromethane,Ethanol,Methanol,DiMethylSulfoxide} [DFT-D]"
+    %process
+        scripts fchk
+
+
+$td-solv
+    %source td
+    %keywords "opt freq td [func]/[bset] {CycloHexane,Chloroform,Dichloromethane,Ethanol,Methanol,DiMethylSulfoxide} [DFT-D]"
+    %process
+        scripts fchk
+
