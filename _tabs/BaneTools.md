@@ -1,6 +1,6 @@
 ---
 layout: page
-title: BaneSoftware
+title: BaneTools
 icon: fas fa-cubes
 order: 2
 ---
