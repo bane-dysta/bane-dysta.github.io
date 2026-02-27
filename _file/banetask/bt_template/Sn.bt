@@ -1,0 +1,11 @@
+$opt
+    %source origin
+    %keywords "opt freq [func]/[bset] [scrf] [DFT-D]"
+    %archive
+        strucid opt
+
+$td
+    %source opt
+    %keywords "opt freq td [func]/[bset] [scrf] [DFT-D]"
+    %archive
+        strucid td

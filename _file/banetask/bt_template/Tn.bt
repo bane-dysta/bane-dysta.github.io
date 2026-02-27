@@ -1,0 +1,14 @@
+$opt
+    %source origin
+    %keywords "opt freq [func]/[bset] [scrf] [DFT-D]"
+    %archive
+        strucid opt
+
+$trip-udft
+    %source opt
+    %keywords "opt freq u[func]/[bset] [scrf] [DFT-D]"
+    %mod
+        spin 3
+    %archive
+        strucid 3-udft
+

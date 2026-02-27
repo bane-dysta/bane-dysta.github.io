@@ -1,0 +1,71 @@
+$opt
+    %source origin
+    %keywords "opt freq [func]/[bset] [scrf] [DFT-D]"
+    %process
+        scripts fchk
+        mkdir -p ../FCclasses
+        cp [inputname].log ../FCclasses
+        cp [inputname].fchk ../FCclasses
+        result [inputname].log [inputname].fchk
+    %archive
+        strucid opt
+
+$td
+    %source opt
+    %keywords "opt freq td [func]/[bset] [scrf] [DFT-D]"
+    %process
+        scripts fchk
+        mkdir -p ../FCclasses
+        cp [inputname].log ../FCclasses
+        cp [inputname].fchk ../FCclasses
+        result [inputname].log [inputname].fchk
+    %archive
+        strucid td
+
+$FCclasses
+    %program script
+    %source opt,td
+    %preprocess
+        benv fc
+    %keywords "/bin/bash"
+    %extrakeywords
+        scripts fcrun.sh -r --hwhm 0.1 --model AH --dipole FC --coords BOTH
+    end exkwd
+    %process
+        result rate_constants.txt *.png *.dat
+
+$vibronic_emi
+    %source opt,td guess
+    %preprocess
+        benv PATH
+    %control
+        verbosity p
+    %keywords "freq(readfc,fcht,readfcht,intmode) IOp(7/75=-1)"
+    %extrakeywords
+initial=source=chk final=source=chk print=(huangrhys,matrix=JK)
+transition=emission spectroscopy=onephoton
+
+../td/td_[originname].chk
+../opt/opt_[originname].chk
+    end exkwd
+    %process
+        intmode [inputname].log
+        result intmode.out *.dat [inputname].log
+
+$vibronic_abs
+    %source td,opt guess
+    %preprocess
+        benv PATH
+    %control
+        verbosity p
+    %keywords "freq(readfc,fcht,readfcht,intmode) IOp(7/75=-1)"
+    %extrakeywords
+initial=source=chk final=source=chk print=(huangrhys,matrix=JK)
+transition=absorption spectroscopy=onephoton
+
+../opt/opt_[originname].chk
+../td/td_[originname].chk
+    end exkwd
+    %process
+        intmode [inputname].log > intmode.out
+        result intmode.out *.dat [inputname].log
