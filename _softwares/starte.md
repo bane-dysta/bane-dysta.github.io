@@ -20,8 +20,8 @@ Starte 支持两类工作方式：
 - [依赖](#依赖)
 - [使用方式](#使用方式)
 - [参数](#参数)
-    - [Starte 参数](#starte-参数)
-    - [Gaussian 参数](#gaussian-参数)
+  - [Starte 参数](#starte-参数)
+  - [Gaussian 参数](#gaussian-参数)
 - [示例](#示例)
 - [输出与排错](#输出与排错)
 
