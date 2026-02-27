@@ -1,0 +1,124 @@
+wfn=*.fchk
+
+[no]
+%process
+SCF
+%command
+#!/bin/bash
+mv new.mwfn SCF.mwfn
+end
+
+wfn_rebase=${input}.fchk
+[no]
+%process
+CI
+%command
+#!/bin/bash
+mv new.mwfn CI.mwfn
+end
+
+wfn_rebase=CI.mwfn
+[grid]
+%process
+wfn2 operator -,SCF.mwfn
+electron
+%command
+#!/bin/bash
+mv density.cub dendiff.cub
+end
+
+%command
+#!/bin/bash
+mkdir -p ${input}_dendiff_CI
+mv dendiff.cub CI.mwfn SCF.mwfn ${input}_dendiff_CI
+end
+
+
+# Bundled by bane dysta
+# ConfDir: D:\MyProgram\banewfn\conf
+
+#>>> BANEWFN_INLINE_CONF_BEGIN grid
+## bundled module: grid
+# # 主逻辑
+# [main]
+# 5
+# 
+# # define
+# [wfn2]
+# 0
+# 1
+# ${operator}
+# 
+# # density.cub
+# [electron]
+# 1
+# ${grid:-3}
+# 2
+# 0
+# 5
+# 
+# # ELF.cub
+# [elf]
+# 9
+# ${grid:-3}
+# 2
+# 0
+# 5
+# 
+# # LOL.cub
+# [lol]
+# 10
+# ${grid:-3}
+# 2
+# 0
+# 5
+# 
+# # totesp.cub 
+# # 注意：由于需要切换cub文件，esp必须作为最后一个处理步骤使用
+# [esp]
+# 12
+# ${grid:-1}
+# 2
+# 0
+# r
+# totesp.cub
+# 13
+# 11
+# 5
+# 627.51
+# 0
+# totesp.cub
+# -1
+# 5
+# 
+# # 退出
+# [quit]
+# -10
+# q
+#<<< BANEWFN_INLINE_CONF_END grid
+
+#>>> BANEWFN_INLINE_CONF_BEGIN no
+## bundled module: no
+# # 主逻辑
+# [main]
+# 200
+# 16
+# 
+# [SCF]
+# SCF
+# y
+# 
+# [CI]
+# CI
+# y
+# 
+# [RHO]
+# CI Rho(1)
+# y
+# 
+# # 退出
+# [quit]
+# 0
+# q
+#<<< BANEWFN_INLINE_CONF_END no
+
