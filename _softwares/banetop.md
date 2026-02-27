@@ -16,16 +16,16 @@ BaneTop 是一个命令行工具，用于将 Sobtop 产生/补全的力场信息
 <!-- TOC tocDepth:2..3 chapterDepth:2..6 -->
 
 - [安装](#安装)
-    - [依赖](#依赖)
-    - [获取与权限](#获取与权限)
-    - [配置](#配置)
+  - [依赖](#依赖)
+  - [获取与权限](#获取与权限)
+  - [配置](#配置)
 - [快速开始](#快速开始)
 - [功能与用法](#功能与用法)
-    - [写入 RESP 电荷（-c）](#写入-resp-电荷-c)
-    - [提取/生成缺失参数（-u）](#提取生成缺失参数-u)
-    - [调用 Sobtop 模板（-s）](#调用-sobtop-模板-s)
-    - [从 fchk 生成 Gaussian 可用参数（-g fchk）](#从-fchk-生成-gaussian-可用参数-g-fchk)
-    - [从 rtp 生成 Gaussian 可用参数（-g rtp）](#从-rtp-生成-gaussian-可用参数-g-rtp)
+  - [写入 RESP 电荷（-c）](#写入-resp-电荷-c)
+  - [提取/生成缺失参数（-u）](#提取生成缺失参数-u)
+  - [调用 Sobtop 模板（-s）](#调用-sobtop-模板-s)
+  - [从 fchk 生成 Gaussian 可用参数（-g fchk）](#从-fchk-生成-gaussian-可用参数-g-fchk)
+  - [从 rtp 生成 Gaussian 可用参数（-g rtp）](#从-rtp-生成-gaussian-可用参数-g-rtp)
 
 <!-- /TOC -->
 
