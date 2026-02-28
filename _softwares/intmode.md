@@ -1,6 +1,7 @@
 ---
 title: intmode
 summary: Gaussian 重组能分解到冗余内坐标，输出键长、键角、二面角的贡献比例
+math: true
 ---
 
 Last Update: 26/2/27
