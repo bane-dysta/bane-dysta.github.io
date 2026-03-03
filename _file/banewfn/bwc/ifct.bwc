@@ -1,0 +1,82 @@
+wfn=*.fchk
+state=(1 2 3 4 5)
+
+[excit]
+%process
+    ifctdata state ${state}
+    ifct state ${state} fragdef fragdef.txt
+%command
+#!/bin/bash
+mkdir -p ${input}_IFCT
+mv dislin.png ${input}_IFCT/state${state}.png
+mv atmCTmat.txt ${input}_IFCT/atmCTmat${state}.txt
+mv tmat.txt ${input}_IFCT/tmat${state}.txt
+sed -n '/Contribution of each fragment to hole and electron/,/Intrinsic local excitation percentage/p' excit_${input}.out > ${input}_IFCT/ifctdata${state}.txt
+mv ${output} ${input}_IFCT
+end
+
+# Bundled by bane dysta
+# ConfDir: D:\MyProgram\banewfn\conf
+
+#>>> BANEWFN_INLINE_CONF_BEGIN excit
+## bundled module: excit
+# # 主逻辑
+# [main]
+# 18
+# 
+# [holeheatmap]
+# 1
+# ${logfile:-}
+# ${state:-1}
+# 3
+# ${charge:-1}             # 1=mulliken 2=hirshfeld
+# -1
+# 0
+# ${fragfile:-fragdef.txt}
+# 2                        # Export data
+# 3                        # Save picture
+# 0
+# 0
+# 
+# [nto]
+# 6
+# ${logfile:-}
+# ${state:-1}
+# 2
+# ${path:-.}/ex_${state:-1}.fchk
+# 
+# [no]
+# 13
+# ${state:-1}
+# 
+# [ifctdata]
+# 8
+# ${charge:-1}             # 1=mulliken 2=hirshfeld
+# ${logfile:-}
+# ${state:-1}
+# 0
+# ${fragdef:-}
+# 0
+# 
+# # IFCT完成后再进行激发态分析会出问题，应当放在最后进行
+# [ifct]
+# 8
+# ${charge:-1}             # 1=mulliken 2=hirshfeld
+# ${logfile:-}
+# ${state:-1}
+# -1
+# 2
+# atmCTmat.txt
+# -1
+# 0
+# ${fragdef:- }
+# 2
+# 3
+# 0
+# 
+# # 退出
+# [quit]
+# 0
+# q
+#<<< BANEWFN_INLINE_CONF_END excit
+

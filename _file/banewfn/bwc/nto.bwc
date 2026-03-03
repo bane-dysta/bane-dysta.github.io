@@ -7,7 +7,7 @@ state=(1 2)
 #!/bin/bash
 mv ex_${state}.fchk ${input}_NTO${state}.fch
 mkdir -p NTOs
-mv excit_${input}.out NTOs
+mv ${output} NTOs
 end
 
 wfn_rebase=${input}_NTO${state}.fch
@@ -18,7 +18,7 @@ wfn_rebase=${input}_NTO${state}.fch
 %command
 #!/bin/bash
 mkdir -p NTOs
-mv ${input}_NTO${state}.fch fmo_${input}_NTO${state}.out NTOs
+mv ${input}_NTO${state}.fch ${output} NTOs
 mv h.cub NTOs/${input}_NTO${state}_oH.cub
 mv l.cub NTOs/${input}_NTO${state}_oL.cub
 end

@@ -14,7 +14,7 @@ EOF
 cat << EOF2 > ${input}_LOL/lol.vmd
 vcube ${input}_lol.cub
 EOF2
-mv grid_${input}.out ${input}_LOL
+mv ${output} ${input}_LOL
 end
 
 wfn_rebase=${input}_LOL/${input}_lol.cub
@@ -23,7 +23,7 @@ wfn_rebase=${input}_LOL/${input}_lol.cub
     autoplot plane ${plane}
 %command
 #!/bin/bash
-mv dislin.png plane.txt plane_fromcub_${input}.out ${input}_LOL
+mv dislin.png plane.txt ${output} ${input}_LOL
 end
 
 

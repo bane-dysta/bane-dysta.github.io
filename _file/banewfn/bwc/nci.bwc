@@ -27,7 +27,7 @@ EOF
 echo vmd -e nci.vmd > nci.bat
 
 mkdir -p ${input}_nci
-mv -f weak_${input}.out ${input}_nci
+mv -f ${output} ${input}_nci
 mv -f nci.bat nci.vmd ${input}_nci
 mv -f func1.cub func2.cub ${input}_nci
 mv -f dislin.png ${input}_nci

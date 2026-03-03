@@ -23,7 +23,7 @@ end
 %command
 #!/bin/bash
 rm -f template.gjf
-read X Y Z < <(awk '/The unit normal vector is /{print $6,$7,$8; exit}' "aromatic_${input}.out")
+read X Y Z < <(awk '/The unit normal vector is /{print $6,$7,$8; exit}' "${output}")
 vector="${X},${Y},${Z}"
 echo [aromatic] > nics2.bwc
 echo "%process" >> nics2.bwc

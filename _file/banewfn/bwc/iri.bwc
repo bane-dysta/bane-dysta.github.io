@@ -54,7 +54,7 @@ EOF
 
 # Final move
 mkdir -p ${input}_iri
-mv -f weak_${input}.out ${input}_iri
+mv -f ${output} ${input}_iri
 mv -f func1.cub ${input}_iri
 mv -f func2.cub ${input}_iri
 mv -f dislin.png ${input}_iri
