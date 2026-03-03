@@ -1,0 +1,180 @@
+wfn=*.fchk
+state=1
+[excit]
+%process
+no state ${state}
+end
+
+[grid]
+%process
+    electron
+    esp
+%command
+#!/bin/bash
+    mkdir -p ESP
+    mv density.cub ESP/${input}_den.cub
+    mv totesp.cub ESP/${input}_esp.cub
+    mv ${output} ESP
+    cat << EOF > ESP/esp.bat
+    vmd -e esp.vmd
+EOF
+
+    cat << EOF2 > ESP/esp.vmd
+    vcube *_den.cub map *_esp.cub
+    set colorlow -20
+    set colorhigh 20
+    mol scaleminmax 0 1 -20 20
+    puts "unit: kcal/mol"
+EOF2
+end
+
+wfn_rebase=NO_000${state}.mwfn
+[grid]
+%process
+    electron
+    esp
+%command
+#!/bin/bash
+    mkdir -p ESP_${state}
+    mv density.cub ESP_${state}/${input}_den.cub
+    mv totesp.cub ESP_${state}/${input}_esp.cub
+    mv NO_000${state}.mwfn ${output} ESP_${state}
+    cat << EOF > ESP_${state}/esp.bat
+    vmd -e esp.vmd
+EOF
+
+    cat << EOF2 > ESP_${state}/esp.vmd
+    vcube *_den.cub map *_esp.cub
+    set colorlow -20
+    set colorhigh 20
+    mol scaleminmax 0 1 -20 20
+    puts "unit: kcal/mol"
+EOF2
+end
+
+# Bundled by bane dysta
+# ConfDir: D:\MyProgram\banewfn\conf
+
+#>>> BANEWFN_INLINE_CONF_BEGIN excit
+## bundled module: excit
+# # 主逻辑
+# [main]
+# 18
+# 
+# [holeheatmap]
+# 1
+# ${logfile:-}
+# ${state:-1}
+# 3
+# ${charge:-1}             # 1=mulliken 2=hirshfeld
+# -1
+# 0
+# ${fragfile:-fragdef.txt}
+# 2                        # Export data
+# 3                        # Save picture
+# 0
+# 0
+# 
+# [nto]
+# 6
+# ${logfile:-}
+# ${state:-1}
+# 2
+# ${path:-.}/ex_${state:-1}.fchk
+# 
+# [no]
+# 13
+# ${logfile:-}
+# ${state:-1}
+# 
+# [ifctdata]
+# 8
+# ${charge:-1}             # 1=mulliken 2=hirshfeld
+# ${logfile:-}
+# ${state:-1}
+# 0
+# ${fragdef:-}
+# 0
+# 
+# # IFCT完成后再进行激发态分析会出问题，应当放在最后进行
+# [ifct]
+# 8
+# ${charge:-1}             # 1=mulliken 2=hirshfeld
+# ${logfile:-}
+# ${state:-1}
+# -1
+# 2
+# atmCTmat.txt
+# -1
+# 0
+# ${fragdef:- }
+# 2
+# 3
+# 0
+# 
+# # 退出
+# [quit]
+# 0
+# q
+#<<< BANEWFN_INLINE_CONF_END excit
+
+#>>> BANEWFN_INLINE_CONF_BEGIN grid
+## bundled module: grid
+# # 主逻辑
+# [main]
+# 5
+# 
+# # define
+# [wfn2]
+# 0
+# 1
+# ${operator}
+# 
+# # density.cub
+# [electron]
+# 1
+# ${grid:-3}
+# 2
+# 0
+# 5
+# 
+# # ELF.cub
+# [elf]
+# 9
+# ${grid:-3}
+# 2
+# 0
+# 5
+# 
+# # LOL.cub
+# [lol]
+# 10
+# ${grid:-3}
+# 2
+# 0
+# 5
+# 
+# # totesp.cub 
+# # 注意：由于需要切换cub文件，esp必须作为最后一个处理步骤使用
+# [esp]
+# 12
+# ${grid:-1}
+# 2
+# 0
+# r
+# totesp.cub
+# 13
+# 11
+# 5
+# 627.51
+# 0
+# totesp.cub
+# -1
+# 5
+# 
+# # 退出
+# [quit]
+# -10
+# q
+#<<< BANEWFN_INLINE_CONF_END grid
+

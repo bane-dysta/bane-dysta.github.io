@@ -1,30 +1,22 @@
 wfn=*.fchk
-state=(1 2)
+state=(1 2 3 4 5)
+
 [excit]
 %process
-    nto state ${state}
+    ifctdata state ${state}
+    ifct state ${state} fragdef fragdef.txt
 %command
 #!/bin/bash
-mv ex_${state}.fchk ${input}_NTO${state}.fch
-mkdir -p NTOs
-mv ${output} NTOs
-end
-
-wfn_rebase=${input}_NTO${state}.fch
-[fmo]
-%process
-    orb index h
-    orb index l
-%command
-#!/bin/bash
-mkdir -p NTOs
-mv ${input}_NTO${state}.fch ${output} NTOs
-mv h.cub NTOs/${input}_NTO${state}_oH.cub
-mv l.cub NTOs/${input}_NTO${state}_oL.cub
+mkdir -p ${input}_IFCT
+mv dislin.png ${input}_IFCT/state${state}.png
+mv atmCTmat.txt ${input}_IFCT/atmCTmat${state}.txt
+mv tmat.txt ${input}_IFCT/tmat${state}.txt
+sed -n '/Contribution of each fragment to hole and electron/,/Intrinsic local excitation percentage/p' excit_${input}.out > ${input}_IFCT/ifctdata${state}.txt
+mv ${output} ${input}_IFCT
 end
 
 # Bundled by bane dysta
-# ConfDir: D:\program\Banewfn\conf
+# ConfDir: D:\MyProgram\banewfn\conf
 
 #>>> BANEWFN_INLINE_CONF_BEGIN excit
 ## bundled module: excit
@@ -87,21 +79,4 @@ end
 # 0
 # q
 #<<< BANEWFN_INLINE_CONF_END excit
-
-#>>> BANEWFN_INLINE_CONF_BEGIN fmo
-## bundled module: fmo
-# # 主逻辑
-# [main]
-# 200
-# 
-# [orb]
-# 3
-# ${index:-h}
-# ${grid:-2}
-# 
-# # 退出
-# [quit]
-# 0
-# q
-#<<< BANEWFN_INLINE_CONF_END fmo
 

@@ -6,19 +6,21 @@ state ${state}
 cub
 %command
 #!/bin/bash
-mv hole.cub ${input}_s${state}_hole.cub
-mv electron.cub ${input}_s${state}_ele.cub
-sed -n '/Integral of hole/,/Excitation energy of this state/p' hole-ele_${input}.out > hole${state}data_${input}.txt
-cat << EOF > hole.bat
+mkdir -p ${input}_hole
+mv hole.cub ${input}_hole/${input}_s${state}_hole.cub
+mv electron.cub ${input}_hole/${input}_s${state}_ele.cub
+sed -n '/Integral of hole/,/Excitation energy of this state/p' ${output} > ${input}_hole/hole${state}data_${input}.txt
+cat << EOF > ${input}_hole/hole.bat
 vmd -e hole.vmd
 EOF
-cat << EOF2 > hole.vmd
+cat << EOF2 > ${input}_hole/hole.vmd
 vcube *.cub
 EOF2
+mv ${output} ${input}_hole
 end
 
-# Bundled by bane dysta
-# ConfDir: D:\program\Banewfn\conf
+# Bundled by bwpack (banewfn inline conf)
+# ConfDir: D:\MyProgram\banewfn\conf
 
 #>>> BANEWFN_INLINE_CONF_BEGIN hole-ele
 ## bundled module: hole-ele
