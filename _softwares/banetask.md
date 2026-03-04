@@ -3,200 +3,388 @@ title: BaneTask
 summary: 量子化学任务控制系统
 ---
 
-Last Update: 26/2/27
+Last Update: 2026/03/04
 
-BaneTask 是一个开源的量子化学任务控制系统，使用 C++17 编写，专注于简化和自动化量子化学计算工作流。如果你曾受困于手动准备大量输入文件、复杂计算流程需步步手操、结果散落难以管理，或者在切换不同量化程序时频繁重学输入格式，BaneTask 就是为了彻底解放你的双手而诞生的。
+BaneTask 是一个用 **C++17** 编写的量子化学任务控制/工作流生成工具。本程序的目标不是像agent一样替你算，而是按照你的要求把你从**输入文件批量生成、任务依赖串联、前后处理脚本拼装、结果落盘整理**这些重复工作里解放出来：你只需要写一个相对简洁的 `.bt` 文本文件描述流程，BaneTask 会在目录中生成对应的工作流脚本文件。
 
-**核心理念**：用一个简洁统一的 `.bt` 文本文件描述计算流程，将依赖管理、结构提取、变量替换和结果归档全部交给程序。
+核心理念很简单：
+
+- 用 **任务块**（`$taskname`）表达计算步骤，用 `%source` 表达依赖关系。
+- 用 `define:` 在文件头定义变量，后续用 `[变量名]` 做替换。
+- 把“跑前准备/跑后处理”写到 `%preprocess / %process`，自动落到每个任务目录的 `pre_comd / comd`。
 
 项目地址：
 
-* **GitHub**: [https://github.com/bane-dysta/banetask](https://github.com/bane-dysta/banetask)
-* **Gitee**: [https://gitee.com/bane-dysta/banetask2](https://gitee.com/bane-dysta/banetask2)
+- **GitHub**: https://github.com/bane-dysta/banetask
+- **Gitee**: https://gitee.com/bane-dysta/banetask2
 
 <!-- TOC tocDepth:2..3 chapterDepth:2..6 -->
 
-- [安装与环境配置](#安装与环境配置)
-  - [主程序与全局路径配置](#主程序与全局路径配置)
-  - [量子化学程序环境配置](#量子化学程序环境配置)
-- [任务控制文件 bt](#任务控制文件-bt)
-  - [全局与变量定义](#全局与变量定义)
-  - [任务块指令](#任务块指令)
-  - [后处理引擎](#后处理引擎)
-- [场景示例](#场景示例)
+- [安装与快速开始](#安装与快速开始)
+- [配置与目录结构](#配置与目录结构)
+  - [banetask.conf 的查找规则与优先级](#banetaskconf-的查找规则与优先级)
+  - [推荐的 ~/.banetask 布局与各路径含义](#推荐的-banetask-布局与各路径含义)
+  - [envs/*.conf：量子化学程序环境配置](#envsconf量子化学程序环境配置)
+  - [Windows 与 Shell 选择](#windows-与-shell-选择)
+- [bt 任务文件](#bt-任务文件)
+  - [文件头：元信息、define、include](#文件头元信息defineinclude)
+  - [任务块：依赖、输入生成与控制](#任务块依赖输入生成与控制)
+  - [前后处理脚本：pre_comd 与 comd](#前后处理脚本pre_comd-与-comd)
+  - [归档：*_archive.json](#归档_archivejson)
+- [运行产物与目录约定](#运行产物与目录约定)
 - [命令行工具](#命令行工具)
   - [banetask 主程序](#banetask-主程序)
   - [btask 辅助工具](#btask-辅助工具)
-- [脚本集](#脚本集)
+- [示例](#示例)
 
 <!-- /TOC -->
 
-## 安装与环境配置
+## 安装与快速开始
 
-### 主程序与全局路径配置
-
-将下载的二进制文件目录加入环境变量 `PATH`：
+把发布的可执行文件（或你自己编译出来的 `banetask` / `btask`）加入 `PATH`：
 
 ```bash
-export PATH=path/to/banetask/bin:$PATH
-
+export PATH=/path/to/banetask/bin:$PATH
 ```
 
-在 `~/.banetask` 建立配置文件 `banetask.conf`。这里定义了 BaneTask 运行所需的各种脚本、模板和工作目录：
+帮助：
 
-```conf
-# BaneTask配置文件
-BANETASK_BASE_PATH=$HOME/scripts/bin
-BANETASK_SCRIPTS_PATH=$HOME/.banetask/scripts
-BANETASK_WFN_EXAMPLES_PATH=$HOME/.banetask/multiwfn_templates
-BANETASK_OTHER_TEMPLATES_PATH=$HOME/.banetask/other_templates
-BANETASK_BANEWFN_PATH=$HOME/.banetask/banewfn
-BANETASK_ENVCONF_PATH=$HOME/.banetask/envs
-BANETASK_EXTERNAL_SCRIPTS_PATH=$HOME/.banetask/external
-BANETASK_TASK_PATH=$HOME/AutoCalc/tasks
-BANETASK_LOG_PATH=$HOME/AutoCalc/tasks
-BANETASK_TEMPLATE_PATH=$HOME/.banetask/bt_templates
-IF_WAIT_FREQ=TRUE
-
+```bash
+banetask --help
 ```
 
-### 量子化学程序环境配置
+它会打印当前读取到的配置文件路径、各环境变量当前值，以及默认的配置搜索路径。
 
-BaneTask 允许你为不同程序自定义运行环境。在 `BANETASK_ENVCONF_PATH` 下创建 `.conf` 文件（例如 `g16.conf`）：
+> BaneTask 本身只负责生成工作流脚本，不强绑定具体队列系统。你可以用banetask提供的调度器`run.sh`，也可以自己按需求编写任务调度器，或是直接进入任务目录手动执行其中的命令。
+
+## 配置与目录结构
+
+### banetask.conf 的查找规则与优先级
+
+BaneTask 会按以下顺序查找 `banetask.conf`：
+
+1. 当前目录（`.`）
+2. `banetask` 可执行文件所在目录
+3. `~/.banetask/`
+4. `/etc/banetask/`
+
+同一个配置项的优先级固定为：
+
+**环境变量 > 配置文件 > 内置默认值**。
+
+因此你可以把“常用默认值”写在 `~/.banetask/banetask.conf`，而在 CI/集群节点上用环境变量做覆盖。
+
+## 配置
+
+建议把所有可移植、可复用的资源集中到 `~/.banetask/`（Windows 下对应 `%USERPROFILE%\.banetask\`），典型结构如下：
+
+```text
+~/.banetask/
+  banetask.conf
+  envs/                 # 各程序运行环境配置（*.conf）
+  bt_templates/         # btask 用的 .bt 模板
+  other_templates/      # %program other 用的输入模板
+  scripts/              # 可选：供 scripts/autorun 使用的脚本集合
+  wfn_examples/         # 可选：multiwfn 模板/输入流示例
+  external/             # 可选：env.sh / env.bat 之类的统一环境初始化
+  banewfn/              # 可选：banewfn 子系统脚本（如你需要）
+```
+
+`banetask.conf` 是一个简单的 `KEY=VALUE` 文件。你不需要把所有变量都写满；只要写你需要覆盖的项即可。下面是与源码行为一致的“路径类变量”含义说明（括号内是默认值或典型用法）：
+
+- `BANETASK_TASK_PATH`：当你 **不带参数运行** `banetask` 时，用它作为“任务搜索根目录”（默认 `.`）。
+- `BANETASK_LOG_PATH`：banetask 自己的日志输出目录（默认 `.`；通常你可以设置成与 `BANETASK_TASK_PATH` 相同）。
+- `BANETASK_ENVCONF_PATH`：程序环境配置目录（默认 `~/.banetask/envs`）。
+- `BANETASK_TEMPLATE_PATH`：`btask` 的模板目录（建议指向 `~/.banetask/bt_templates`；若不设置，`btask` 会尝试使用 `./conf/bt_templates`）。
+- `BANETASK_OTHER_TEMPLATES_PATH`：`%program other` 的输入模板目录（默认 `~/.banetask/other_templates`）。
+
+下面这些是“可选能力”才会用到的路径（不配置也不影响基础工作流生成）：
+
+- `BANETASK_SCRIPTS_PATH`：后处理指令中的 `scripts ...`、以及 `autorun: true` 时的 `run.sh/run.bat` 所在目录（默认 `~/.banetask/scripts`）。
+- `BANETASK_EXTERNAL_SCRIPTS_PATH`：生成的 `pre_comd/comd` 会优先尝试加载这里的 `env.sh`（bash）或 `env.bat/env.cmd`（cmd）做统一环境初始化（默认 `~/.banetask/external`）。
+- `BANETASK_WFN_EXAMPLES_PATH`：`multiwfn` 指令使用的模板/输入流目录（默认 `~/.banetask/wfn_examples`）。
+- `BANETASK_BANEWFN_PATH`：`banewfn` 指令用到的脚本目录（无默认值；你需要时再配）。
+
+另外还有一个与依赖判定相关的开关：
+
+- `IF_WAIT_FREQ`：依赖任务完成性检查时的策略开关（布尔值，默认行为以源码为准）。如果你遇到“日志很大/频率输出很靠前导致尾部检测不稳”的情况，可以通过它调整检查方式。
+
+### 量子化学程序环境
+
+`BANETASK_ENVCONF_PATH` 目录下的 `*.conf` 用于告诉 BaneTask：
+
+- 这个程序的**输入文件后缀**是什么（用来在任务目录里找到要跑的输入）。
+- 跑之前需要怎样 **ENV_SETUP**（加载模块、设置环境变量等）。
+- 真正执行计算时要用怎样的 **RUN_CMD_TEMPLATE**。
+
+源码要求每个环境配置文件至少包含三项：
+
+- `SUFFIX`：输入文件后缀（不带点），例如 `gjf` / `inp` / `sh`。
+- `ENV_SETUP`：执行前的环境准备命令。
+- `RUN_CMD_TEMPLATE`：实际执行命令模板。
+
+并且支持以下模板变量（由 BaneTask 在生成 `.bwrk` 时替换）：
+
+- `${ACTUAL_INPUT_FILE}`：本段工作流实际要跑的输入文件名（例如 `opt_methane.gjf`）。
+- `${ACTUAL_OUTPUT_FILE}`：本段工作流的输出文件名（默认与输入同名换后缀，通常是 `.log`；可用 `OUTPUT_SUFFIX` 配置）。
+- `${CORES}`：本段工作流使用的核数。
+
+配置文件是 `KEY=VALUE` 形式，同时支持用**单引号包裹多行值**（常用于 `ENV_SETUP`）：
 
 ```conf
+# g16.conf（示例）
 CONF_CORES=32
 CONF_MEMORY=96000
 SUFFIX=gjf
-ENV_SETUP='source "$HOME/apprepo/gaussian/16-hy/scripts/env.sh"
-export PGI_FASTMATH_CPU=sandybridge'
-RUN_CMD_TEMPLATE='g16 "${ACTUAL_INPUT_FILE}" > "${ACTUAL_INPUT_FILE}"'
+OUTPUT_SUFFIX=log
 
+ENV_SETUP='source "$HOME/apprepo/gaussian/16-hy/scripts/env.sh"
+export GAUSS_SCRDIR="$HOME/scratch"'
+
+# 这里给出一个“可移植”的写法：显式把输出导向 ${ACTUAL_OUTPUT_FILE}
+RUN_CMD_TEMPLATE='g16 "${ACTUAL_INPUT_FILE}" > "${ACTUAL_OUTPUT_FILE}"'
 ```
 
-这里定义了程序的默认核数、内存、输入后缀，以及初始化环境变量（`ENV_SETUP` 支持跨行）和运行命令模板。
+约定的文件名：
 
-## 任务控制文件 bt
+- Gaussian：优先找 `g16.conf`，找不到再找 `gaussian.conf`
+- ORCA：`orca.conf`
+- Script：`script.conf`
+- Other：由  `prog` 字段决定，例如 `xtb.conf`
 
-`.bt` 文件需与结构资源（如 `.xyz`）同名并放在同一目录。
+> 如果你希望在 Windows/cmd 下使用这些配置，`ENV_SETUP` 和 `RUN_CMD_TEMPLATE` 里就应该写 **cmd 语法**（例如 `call xxx.bat`、`set VAR=...`）。BaneTask 不会自动把 bash 命令翻译成 cmd。
 
-### 全局与变量定义
+### Windows 与 Shell 选择
 
-文件头部采用 YAML 风格：
+为了让同一套 `.bt` 在 Linux/macOS（bash）与 Windows（cmd）都能工作，源码里引入了“脚本输出 shell”选择：
+
+- 非 Windows 平台默认输出 **bash** 风格脚本。
+- Windows 平台默认输出 **cmd** 风格脚本。
+
+你可以用配置/环境变量强制切换（留给未来 Git Bash 兼容）：
+
+- `BANETASK_SHELL`：可设为 `bash` / `sh` / `gitbash` 或 `cmd` / `bat` / `powershell`（会按类别归入 bash 或 cmd）。
+- `USE_GITBASH=true`：在 Windows 上强制使用 bash 输出（优先级高于默认）。
+- `BANETASK_CMD_ENABLE_DIRECTIVES=true`：仅在 cmd 模式下有意义。默认 cmd 模式会把 `%preprocess/%process` 里的每一行都当作“原始命令行”写入脚本，不再解析 `copy/scripts/result...` 这类内置指令；打开该开关后才会启用这些指令解析。
+
+`autorun: true` 的行为也会随 shell 变化：
+
+- bash 模式下尝试调用 `BANETASK_SCRIPTS_PATH/run.sh`
+- cmd 模式下尝试调用 `BANETASK_SCRIPTS_PATH/run.bat`
+
+> 归档链路（`banejs --archive/--soc`）在 Windows/cmd 模式下默认不会写入 `comd`，以避免生成无效命令。
+
+## bt 任务文件
+
+### 文件头：元信息、define、include
+
+一个 `.bt` 文件由两部分组成：
+
+1. 文件头（YAML-like）：用于写元信息与 `define:` 变量。
+2. 若干任务块（`$taskname`）：每个块描述一个步骤。
+
+文件头示例：
 
 ```yaml
 autorun: true
+
 define:
   func: B3LYP
   basis: 6-31G(d)
   solvent: water
 ```
 
-开启 `autorun: true` 后，BaneTask 会在生成 `pre_comd / comd` 后，在任务结束阶段自动追加执行 `BANETASK_SCRIPTS_PATH/run.sh --path ..`（若 `run.sh` 存在），用于一键触发后续任务循环/队列提交。`define` 定义的变量可以在后续用 `[变量名]` 的形式全局调用。
+- `define:` 下的键值会以 `[func]`、`[basis]` 的形式在后续内容中替换。
+- `autorun: true` 会让 BaneTask 在生成 `comd` 时额外追加一条 `run.sh/run.bat --path ..`（若该脚本存在）。
 
-### 任务块指令
+源码还支持两种“拆分/复用”的 include 机制，适合把私人配置与公共模板分离：
 
-每个任务块以 `$` 加任务名开头，支持以下核心指令：
+- `#INCLUDE path/to/file.yaml`：只能出现在文件头区域，用来把额外的 header/define 合并进来。
+- `&INCLUDE path/to/file.bt`：出现在任务区，用来把另一份 `.bt/.projbt` 里的任务块并入当前文件。
 
-- **`%source` (结构资源)**：
-- `origin`: 使用原始配对的输入文件。
-- `任务名`: 智能提取指定前置任务的输出结构（目前支持 Gaussian 和 ORCA）。
-- `任务名 guess`: 对于 Gaussian，不仅提取结构，还会自动添加 `%oldchk` 并挂载 `guess=read`。
-- `xyz=文件路径`: 指定特定结构文件。
+此外，如果 `.bt` 所在目录里存在以下文件，会被自动加载：
 
+- `extra.yaml`：在解析完当前 `.bt` 文件头后追加解析（常用来放“这个目录特有的 define”）。
+- `extra.bt`：在解析完当前 `.bt` 任务块后追加解析（常用来放“这个目录特有的额外任务块”）。
 
-- **`%program` (程序类型)**：默认 `gaussian`，支持 `orca`、`script`、`other`（调用外部模板）。
-- **`%control`**：可局部覆盖 `totcore` / `totmem`，并支持：
-  - `runifdef [变量名]`：条件任务块。当该占位符未被替换（变量未定义）时，自动跳过整个任务块。
-  - `verbosity p|t`：Gaussian 路由行使用 `#p` / `#t`（默认仅 `#`）。
-- **`%keywords`**：计算关键词。Gaussian 自动补 `#`，ORCA 自动补 `!`，脚本模式下用于写入 shebang（如 `/bin/csh`）。
-- **`%extrakeywords`**：额外数据块（以 `end exkwd` 结尾）。可用于写入 Gaussian 坐标后的辅助输入（如 `.wfn` 文件名）、ORCA 的特殊控制块（如 `%tddft`），或 script 的具体脚本内容。
-- **`%mod`**：强大的结构修改器，支持 `spin`、`charge` 的直接赋值或加减运算（如 `spin add 1`）。
-- **`%archive`**：结果归档声明（可选）。用于生成 `任务名_archive.json` 并在后处理阶段自动调用 `banejs` 将关键产物沉淀到 `../Results/Archive`。
-  - `strucid XXX`：写入结构 ID（便于后续索引/汇总）。
-  - `properties {prop1,prop2,...}`：声明需要归档的性质/文件（例如 `freq`、`tddft`、`log_file`、`fchk_file`、`soc` 等）。其中 `soc` 会触发 SOC 专用归档流程；Gaussian 任务会自动补齐 `log_file / fchk_file`，频率/TD 任务会自动补齐 `freq / tddft`。
+> 这三种机制是“源码内建”的，不依赖你是否公开 `conf/scripts` 之类的脚本目录。
 
-### 后处理引擎
+### 任务块：依赖、输入生成与控制
 
-计算完成后，写在`%process`里的后处理指令会在QM计算后执行。
+每个任务块以 `$任务名` 开头，例如 `$opt`、`$sp`。任务名会用于创建输出目录（例如 `opt/`、`sp/`），也会参与生成输入文件名。
 
-**内置占位符**：
+任务块中常用的指令如下：
 
-- `[inputname]`：当前输入文件名（任务名_原始文件名）。
-- `[taskname]`：当前任务名。
-- `[originname]`：原始文件名。
-- `[rootname]`：结构根名（通常为分子目录名，不含任务前缀），用于保持目录/文件基名一致。
+**1）`%program`：程序类型**
 
-**内置函数**：
+- `gaussian`（默认）
+- `orca`
+- `other`：走“模板驱动”的其他程序接口（由模板与 `.other_task` 决定）
+- `script`：生成一个可执行脚本（`.sh`）作为“输入文件”，并由 `script.conf` 定义如何运行
 
-1. `scripts`：直接调用 `BANETASK_SCRIPTS_PATH` 下的脚本（如 `scripts shermo -e [inputname].log`）。
-2. `multiwfn`：自动从模板目录拉取输入流并调用 Multiwfn 分析（如 `multiwfn [inputname].fchk esp`）。
-3. `banewfn`：深度联动 `banewfn` 子程序自动化提取波函数。
-4. `copy`：通配符复制快捷命令（如 `copy fchk ../Archive` 等价于 `cp -r *.fchk ../Archive`）。
-5. `result / results`：结果收集器。自动创建 `../Results/[inputname]/` 并将给定的文件/目录复制进去（如 `result *.fchk *.log`）。
-6. `benv`：快捷加载环境配置（如 `benv g16`）。
+**2）`%source`：结构来源与依赖**
 
- 类似于`%process`，写在`%preprocess`里的指令会在 QM 计算命令执行前执行。
+`%source` 同时决定“从哪里取几何结构”和“依赖哪些前置任务完成”。支持：
 
-## 场景示例
+- `origin`：使用与 `.bt` 同名（或可推断同名）的原始结构文件（`.xyz/.gjf/.com/.log`）。
+- `任务名`：从 `任务名/` 目录下提取输出结构（默认从 `任务名_[originname].log` 提取）。
+- `任务名 guess`：Gaussian 专用。除提取结构外，还会写入 `%oldchk` 并启用 `guess=read`。
+- `restart`：从当前任务的旧 `.log` 中提取结构并“重启”；旧结果会被移动到 `fail/` 目录以避免覆盖。
+- `xyz=文件名`：从指定的 `文件名.xyz` 读取结构（默认在 `.bt` 所在目录下找）。
+- 多依赖：用逗号分隔，例如 `opt,N+1,N-1`。其中**第一个依赖**用于取结构/guess，其余依赖只用于“完成性检查”。
 
-**场景：Gaussian 优化 + ORCA 高精度单点 + Shermo 热力学分析**
+**3）`%control`：资源与条件控制**
 
-在这个工作流中，程序先用 Gaussian 优化，然后自动将结构传递给 ORCA 进行单点能计算，最后调用shermo进行后处理：
+- `totcore 32` / `totmem 96000`：覆盖该任务块的资源（也会反映到 `.bwrk` 的 YAML 头）。
+- `runifdef [SOMEVAR]`：条件任务块。如果替换后仍然包含 `[` `]`（通常表示变量未定义），该任务块会被跳过。
+- `verbosity p|t`：Gaussian 路由行用 `#p` / `#t`（默认 `#`）。
 
+**4）`%keywords` 与 `%extrakeywords`：输入内容**
+
+- `%keywords`：主关键词。Gaussian 会自动补 `#` 前缀，ORCA 会自动补 `!` 前缀。
+- `%extrakeywords`：附加块，以 `end exkwd` 结束。用途取决于程序：
+  - Gaussian：写在坐标之后（例如额外的输入段）。
+  - ORCA：写在关键词行之后（例如 `%tddft` 等块）。
+  - Script：作为脚本正文；`%keywords` 则用于 shebang（例如 `/bin/bash`）。
+
+源码支持在 `%keywords` 中使用 `{a,b,c}` 做“关键词集合展开”，会生成多份输入文件并分别生成 `.bwrk`。注意：展开项会被用作文件名前缀的一部分，因此建议使用**文件名安全**的标识（字母/数字/下划线/短横线）。
+
+**5）`%mod`：电荷与自旋修正**
+
+可对 `charge` / `spin` 做赋值或加减，例如：
+
+```text
+%mod
+  charge add 1
+  spin set 1
 ```
-autorun: true
-$opt
-    %source origin
-    %keywords "opt freq B3LYP/6-31G(d) scrf em=gd3bj"
 
-$sp
-    %program orca
-    %source opt
-    %keywords "wB97M-V def2-tzvp def2/J RIJCOSX verytightSCF defgrid3 SMD(water)"
-    %process
-        scripts shermo -e [inputname].log -f ../opt/opt_[originname].log
+### 前后处理脚本：pre_comd 与 comd
 
+`%preprocess` 与 `%process` 并不会在生成阶段执行，而是写入任务目录下的两段脚本：
+
+- `pre_comd`：在主程序运行前执行
+- `comd`：在主程序运行后执行
+
+脚本里支持四个内置占位符（生成脚本时替换）：
+
+- `[taskname]`：任务名（`$...` 的名字）
+- `[originname]`：原始结构名（通常是 `.bt` 的基名）
+- `[inputname]`：默认是 `[taskname]_[originname]`
+- `[rootname]`：`.bt` 所在目录名（常用来保持跨目录一致命名）
+
+在 **bash 模式** 下，BaneTask 还提供了一些“内置指令”用于简化后处理书写（你可以把它们理解为宏/快捷命令）：
+
+- `scripts ...`：调用 `BANETASK_SCRIPTS_PATH` 下的脚本
+- `copy ...`：文件复制快捷写法（会展开成 `cp -r`）
+- `result / results ...`：把指定产物收集到 `../Results/[inputname]/`
+- `multiwfn ...` / `banewfn ...` / `analysis ...` / `benv ...`：与个人工具链联动的快捷入口
+
+在 **cmd 模式（Windows 默认）** 下，为避免与 Windows 内置命令（例如 `copy`）冲突，源码默认不解析上述内置指令，而是把每一行都当作原始命令写入脚本。你只要在 `%preprocess/%process` 中写正常的 `.bat`/cmd 命令即可。
+
+如果你确实希望在 cmd 模式下也启用这些内置指令解析，可以设置 `BANETASK_CMD_ENABLE_DIRECTIVES=true`，但这通常意味着你要准备一套对应的 `.bat` 脚本体系或直接切到 Git Bash。
+
+### 归档（开发中）
+
+当任务块包含 `%archive` 时，BaneTask 会在任务目录生成 `任务名_archive.json`，用于把“任务元信息 + 归档诉求”传递给外部归档工具（例如 `banejs`）。
+
+示例：
+
+```text
+%archive
+  strucid 00123
+  properties {freq,tddft,log_file,fchk_file}
 ```
+
+源码还会根据关键词做一些自动补全：
+
+- 关键词包含 `freq` 会自动加入 `freq`
+- 关键词匹配 TD-DFT（`td`/`td=`/`td(` 等）会自动加入 `tddft`
+- Gaussian 任务默认会加入 `log_file` 与 `fchk_file`
+
+> 是否以及如何执行真正的归档，是你自己的工具链决定的；BaneTask 只负责生成 JSON，并在 bash 模式下可选把 `banejs` 命令写入 `comd`。
+
+## 运行产物与目录约定
+
+假设你的 `.bt` 文件位于某个分子目录（例如 `methane/methane.bt`），BaneTask 的约定是：
+
+- 在 `.bt` 同级目录下，为每个任务块创建一个子目录：`opt/`、`sp/`……
+- 在任务目录中生成输入文件、对应的 `.bwrk`、以及 `pre_comd/comd`。
+
+常见文件如下：
+
+- `opt/opt_methane.gjf`、`opt/opt_methane.chk`：Gaussian 输入与 chk（是否包含 nproc/mem 取决于 `%control`）
+- `sp/sp_methane.inp`：ORCA 输入
+- `*/pre_comd`、`*/comd`：前后处理脚本（shell 由 `BANETASK_SHELL/USE_GITBASH` 决定）
+- `*.bwrk`：工作流文件（每个输入文件一个 `.bwrk`）
+- `bt.status`：位于 `.bt` 所在目录，用于记录哪些任务块已生成过工作流（用于跳过重复生成）
+
+如果你只想刷新 `pre_comd/comd`（以及归档 JSON），而不希望改动/新增 `.bwrk`，可以使用：
+
+```bash
+banetask your.bt --comd-only
+```
+
+该模式不会修改 `bt.status`。
 
 ## 命令行工具
 
 ### banetask 主程序
 
-基本用法：
+常用方式：
 
-- `banetask task.bt`：解析 `.bt` 并生成输入文件、`.bwrk` 与脚本。
-- `banetask task.bt --comd-only`：只重新生成/覆盖 `pre_comd / comd`（以及归档相关 JSON），不生成新的 `.bwrk`，也不会改写 `bt.status`——适合你只想“刷新后处理/归档脚本”。
+- `banetask your.bt`：解析 `.bt`，按依赖关系生成输入、脚本与 `.bwrk`。
+- `banetask your.bt --comd-only`：只重新生成/覆盖 `pre_comd / comd`（以及归档 JSON），不生成新的 `.bwrk`，也不会改写 `bt.status`。
+
+一些辅助选项（以 `--help` 输出为准）：
+
+- `-d, --debug`：打开更详细的日志
+- `-l, --log <path>`：指定日志文件输出路径
+
+另外，如果你 **不提供 task file path**，`banetask` 会在 `BANETASK_TASK_PATH` 下递归搜索 `.bt` 并逐个处理（适合批处理目录）。
 
 ### btask 辅助工具
 
-除了主程序外，内置的 `btask` 提供模板管理、项目化批处理与一键更新能力：
+`btask` 是配套的模板/批处理工具，主要用于生成/合并 `.bt` 模板、重置状态、以及（可选）项目化批处理：
 
-- `btask -t`：创建测试文件夹和示例文件。
-- `btask -r`：删除当前目录及子目录下的所有 `bt.status`（重置任务完成状态）。
-- `btask -l`：列出系统所有可用模板。
-- `btask -c`：按分类列出模板。
-- `btask -i`：交互式模板选择器（上下键选择、空格勾选、`v` 设变量）组合内置模板快速生成复杂 `.bt`。
-- `btask -m opt freq`：合并指定模板（可配合 `-o` 指定输出文件名）。
-- `btask -v task.bt mytemplate`：为已有 `.bt` 自动生成 `define` 变量段（使用变量模板）。
-- `btask -d <dir>`：指定模板目录（覆盖默认模板路径）。
+- `btask -t`：创建测试文件夹和示例文件
+- `btask -r`：删除当前目录及子目录下的所有 `bt.status`
+- `btask -l`：列出可用模板
+- `btask -i`：交互式选择模板并生成 `.bt`
+- `btask -m opt freq -o task.bt`：合并模板并输出
 
-**项目模式（.projbt）**：
+项目模式（`.projbt`）仍然可用，但如果你只用单个 `.bt` 做简单任务，可以直接忽略这部分。
 
-- `btask -b`：项目批处理模式。在 `$BANETASK_TASK_PATH` 下创建项目目录结构，生成一个 `.projbt` 项目模板文件；各任务目录中的 `.bt` 通过符号链接指向该 `.projbt`，修改一次即可同步所有任务。
-- `btask -u`：项目更新模式（在包含 `.projbt` 的目录中运行）。选择任务块后可：
-  1. 清除完成标记并重新执行 `banetask`（可选择是否立即执行 `comd` 开算）
-  2. 在匹配的任务目录中批量执行自定义脚本
+## 示例
 
-当你想对一个项目的所有分子“统一执行某条命令”或“统一收集结果文件”，可以直接：
+下面给一个“Gaussian 优化 + ORCA 单点 + 简单后处理”的示例：
 
-- `btask xxx.projbt -n <taskname> --exec '<cmd>'`：在每个分子目录的 `<taskname>/` 下执行命令  
-  例：`btask 123.projbt -n opt --exec 'grep "SCF Done" *.log'`
-- `btask xxx.projbt -n <taskname> --collect '<glob...>'`：收集匹配文件/目录到 `<projbt_dir>/results/`，并自动追加 `_<moleculename>` 后缀  
-  例：`btask 123.projbt -n soc --collect 'soc*.png *.txt'`
-- `--dry-run`：只打印将要执行/收集的内容，不实际操作（建议首次先 dry-run 预演）。
+```text
+autorun: false
 
-## 脚本集
+define:
+  func: B3LYP
+  basis: 6-31G(d)
 
-- bt模板入口在[这里](/_file/banetask/bt_template)
-- 一些配套脚本入口在[这里](/_file/banetask/scripts)
+$opt
+  %source origin
+  %program gaussian
+  %control
+    totcore 16
+    totmem 64000
+  %keywords "opt freq [func]/[basis]"
+  %process
+    echo "OPT finished: [inputname]" 
+
+$sp
+  %source opt
+  %program orca
+  %control
+    totcore 32
+    totmem 96000
+  %keywords "wB97M-V def2-TZVP def2/J RIJCOSX TightSCF"
+  %process
+    echo "SP finished: [inputname]"
+```
+
+如果你希望在 Windows/cmd 下使用，上面的 `%process` 直接写 cmd 命令同样可行；真正需要注意的是 `envs/*.conf` 里的 `ENV_SETUP`/`RUN_CMD_TEMPLATE` 也要写成 cmd 语法，或者把 `BANETASK_SHELL` 切到 `bash` 并在 Git Bash 中执行。
