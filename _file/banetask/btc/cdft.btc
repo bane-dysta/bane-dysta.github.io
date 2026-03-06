@@ -1,0 +1,67 @@
+autorun: true
+define:
+  func: B3LYP
+  bset: 6-31G(d)
+  scrf: 
+  DFT-D: em=gd3bj
+
+$opt
+  %source origin
+  %control
+    totcore 4
+    totmem 4000
+  %keywords "opt freq [func]/[bset] [scrf] [DFT-D] out=wfn"
+    %extrakeywords
+N.wfn
+  end exkwd
+  %process
+    formchk [inputname].chk [inputname].fchk
+    copy [inputname].out [inputname].log 
+
+$N-1
+  %source opt
+  %control
+    totcore 4
+    totmem 4000
+  %keywords "[func]/[bset] [scrf] [DFT-D] out=wfn"
+  %mod   
+      spin    add  1
+      charge  add  1
+  %extrakeywords
+N-1.wfn
+  end exkwd
+  %process
+    formchk [inputname].chk [inputname].fchk
+    copy [inputname].out [inputname].log 
+
+$N+1
+  %source opt
+  %control
+    totcore 4
+    totmem 4000
+  %keywords "[func]/[bset] [scrf] [DFT-D] out=wfn"
+  %mod
+      spin    add      1
+      charge  subtract 1
+  %extrakeywords
+N+1.wfn
+  end exkwd
+  %process
+    formchk [inputname].chk [inputname].fchk
+    copy [inputname].out [inputname].log 
+
+$CDFT
+  %source opt,N+1,N-1
+  %program script
+  %keywords "123"
+  %control 
+      totcore 4
+      totmem 4000 
+  %extrakeywords
+copy "..\opt\opt_[originname].fchk" . 
+copy "..\opt\N.wfn" . 
+copy "..\N-1\N-1.wfn" . 
+copy "..\N+1\N+1.wfn" .
+  end exkwd
+  %process
+    banewfn cdft opt_[originname].fchk

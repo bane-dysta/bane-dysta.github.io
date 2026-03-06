@@ -77,7 +77,9 @@ set style_dir $env(VMDSCRIPTS)\\styles
 gitbash的安装一路默认即可，没啥难度。最好别改默认安装路径。
 
 ### Banewfn本体
-banewfn可以从笔者的[GitHub](https://github.com/bane-dysta/banewfn/releases)下载，那边的更新最勤。
+banewfn可以从笔者的[GitHub](https://github.com/bane-dysta/banewfn/releases)下载，那边的更新最勤；
+
+如果连不上GitHub，可以去[gitee](https://gitee.com/bane-dysta/banewfn/releases)下载，但是这里可能不是最新版。
 
 release里有两个版本。一个是压缩包，这一版解压后需要手动调一下配置文件。如果你已经按照上文操作配置过Multiwfn的路径，不想麻烦的朋友可以直接双击set.bat把配置文件做好。如果你是高手，也可以手动创建：在地址栏键入`%USERPROFILE%`，进入你的个人文件夹，创建一个`.bane`文件夹，在其中再创建一个`wfn`文件夹，在`wfn`里创建`banewfn.rc`（也就是`%USERPROFILE%/.bane/wfn/banewfn.rc`），路径自己填：
 ```
