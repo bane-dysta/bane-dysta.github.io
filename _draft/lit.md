@@ -196,7 +196,17 @@ sudo systemctl restart sshd
 
 ## fatal error: filesystem: No such file or directory
 描述：在旧集群上通过编译安装的新gcc往往找不到filesystem，导致C++17的很多项目编译不过去
+
 原因：有些来源的filesystem似乎在experimental/filesystem里
 
 解决：
 修改头文件，把`#include <filesystem>`改为`#include <experimental/filesystem>`(命名空间也要改),在编译时添加flag`-lstdc++fs`，大概率解决此问题。
+
+## 清除失效打开方式
+描述：将某后缀关联某程序后，原程序未正常卸载，后续失效程序赖在打开方式里
+
+原因：注册表残留项
+
+解决：
+- 在`HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts`里，把对应后缀中失效程序项删掉
+- 在`HKEY_CLASSES_ROOT\Applications`，删掉对应程序的注册表
