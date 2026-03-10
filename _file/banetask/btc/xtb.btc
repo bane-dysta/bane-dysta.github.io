@@ -1,0 +1,6 @@
+$opt
+  %source origin
+  %program other
+  %keywords "job=xtb prog=script gfn=[gfn] suffix=bat"
+  %process
+    banewfn ESP molden.input

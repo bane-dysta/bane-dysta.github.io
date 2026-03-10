@@ -1,0 +1,16 @@
+autorun: true
+define:
+  func: B3LYP
+  bset: 6-31G(d)
+  scrf: 
+  DFT-D: em=gd3bj
+
+$opt
+  %source origin
+  %control
+    totcore 4
+    totmem 4000
+  %keywords "opt freq [func]/[bset] [scrf] [DFT-D]"
+  %process
+    formchk [inputname].chk [inputname].fchk
+    banewfn fmo [inputname].fchk
