@@ -87,9 +87,9 @@ release：[starte](/_file/55/starte_static.7z)
 ```text
 %nprocshared=16
 %mem=8GB
-# opt(nomicro) nosymm td external='./starte_static'
+# opt(nomicro) nosymm external='starte'
 
-method=pbe1pbe basis=6-31+g* root=1 nadd=4 extra='int=fine'
+method=b3lyp basis=def2svp root=2 nadd=2
 sdnto=.t. banesnto=.t. sntorange=2 inttype=2
 
 0 1
