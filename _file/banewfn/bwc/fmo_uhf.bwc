@@ -1,17 +1,17 @@
 wfn=*.fchk
 [fmo]
 %process
-    orb index h-1
-    orb index h
-    orb index l
-    orb index l+1
+    orb index ha
+    orb index hb
+    orb index la
+    orb index lb
 %command
 #!/bin/bash
 mkdir -p ${input}
-mv h-1.cub ${input}/${input}_oH1.cub
-mv h.cub ${input}/${input}_oH.cub
-mv l.cub ${input}/${input}_oL.cub
-mv l+1.cub ${input}/${input}_oL1.cub
+mv ha.cub ${input}/${input}_A_oH.cub
+mv hb.cub ${input}/${input}_B_oH.cub
+mv la.cub ${input}/${input}_A_oL.cub
+mv lb.cub ${input}/${input}_B_oL.cub
 echo "vmd -e orb.vmd" > ${input}/orb.bat
 echo "vcube *.cub" > ${input}/orb.vmd
 rm ${output}
