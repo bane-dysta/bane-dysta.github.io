@@ -54,7 +54,7 @@ Multiwfn是可以解压即用的，但是为了可以在命令行调用，本文
 - 打开VMD可执行文件所在目录，把地址复制出来备用
 - 使用快捷键Win+R打开运行窗口，输入sysdm.cpl回车
 - 在弹出的窗口里打开`高级`选项卡，点击下方的`环境变量`
-- 在新弹出的窗口上半部分，点击新建。
+- 在新弹出的窗口上半部分，点击新建。（若后续vcube加载失败，可以尝试在下半部分创建变量）
 - 变量名填`VMDSCRIPTS`，变量值为先前复制的VMD可执行文件所在目录
 - 点击确定以添加环境变量
 - 找到一个名为`Path`的环境变量，双击打开
@@ -70,6 +70,16 @@ set style_dir $env(VMDSCRIPTS)\\styles
 ```
 
 最后下载ggdh老师的[vcube](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=18150&fromuid=63020)，并把vcube.tcl和style放进vmd所在目录。公社下载文件要注册，在这里也[提供一份2.0版](/_file/banewfn/vcube2.0.rar)。
+
+完成后，Win+R运行cmd，在命令行键入VMD，如果可以成功运行VMD，且输出
+```
+vcube loaded...
+vcube version 2.0 developed by ZhongCheng@whu.edu.cn
+type "vhelp" to get list of available functions and keyboard shortcuts
+type "vhelp function" to get detailed usage of that function
+```
+则配置完成。部分用户反映按照上述步骤配置完之后vcube加载失败，这可能是权限问题，此时可以尝试将VMDSCRIPTS变量添加至系统变量，也就是下半部分窗口。
+
 
 ### GitBash
 为了在命令行使用bash脚本，需要安装一个gitbash。可以去[官网](https://git-scm.com/install/windows)下，但是这里走的是GitHub，偶尔会抽风下不下来。此时也可以去国内镜像下载，比如[清华源](https://mirrors.tuna.tsinghua.edu.cn/github-release/git-for-windows/git/)。
