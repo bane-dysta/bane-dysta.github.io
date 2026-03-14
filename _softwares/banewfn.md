@@ -44,7 +44,7 @@ Multiwfn是可以解压即用的，但是为了可以在命令行调用，本文
 - 点击确定退出`Path`设置
 - 点击确定退出环境变量设置
 
-完成后，Win+R运行cmd，在命令行键入multiwfn，如果可以成功运行Multiwfn，则证明设置成功
+完成后，Win+R运行cmd，在命令行键入multiwfn，如果可以成功运行Multiwfn，则证明设置成功。
 
 ### VMD
 下载地址：https://www.ks.uiuc.edu/Development/Download/download.cgi?PackageName=VMD
