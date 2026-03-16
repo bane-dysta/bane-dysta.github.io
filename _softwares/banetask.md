@@ -66,6 +66,11 @@ banetask --help
 
 > BaneTask 本身只负责生成工作流脚本，不强绑定具体队列系统。你可以用banetask提供的调度器`run.sh`，也可以自己按需求编写任务调度器，或是直接进入任务目录手动执行其中的命令。
 
+## 脚本集
+
+- btc脚本集合入口在[这里](/_file/banetask/btc/)，此为Windows专属
+- Linux版例子暂时可以取[我的gitee](https://gitee.com/bane-dysta/conf2)看
+
 ## 配置与目录结构
 
 ### banetask.conf 的查找规则与优先级
