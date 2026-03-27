@@ -116,7 +116,7 @@ cores=4
 ## 自定义脚本教程
 公社介绍贴：[[辅助/分析程序] 模板化Multiwfn运行的一种途径](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=56646&fromuid=63020)
 
-Manual: [BaneWfn_Munual.md](_file\banewfn\BaneWfn_Project_Manual_zh.pdf)
+Manual: [BaneWfn_Munual.md](/_file/banewfn/BaneWfn_Project_Manual_zh.pdf)
 
 banewfn的方便之处在于可以用一个通用的bw文件完成复杂波函数分析。安装banewfn后，只要把conf文件写好，就可以随意组合操作拼成脚本。
 
