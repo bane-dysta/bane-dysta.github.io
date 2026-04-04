@@ -1,0 +1,20 @@
+tar -czf blog-src.tgz \
+  _config.yml \
+  Gemfile \
+  Gemfile.lock \
+  README.md \
+  CNAME \
+  _data \
+  _includes \
+  _layouts \
+  _plugins \
+  _sass \
+  _tabs \
+  _softwares \
+  assets \
+  index.html \
+  local_serve.bat \
+  postindex.py \
+  pull.bat \
+  push.bat \
+  tools

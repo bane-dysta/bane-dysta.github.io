@@ -1,30 +1,25 @@
 wfn=*.fchk
+
 [grid]
 %process
-    electron
-    esp
+    elf
 %command
 #!/bin/bash
-    mkdir -p ESP
-    mv density.cub ESP/${input}_den.cub
-    mv totesp.cub ESP/${input}_esp.cub
-
-    cat << EOF > ESP/esp.bat
-    vmd -e esp.vmd
+mkdir -p ${input}_ELF
+mv ELF.cub ${input}_ELF/${input}_elf.cub
+cat << EOF > ${input}_ELF/elf.bat
+vmd -e elf.vmd
 EOF
-
-    cat << EOF2 > ESP/esp.vmd
-    vcube *_den.cub map *_esp.cub
-    set colorlow -20
-    set colorhigh 20
-    mol scaleminmax 0 1 -20 20
-    puts "unit: kcal/mol"
+cat << EOF2 > ${input}_ELF/elf.vmd
+vcube ${input}_elf.cub
 EOF2
+
+mv ${output} ${input}_ELF
+
 end
 
-
 # Bundled by bane dysta
-# ConfDir: D:\program\Banewfn\conf
+# ConfDir: D:\MyProgram\banewfn\conf
 
 #>>> BANEWFN_INLINE_CONF_BEGIN grid
 ## bundled module: grid
@@ -32,10 +27,24 @@ end
 # [main]
 # 5
 # 
+# # define
+# [wfn2]
+# 0
+# 1
+# ${operator}
+# 
 # # density.cub
 # [electron]
 # 1
 # ${grid:-3}
+# 2
+# 0
+# 5
+# 
+# # spindensity.cub
+# [spin]
+# 5
+# ${grid:-2}
 # 2
 # 0
 # 5
@@ -72,6 +81,26 @@ end
 # 0
 # totesp.cub
 # -1
+# 5
+# 
+# # avglocion
+# [alie]
+# 18
+# ${grid:-3}
+# 2
+# 0
+# 5
+# 
+# [leae]
+# -10
+# 1000
+# 2
+# -27
+# 5
+# 100
+# ${grid:-3}
+# 2
+# 0
 # 5
 # 
 # # 退出
