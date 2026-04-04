@@ -4,6 +4,7 @@ tar -czf blog-src.tgz \
   Gemfile.lock \
   README.md \
   CNAME \
+  _posts \
   _data \
   _includes \
   _layouts \

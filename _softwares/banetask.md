@@ -432,7 +432,7 @@ btask compare opt td --metric energy --path ./my_project
 
 下面给一个“Gaussian 优化 + ORCA 单点 + 条件后续任务”的例子：
 
-```text
+```bt
 autorun: false
 
 define:
