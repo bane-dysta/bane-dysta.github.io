@@ -28,3 +28,7 @@ _sass/dist
 
 _posts/.obsidian
 *.bat
+
+
+*.tgz
+*.patch
