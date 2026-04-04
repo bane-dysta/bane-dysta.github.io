@@ -8,7 +8,7 @@ module Rouge
       title 'BaneWfn'
       desc 'BaneWfn workflow script (.bw/.bwc)'
       tag 'banewfn'
-      aliases 'bw', 'bwc', 'bt', 'btc'
+      aliases 'bw', 'bwc'
       filenames '*.bw', '*.bwc'
 
       def self.detect?(text)

@@ -87,13 +87,15 @@ type "vhelp function" to get detailed usage of that function
 gitbash的安装一路默认即可，没啥难度。最好别改默认安装路径。
 
 ### Banewfn本体
-banewfn可以从笔者的[GitHub](https://github.com/bane-dysta/banewfn/releases)下载，那边的更新最勤；
+banewfn可以从笔者的[GitHub](https://github.com/bane-dysta/banewfn/releases)下载。Github里有CI prerelease，可以确保拿到最新版，但是网络有概率抽风。
 
-如果连不上GitHub，可以去[gitee](https://gitee.com/bane-dysta/banewfn/releases)下载，但是这里可能不是最新版。
+如果连不上GitHub，可以去[gitee](https://gitee.com/bane-dysta/banewfn/releases)下载，但是这里要靠笔者手动release，可能不是最新版。
 
-release里有两个版本。一个是installer版，跟着提示选路径即可。推荐先装完上面的Multiwfn和gitbash再用installer安装，如果上述操作正确，installer应该已经自动找到正确的路径了。目前installer已经比较完善，除了没有打包example之外强于压缩包版，一般情况下优先使用installer安装。installer一定是最新版，压缩包更新可能不一定及时（作者是懒狗）。
+#### Windows版
 
-压缩包版解压后需要手动调一下配置文件。如果你已经按照上文操作配置过Multiwfn的路径，不想麻烦的朋友可以直接双击set.bat把配置文件做好。如果你是高手，也可以手动创建：在地址栏键入`%USERPROFILE%`，进入你的个人文件夹，创建一个`.bane`文件夹，在其中再创建一个`wfn`文件夹，在`wfn`里创建`banewfn.rc`（也就是`%USERPROFILE%/.bane/wfn/banewfn.rc`），路径自己填：
+Windows的release有两个版本。一个是exe后缀的installer版，跟着提示选路径即可。推荐先装完上面的Multiwfn和gitbash再用installer安装，如果上述操作正确，installer应该已经自动找到正确的路径了。目前installer已经比较完善，除了没有打包example之外强于portable版，一般情况下优先使用installer安装。
+
+还有一个是zip后缀的portable版，这一版解压后需要手动调一下配置文件。如果你已经按照上文操作配置过Multiwfn的路径，不想麻烦的朋友可以直接双击set.bat把配置文件做好。如果你是高手，也可以手动创建：在地址栏键入`%USERPROFILE%`，进入你的个人文件夹，创建一个`.bane`文件夹，在其中再创建一个`wfn`文件夹，在`wfn`里创建`banewfn.rc`（也就是`%USERPROFILE%/.bane/wfn/banewfn.rc`），路径自己填：
 ```
 # banewfn.rc
 gitbash_exec=C:\Program Files\Git\bin\bash.exe
@@ -102,6 +104,9 @@ confpath=D:\MyProgram\banewfn\conf
 cores=4
 ```
 设置完后，还可以将bw后缀绑定banewfn。操作方法：任意新建一个bw文件，比如1.bw，在右键菜单里选择属性，从弹出的页面里找到选取打开方式，选择banewfn.exe作为bw文件的默认打开方式。
+
+#### Linux版
+Linux目前通过cpack单文件安装包进行release（后缀sh），`banewfn.rc`文件需要用户手动创建。
 
 ## 脚本集
 此处的脚本默认读者已按上述安装流程安装了所有程序，尤其是gitbash和VMD。
