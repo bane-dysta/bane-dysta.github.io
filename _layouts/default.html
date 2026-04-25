@@ -75,6 +75,8 @@ layout: compress
     {% endif %}
 
     <!-- JavaScripts -->
+    <script src="{{ '/assets/js/dist/theme.min.js' | relative_url }}"></script>
+    <!-- gpt 5.5 find this bug - theme.min.js must be loaded before home.min.js -->
     {% include js-selector.html lang=lang %}
     <script src="{{ '/assets/js/main.js' | relative_url }}"></script>
 
