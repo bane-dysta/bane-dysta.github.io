@@ -1,4 +1,5 @@
 tar -czf blog-src.tgz \
+  .github \
   _config.yml \
   Gemfile \
   Gemfile.lock \
