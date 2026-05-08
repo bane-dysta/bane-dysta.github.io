@@ -147,9 +147,13 @@ VS code高亮语法插件：[bt-highlight.vsix](/_file/banewfn/banewfn-syntax-1.
 - 输入`dir`，将输出复制或截图，并提供给开发者
 
 ## 自定义脚本教程
-公社介绍贴：[[辅助/分析程序] 模板化Multiwfn运行的一种途径](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=56646&fromuid=63020)
+注意，以下内容只是简单介绍一下，并不会经常更新。如果下述内容与随banewfn一起release的最新pdf文档冲突，以最新的pdf文档为准。
 
-Manual: [BaneWfn_Munual.md](/_file/banewfn/BaneWfn_Project_Manual_zh.pdf)
+Manual-ver1.3: [BaneWfn_Munual.md](/_file/banewfn/BaneWfn_Project_Manual_zh.pdf)
+
+公社介绍贴：
+- [[辅助/分析程序] 模板化Multiwfn运行的一种途径](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=56646&fromuid=63020)
+- [[波函数分析交流] 如何一键用Multiwfn预测反应位点？](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=58803&fromuid=63020)
 
 banewfn的方便之处在于可以用一个通用的bw文件完成复杂波函数分析。安装banewfn后，只要把conf文件写好，就可以随意组合操作拼成脚本。
 
