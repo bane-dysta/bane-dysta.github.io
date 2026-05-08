@@ -108,7 +108,7 @@ cores=4
 #### Linux版
 Linux目前通过cpack单文件安装包进行release（后缀sh），`banewfn.rc`文件需要用户手动创建。
 
-## 脚本集
+## 工具集
 此处的脚本默认读者已按上述安装流程安装了所有程序，尤其是gitbash和VMD。
 
 - 脚本集合入口在[这里](/_file/banewfn/scripts/)
@@ -119,6 +119,32 @@ Linux目前通过cpack单文件安装包进行release（后缀sh），`banewfn.r
 - bwc脚本集在[这里](/_file/banewfn/bwc/)
 
 VS code高亮语法插件：[bt-highlight.vsix](/_file/banewfn/banewfn-syntax-1.1.1.vsix)
+
+## 报错排查
+
+### 高频问题：双击没反应/闪退
+这种问题有七八成都是扩展名不一致引起的，比如bw/bwc文件里检索的是*.fchk，而实际提供的是fch。关于如何打开扩展名：
+
+![](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/2026/05/20260508174512.png)
+
+打开之后检查一下扩展名是否跟bw/bwc文件起始wfn定义的不一致。fchk与fch本质上是一类文件，可以通用，可以选择修改扩展名或修改bw/bwc文件wfn起始定义的模式以继续波函数分析。
+
+如果没有发现此类问题，按照如下步骤操作然后将输出反馈给开发者：
+
+- 找到安装banewfn的位置
+- 右击`banewfn.exe`，点击`复制文件地址选项`
+- 去你的工作目录
+- 右键-在此处打开终端
+- 敲一个`&`，然后空格
+- 右键粘贴banewfn地址，然后再敲一个空格
+- 输入存在问题的banewfn输入文件的文件名，如`fmo.bwc`
+- 将输出复制或截图，并提供给开发者
+
+同时，最好将如下信息也一并提供：
+
+- 去你的工作目录
+- 右键-在此处打开终端
+- 输入`dir`，将输出复制或截图，并提供给开发者
 
 ## 自定义脚本教程
 公社介绍贴：[[辅助/分析程序] 模板化Multiwfn运行的一种途径](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=56646&fromuid=63020)
