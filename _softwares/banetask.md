@@ -34,15 +34,25 @@ BaneTask 是一个用 **C++17** 编写的量子化学任务控制 / 工作流生
 - [bt 任务文件](#bt-任务文件)
   - [文件头：元信息、define、include](#文件头元信息defineinclude)
   - [任务块：依赖、输入生成与控制](#任务块依赖输入生成与控制)
-  - [前后处理脚本：pre_comd 与 comd](#前后处理脚本pre_comd-与-comd)
+    - [`%program`](#program)
+    - [`%source`](#source)
+    - [`%control`](#control)
+    - [`%keywords` 与关键词展开](#keywords-与关键词展开)
+    - [`%extrakeywords`](#extrakeywords)
+    - [`%mod`](#mod)
+  - [前后处理脚本：pre\_comd 与 comd](#前后处理脚本pre_comd-与-comd)
   - [归档与结果快照](#归档与结果快照)
 - [运行产物与目录约定](#运行产物与目录约定)
 - [结果数据库与项目比较](#结果数据库与项目比较)
+  - [`runif` 的写法](#runif-的写法)
+  - [`banetask db`](#banetask-db)
+  - [`btask db` 与 `btask compare`](#btask-db-与-btask-compare)
 - [命令行工具](#命令行工具)
   - [banetask 主程序](#banetask-主程序)
   - [btask 辅助工具](#btask-辅助工具)
   - [btc（Windows 辅助入口）](#btcwindows-辅助入口)
 - [示例](#示例)
+- [其他](#其他)
 
 <!-- /TOC -->
 
@@ -76,21 +86,21 @@ BaneTask 会按以下顺序查找 `banetask.conf`：
 
 1. 当前目录（`.`）
 2. `banetask` 可执行文件所在目录
-3. `~/.banetask/`
+3. `~/.bane/task/`
 4. `/etc/banetask/`
 
 同一个配置项的优先级固定为：
 
 **环境变量 > 配置文件 > 内置默认值**。
 
-因此你可以把常用默认值写在 `~/.banetask/banetask.conf`，再在 CI / 集群节点上用环境变量做覆盖。
+因此你可以把常用默认值写在 `~/.bane/task/banetask.conf`，再在 CI / 集群节点上用环境变量做覆盖。
 
 ## 配置
 
-建议把所有可移植、可复用的资源集中到 `~/.banetask/`（Windows 下对应 `%USERPROFILE%\.banetask\`），典型结构如下：
+建议把所有可移植、可复用的资源集中到 `~/.bane/task/`（Windows 下对应 `%USERPROFILE%\.bane\task\`），典型结构如下：
 
 ```text
-~/.banetask/
+~/.bane/task/
   banetask.conf
   envs/                 # 各程序运行环境配置（*.conf）
   bt_templates/         # btask 用的 .bt 模板
@@ -105,12 +115,12 @@ BaneTask 会按以下顺序查找 `banetask.conf`：
 
 - `BANETASK_TASK_PATH`：当你 **不带参数运行** `banetask` 时，用它作为任务搜索根目录（默认 `.`）。
 - `BANETASK_LOG_PATH`：banetask 自己的日志输出目录（默认 `.`）。
-- `BANETASK_ENVCONF_PATH`：程序环境配置目录（默认 `~/.banetask/envs`）。
-- `BANETASK_TEMPLATE_PATH`：`btask` 模板目录（默认 `~/.banetask/bt_templates`）。
-- `BANETASK_OTHER_TEMPLATES_PATH`：`%program other` 的输入模板目录（默认 `~/.banetask/other_templates`）。
-- `BANETASK_SCRIPTS_PATH`：`scripts ...` 指令和 `autorun` 使用的 `run.sh` / `run.bat` 所在目录（默认 `~/.banetask/scripts`）。
-- `BANETASK_EXTERNAL_SCRIPTS_PATH`：生成的 `pre_comd / comd` 会优先尝试加载这里的 `env.sh` / `env.bat` / `env.cmd`（默认 `~/.banetask/external`）。
-- `BANETASK_WFN_EXAMPLES_PATH`：`multiwfn ...` 指令使用的模板目录（默认 `~/.banetask/multiwfn_templates`）。
+- `BANETASK_ENVCONF_PATH`：程序环境配置目录（默认 `~/.bane/task/envs`）。
+- `BANETASK_TEMPLATE_PATH`：`btask` 模板目录（默认 `~/.bane/task/bt_templates`）。
+- `BANETASK_OTHER_TEMPLATES_PATH`：`%program other` 的输入模板目录（默认 `~/.bane/task/other_templates`）。
+- `BANETASK_SCRIPTS_PATH`：`scripts ...` 指令和 `autorun` 使用的 `run.sh` / `run.bat` 所在目录（默认 `~/.bane/task/scripts`）。
+- `BANETASK_EXTERNAL_SCRIPTS_PATH`：生成的 `pre_comd / comd` 会优先尝试加载这里的 `env.sh` / `env.bat` / `env.cmd`（默认 `~/.bane/task/external`）。
+- `BANETASK_WFN_EXAMPLES_PATH`：`multiwfn ...` 指令使用的模板目录（默认 `~/.bane/task/multiwfn_templates`）。
 - `BANETASK_BANEWFN_PATH`：`banewfn ...` 指令使用的模板 / 脚本目录（默认空）。
 - `BANETASK_SHELL`：强制脚本输出 shell 类型，可取 `bash` / `sh` / `gitbash` 或 `cmd` / `bat` / `dos`。
 - `USE_GITBASH=true`：在 Windows 上强制输出 bash 风格脚本。
