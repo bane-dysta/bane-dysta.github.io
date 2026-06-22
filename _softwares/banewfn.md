@@ -99,9 +99,9 @@ banewfn可以从笔者的[GitHub](https://github.com/bane-dysta/banewfn/releases
 
 如果连不上GitHub，可以去[gitee](https://gitee.com/bane-dysta/banewfn/releases)下载，但是这里要靠笔者手动release，可能不是最新版。
 
-Windows的release有两个版本。一个是exe后缀的installer版，跟着提示选路径即可。推荐先装完上面的Multiwfn和gitbash再用installer安装，如果上述操作正确，installer应该已经自动找到正确的路径了。目前installer已经比较完善，除了没有打包example之外强于portable版，一般情况下优先使用installer安装。
+Windows的release有两个版本。一个是exe后缀的installer版（banewfn.setup.exe），跟着提示选路径即可。**推荐先装完上面的Multiwfn和gitbash再用installer安装**。如果上述操作正确，installer应该已经自动找到正确的路径了。目前installer已经比较完善，除了没有打包example之外强于portable版，**一般情况下优先使用installer安装**。
 
-还有一个是zip后缀的portable版，这一版解压后需要手动调一下配置文件。如果你已经按照上文操作配置过Multiwfn的路径，不想麻烦的朋友可以直接双击set.bat把配置文件做好。如果你是高手，也可以手动创建：在地址栏键入`%USERPROFILE%`，进入你的个人文件夹，创建一个`.bane`文件夹，在其中再创建一个`wfn`文件夹，在`wfn`里创建`banewfn.rc`（也就是`%USERPROFILE%/.bane/wfn/banewfn.rc`），路径自己填：
+还有一个版本是zip后缀的portable版，这一版解压后需要手动调一下配置文件。如果你已经按照上文操作配置过Multiwfn的路径，不想麻烦的朋友可以直接双击set.bat把配置文件做好。如果你是高手，也可以手动创建：在地址栏键入`%USERPROFILE%`，进入你的个人文件夹，创建一个`.bane`文件夹，在其中再创建一个`wfn`文件夹，在`wfn`里创建`banewfn.rc`（也就是`%USERPROFILE%/.bane/wfn/banewfn.rc`），路径自己填：
 ```conf
 # banewfn.rc
 gitbash_exec=C:\Program Files\Git\bin\bash.exe
@@ -114,7 +114,7 @@ cores=4
 ### Linux版
 - Linux版无需安装git bash。
 - 此外，如果你的目的是在服务器上进行波函数分析，下载到本地使用，则你无需安装Linux版VMD，但仍需安装Multiwfn。
-- 如果你希望在本地使用banewfn的一键可视化，则你需要按照前述方法配置好VMD的`PATH`。
+- 如果你希望在本地使用banewfn的一键可视化，则你需要在本地按照[前述方法](#vmd)配置好VMD的`PATH`。
 
 #### Multiwfn
 Multiwfn的Linux版见[sobereva老师的博文](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=40529&fromuid=63020)，无需为banewfn进行其他额外设置，此处不再赘述。
