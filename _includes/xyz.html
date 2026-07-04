@@ -1,15 +1,28 @@
+{% assign chem_render_params = site.data.chem_render_params %}
+{% assign chem_defaults = chem_render_params.defaults %}
+{% assign chem_mode = include.mode | default: chem_defaults.mode %}
+{% assign chem_profile = 'liquid' %}
+{% if chem_mode == '2d' %}
+  {% assign chem_profile = 'liquid_2d' %}
+{% elsif include.xyz and include.src == nil %}
+  {% assign chem_profile = 'liquid_inline_xyz' %}
+{% endif %}
+{% assign chem_profile_defaults = chem_render_params.profiles[chem_profile] %}
+{% assign chem_width = include.width | default: chem_profile_defaults.width | default: chem_defaults.width %}
+{% assign chem_height = include.height | default: chem_profile_defaults.height | default: chem_defaults.height %}
+
 <div class="molecule-container">
   <div class="canvas-container">
     {% assign unique_id = include.id | default: 'mol' %}
     {% unless include.id %}
-      {% assign content_hash = include.xyz | append: include.mol | append: include.smiles | append: include.representation | append: include.bgcolor | size %}
-      {% assign unique_id = unique_id | append: '_' | append: content_hash | append: '_' | append: include.mode %}
+      {% assign content_hash = include.xyz | append: include.mol | append: include.smiles | append: include.src | append: include.format | append: include.representation | append: include.bgcolor | append: include.initial_scale_3d | size %}
+      {% assign unique_id = unique_id | append: '_' | append: content_hash | append: '_' | append: chem_mode %}
     {% endunless %}
     
-    {% if include.mode == '2d' %}
-      <canvas id="viewACS_{{ unique_id }}" width="{{ include.width | default: 400 }}" height="{{ include.height | default: 300 }}"></canvas>
-    {% elsif include.mode == '3d' %}
-      <canvas id="transform3d_{{ unique_id }}" width="{{ include.width | default: 400 }}" height="{{ include.height | default: 400 }}"></canvas>
+    {% if chem_mode == '2d' %}
+      <canvas id="viewACS_{{ unique_id }}" width="{{ chem_width }}" height="{{ chem_height }}"></canvas>
+    {% elsif chem_mode == '3d' %}
+      <canvas id="transform3d_{{ unique_id }}" width="{{ chem_width }}" height="{{ chem_height }}"></canvas>
     {% endif %}
   </div>
 </div>
@@ -19,6 +32,14 @@
 {% endif %}
 
 <script>
+(function() {
+var chemParams = window.ChemRenderOptions.fromObject({
+{% for chem_param in chem_render_params.params %}
+  {% assign chem_liquid_key = chem_param.liquid_key | default: chem_param.key %}
+  {{ chem_param.key | jsonify }}: {{ include[chem_liquid_key] | jsonify }}{% unless forloop.last %},{% endunless %}
+{% endfor %}
+}, { profile: {{ chem_profile | jsonify }} });
+
 function readMolDataNearCurrentScript() {
   var script = document.currentScript;
   var node = script ? script.previousElementSibling : null;
@@ -76,6 +97,13 @@ function parseCountsLine(line) {
 
 function normalizeElementSymbol(rawSymbol) {
   if (!rawSymbol) return null;
+
+  if (typeof window !== 'undefined' && window.XYZBondsLite && typeof window.XYZBondsLite.normalizeElement === 'function') {
+    var normalizedByLite = window.XYZBondsLite.normalizeElement(rawSymbol);
+    if (normalizedByLite && ChemDoodle.ELEMENT && ChemDoodle.ELEMENT[normalizedByLite]) {
+      return normalizedByLite;
+    }
+  }
 
   var lettersOnly = String(rawSymbol).replace(/[^A-Za-z]/g, '');
   if (!lettersOnly) return null;
@@ -186,7 +214,7 @@ function parseMolWithFallback(rawMol, options) {
   if (!located) return null;
 
   options = options || {};
-  var coordinateScale = Number.isFinite(options.coordinateScale) ? options.coordinateScale : 1;
+  var coordinateScale = finiteChemOptionNumber(options.coordinateScale, 1);
   var flipY = !!options.flipY;
 
   var countsIndex = located.index;
@@ -213,7 +241,130 @@ function parseMolWithFallback(rawMol, options) {
 
   return parsed.atoms.length > 0 ? parsed : null;
 }
-{% if include.mode == '2d' %}
+
+
+function resolveChemSourceUrl(src) {
+  src = String(src || '').trim();
+  if (!src) return '';
+
+  /* Keep absolute URLs, protocol-relative URLs, and root-relative URLs unchanged. */
+  if (/^(?:[a-z][a-z0-9+.-]*:)?\/\//i.test(src) || src.charAt(0) === '/') {
+    return src;
+  }
+
+  /* Convert a site-relative path such as assets/posts/48/1.mol to a URL that also
+     works when the site is deployed under a non-empty baseurl. */
+  var baseUrl = {{ site.baseurl | default: '' | jsonify }};
+  baseUrl = String(baseUrl || '').replace(/\/$/, '');
+  return baseUrl + '/' + src.replace(/^\/+/, '');
+}
+
+function detectChemSourceFormat(src, explicitFormat) {
+  var explicit = String(explicitFormat || '').trim().toLowerCase();
+  if (explicit) return explicit;
+
+  var cleanSrc = String(src || '').split('#')[0].split('?')[0];
+  var match = cleanSrc.match(/\.([A-Za-z0-9]+)$/);
+  return match ? match[1].toLowerCase() : '';
+}
+
+function fetchChemSourceText(src) {
+  var url = resolveChemSourceUrl(src);
+  if (!url) return Promise.reject(new Error('Empty molecule source URL.'));
+
+  return fetch(url, { cache: 'no-cache' }).then(function(response) {
+    if (!response.ok) {
+      throw new Error('Failed to fetch molecule source ' + url + ': HTTP ' + response.status);
+    }
+    return response.text();
+  });
+}
+
+function finiteChemOptionNumber(value, fallback) {
+  var parsed = typeof value === 'number' ? value : parseFloat(value);
+  return Number.isFinite(parsed) ? parsed : fallback;
+}
+
+
+function applyXYZBondsToMolecule(molecule, sourceAtoms, options) {
+  if (!molecule || !molecule.atoms || !molecule.atoms.length) return molecule;
+
+  options = options || {};
+  var bondMode = String(options.bondMode || 'lite').toLowerCase();
+
+  if (bondMode === 'none' || bondMode === 'off' || bondMode === 'false') {
+    molecule.bonds = [];
+    return molecule;
+  }
+
+  if (bondMode !== 'chemdoodle' && typeof window !== 'undefined' && window.XYZBondsLite && typeof window.XYZBondsLite.applyToMolecule === 'function') {
+    return window.XYZBondsLite.applyToMolecule(molecule, sourceAtoms, ChemDoodle, {
+      mode: 'lite',
+      scale: options.bondScale,
+      tolerance: options.bondTolerance,
+      pruneByMaxNeighbors: options.pruneByMaxNeighbors
+    });
+  }
+
+  if (ChemDoodle.informatics && ChemDoodle.informatics.BondDeducer) {
+    try {
+      molecule.bonds = [];
+      new ChemDoodle.informatics.BondDeducer().deduceCovalentBonds(
+        molecule,
+        finiteChemOptionNumber(options.bondMax, 1)
+      );
+    } catch (err) {
+      console.warn('ChemDoodle BondDeducer failed for XYZ source:', err);
+    }
+  }
+
+  return molecule;
+}
+
+function parseXYZToMolecule(rawXYZ, options) {
+  var xyzData = String(rawXYZ || '').replace(/^\uFEFF/, '').replace(/\r\n?/g, '\n').trim();
+  if (!xyzData) return null;
+
+  options = options || {};
+  var coordinateScale = finiteChemOptionNumber(options.coordinateScale, 1);
+  var lines = xyzData.split('\n');
+  var startIndex = 0;
+  var numAtoms = parseInt(lines[0], 10);
+
+  if (Number.isInteger(numAtoms) && numAtoms > 0) {
+    startIndex = 2;
+  } else {
+    numAtoms = lines.length;
+    startIndex = 0;
+  }
+
+  var molecule = new ChemDoodle.structures.Molecule();
+  var sourceAtoms = [];
+
+  for (var i = startIndex; i < lines.length && molecule.atoms.length < numAtoms; i++) {
+    var line = lines[i].trim();
+    if (!line || line.charAt(0) === '#') continue;
+
+    var parts = line.split(/\s+/);
+    if (parts.length < 4) continue;
+
+    var element = normalizeElementSymbol(parts[0]);
+    var x = parseFloat(parts[1]);
+    var y = parseFloat(parts[2]);
+    var z = parseFloat(parts[3]);
+
+    if (!element || !Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) continue;
+
+    sourceAtoms.push({ element: element, x: x, y: y, z: z });
+    molecule.atoms.push(new ChemDoodle.structures.Atom(element, x * coordinateScale, y * coordinateScale, z * coordinateScale));
+  }
+
+  if (molecule.atoms.length === 0) return null;
+
+  applyXYZBondsToMolecule(molecule, sourceAtoms, options);
+  return molecule;
+}
+{% if chem_mode == '2d' %}
 /* 2D Canvas */
 (function() {
   /* Generate truly unique ID at runtime */
@@ -231,22 +382,48 @@ function parseMolWithFallback(rawMol, options) {
     return;
   }
   
-  var canvas = new ChemDoodle.ViewerCanvas(uniqueCanvasId, {{ include.width | default: 400 }}, {{ include.height | default: 300 }});
+  var canvas = new ChemDoodle.ViewerCanvas(uniqueCanvasId, chemParams.width, chemParams.height);
   canvas.styles.bonds_width_2D = 0.6;
   canvas.styles.bonds_saturationWidthAbs_2D = 2.6;
   canvas.styles.atoms_font_size_2D = 10;
   
-  {% if include.smiles %}
+  {% if include.src %}
+  var chemSrc = {{ include.src | jsonify }};
+  var chemFormat = detectChemSourceFormat(chemSrc, {{ include.format | default: '' | jsonify }});
+  fetchChemSourceText(chemSrc).then(function(sourceText) {
+    var molecule = null;
+
+    if (chemFormat === 'mol' || chemFormat === 'sdf') {
+      molecule = parseMolWithFallback(sourceText);
+    } else if (chemFormat === 'smiles' || chemFormat === 'smi') {
+      var smiles = sourceText.trim().split(/\s+/)[0];
+      var molfile = OCL.Molecule.fromSmiles(smiles).toMolfile();
+      molecule = ChemDoodle.readMOL(molfile);
+    } else {
+      console.error('Unsupported 2D molecule source format:', chemFormat, chemSrc);
+      return;
+    }
+
+    if (molecule && molecule.atoms && molecule.atoms.length > 0) {
+      molecule.scaleToAverageBondLength(chemParams.scale2D);
+      canvas.loadMolecule(molecule);
+    } else {
+      console.error('Failed to parse molecule source for:', uniqueCanvasId, chemSrc);
+    }
+  }).catch(function(err) {
+    console.error('Failed to load molecule source for:', uniqueCanvasId, chemSrc, err);
+  });
+  {% elsif include.smiles %}
   var smiles = '{{ include.smiles }}';
   var molfile = OCL.Molecule.fromSmiles(smiles).toMolfile();
   var molecule = ChemDoodle.readMOL(molfile);
-  molecule.scaleToAverageBondLength({{ include.scale | default: 20 }});
+  molecule.scaleToAverageBondLength(chemParams.scale2D);
   canvas.loadMolecule(molecule);
   {% elsif include.mol %}
   var molData = readMolDataNearCurrentScript();
   var molecule = parseMolWithFallback(molData);
   if (molecule && molecule.atoms && molecule.atoms.length > 0) {
-    molecule.scaleToAverageBondLength({{ include.scale | default: 20 }});
+    molecule.scaleToAverageBondLength(chemParams.scale2D);
     canvas.loadMolecule(molecule);
   } else {
     console.error('Failed to parse MOL data for:', uniqueCanvasId, molData);
@@ -254,7 +431,7 @@ function parseMolWithFallback(rawMol, options) {
   {% endif %}
 })();
 
-{% elsif include.mode == '3d' %}
+{% elsif chem_mode == '3d' %}
 /* 3D Canvas */
 (function() {
   /* Generate truly unique ID at runtime */
@@ -273,21 +450,25 @@ function parseMolWithFallback(rawMol, options) {
   }
   
   console.log('Starting 3D canvas initialization for:', uniqueCanvasId);
-  var canvas = new ChemDoodle.TransformCanvas3D(uniqueCanvasId, {{ include.width | default: 400 }}, {{ include.height | default: 400 }});
+  var canvas = new ChemDoodle.TransformCanvas3D(uniqueCanvasId, chemParams.width, chemParams.height);
   console.log('3D canvas created:', uniqueCanvasId);
   
-  canvas.styles.set3DRepresentation('{{ include.representation | default: "Ball and Stick" }}');
-  canvas.styles.backgroundColor = '{{ include.bgcolor | default: "black" }}';
-  canvas.styles.atoms_useVDWDiameters_3D = {{ include.use_vdw_3d | default: false }};
-  canvas.styles.atoms_vdwMultiplier_3D = {{ include.vdw_multiplier_3d | default: 1.0 }};
-  canvas.styles.atoms_sphereDiameter_3D = {{ include.atom_diameter_3d | default: 8.0 }};
-  canvas.styles.bonds_cylinderDiameter_3D = {{ include.bond_diameter_3d | default: 1.0 }};
+  var optionResolver = window.ChemRenderOptions;
+  var representation3D = chemParams.representation;
+  var atomDiameter3D = chemParams.atomDiameter3D;
+
+  canvas.styles.set3DRepresentation(representation3D);
+  canvas.styles.backgroundColor = chemParams.bgcolor;
+  canvas.styles.atoms_useVDWDiameters_3D = optionResolver.resolveUseVDW3D(chemParams.useVDW3D, representation3D);
+  canvas.styles.atoms_vdwMultiplier_3D = optionResolver.resolveVDWMultiplier3D(chemParams.vdwMultiplier3D, atomDiameter3D);
+  canvas.styles.atoms_sphereDiameter_3D = atomDiameter3D;
+  canvas.styles.bonds_cylinderDiameter_3D = chemParams.bondDiameter3D;
 
   function applyInitial3DScale() {
     /* In ChemDoodle 3D/WebGL canvases, wheel zoom is controlled by camera.zoom,
        not styles.scale. Treat initial_scale_3d as apparent display scale:
        1 = original size, 0.5 = half size, 0.1 = one tenth size. */
-    var initialScale3D = {{ include.initial_scale_3d | default: 0.5 }};
+    var initialScale3D = chemParams.initialScale3D;
     if (Number.isFinite(initialScale3D) && initialScale3D > 0) {
       canvas.camera.zoom = 1 / initialScale3D;
       if (typeof canvas.updateScene === 'function') {
@@ -300,67 +481,69 @@ function parseMolWithFallback(rawMol, options) {
 
   console.log('Styles set for:', uniqueCanvasId);
   
-  {% if include.xyz %}
-  /* Parse XYZ coordinate data */
+  {% if include.src %}
+  var chemSrc = {{ include.src | jsonify }};
+  var chemFormat = detectChemSourceFormat(chemSrc, {{ include.format | default: '' | jsonify }});
+  fetchChemSourceText(chemSrc).then(function(sourceText) {
+    var molecule = null;
+
+    if (chemFormat === 'mol' || chemFormat === 'sdf') {
+      molecule = parseMolWithFallback(sourceText, {
+        coordinateScale: chemParams.molCoordinateScale3D,
+        flipY: true
+      });
+    } else if (chemFormat === 'xyz') {
+      molecule = parseXYZToMolecule(sourceText, {
+        coordinateScale: chemParams.xyzCoordinateScale3D,
+        bondMode: chemParams.bondMode,
+        bondScale: chemParams.bondScale,
+        bondTolerance: chemParams.bondTolerance,
+        bondMax: chemParams.bondMaxDistance
+      });
+    } else if (chemFormat === 'smiles' || chemFormat === 'smi') {
+      var smiles = sourceText.trim().split(/\s+/)[0];
+      var molfile = OCL.Molecule.fromSmiles(smiles).toMolfile();
+      molecule = ChemDoodle.readMOL(molfile);
+    } else {
+      console.error('Unsupported 3D molecule source format:', chemFormat, chemSrc);
+      return;
+    }
+
+    if (molecule && molecule.atoms && molecule.atoms.length > 0) {
+      console.log('External molecule source loaded for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms');
+      canvas.loadMolecule(molecule);
+      applyInitial3DScale();
+    } else {
+      console.error('Failed to parse molecule source for:', uniqueCanvasId, chemSrc);
+    }
+  }).catch(function(err) {
+    console.error('Failed to load molecule source for:', uniqueCanvasId, chemSrc, err);
+  });
+  {% elsif include.xyz %}
   var xyzData = {{ include.xyz | jsonify }};
-  var lines = xyzData.trim().split('\n');
-  var numAtoms = parseInt(lines[0]);
-  var comment = lines[1]; /* Skip comment line */
-  
-  var molecule = new ChemDoodle.structures.Molecule();
-  
-  /* Parse atoms from XYZ data */
-  for (var i = 2; i < 2 + numAtoms && i < lines.length; i++) {
-    var parts = lines[i].trim().split(/\s+/);
-    if (parts.length < 4) {
-      console.warn('Skipping malformed XYZ line at index', i, ':', lines[i]);
-      continue;
-    }
+  var molecule = parseXYZToMolecule(xyzData, {
+    coordinateScale: chemParams.xyzCoordinateScale3D,
+    bondMode: chemParams.bondMode,
+    bondScale: chemParams.bondScale,
+    bondTolerance: chemParams.bondTolerance,
+    bondMax: chemParams.bondMaxDistance
+  });
 
-    var element = normalizeElementSymbol(parts[0]);
-    var x = parseFloat(parts[1]);
-    var y = parseFloat(parts[2]);
-    var z = parseFloat(parts[3]);
-
-    if (!element || !Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) {
-      console.warn('Skipping invalid atom entry at line', i, ':', lines[i]);
-      continue;
-    }
-
-    molecule.atoms.push(new ChemDoodle.structures.Atom(element, x, y, z));
+  if (molecule && molecule.atoms && molecule.atoms.length > 0) {
+    console.log('XYZ molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms and', molecule.bonds.length, 'bonds');
+    canvas.loadMolecule(molecule);
+    applyInitial3DScale();
+    console.log('XYZ molecule loaded for:', uniqueCanvasId);
+  } else {
+    console.error('Failed to parse inline XYZ data for:', uniqueCanvasId);
   }
-  
-  /* Auto-generate bonds based on distance (simple approach) */
-  /* You may want to customize this based on your needs */
-  for (var j = 0; j < molecule.atoms.length; j++) {
-    for (var k = j + 1; k < molecule.atoms.length; k++) {
-      var atom1 = molecule.atoms[j];
-      var atom2 = molecule.atoms[k];
-      
-      var dx = atom1.x - atom2.x;
-      var dy = atom1.y - atom2.y;
-      var dz = atom1.z - atom2.z;
-      var distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
-      
-      /* Simple bonding criteria based on atomic radii */
-      var maxBondDistance = 2.0; /* Adjust as needed */
-      if (distance < maxBondDistance) {
-        molecule.bonds.push(new ChemDoodle.structures.Bond(atom1, atom2));
-      }
-    }
-  }
-  
-  console.log('XYZ molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms and', molecule.bonds.length, 'bonds');
-  canvas.loadMolecule(molecule);
-  applyInitial3DScale();
-  console.log('XYZ molecule loaded for:', uniqueCanvasId);
   {% elsif include.mol %}
   var molData = readMolDataNearCurrentScript();
   var molecule = parseMolWithFallback(molData, {
     /* ChemDoodle.readMOL normally multiplies MOL coordinates by bondLength_2D.
        Do the same only when readMOL fails and our fallback parser is used;
        otherwise shifted-header MOL files look tiny in coordinate space, making fixed-size atoms appear huge. */
-    coordinateScale: {{ include.mol_coordinate_scale_3d | default: 20 }},
+    coordinateScale: chemParams.molCoordinateScale3D,
     flipY: true
   });
   if (molecule && molecule.atoms && molecule.atoms.length > 0) {
@@ -382,6 +565,7 @@ function parseMolWithFallback(rawMol, options) {
   {% endif %}
 })();
 {% endif %}
+})();
 </script>
 
 <style>

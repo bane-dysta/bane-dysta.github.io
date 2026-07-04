@@ -9,6 +9,6 @@ summary: 为SNTO设计的轨道重叠积分计算程序
 - [使用记录（博文）](/posts/58/)
 
 ## 下载
-- [baneSNTO.tar.xz](/_file/58/baneSNTO.tar.xz)
+- [baneSNTO.tar.xz](/assets/posts/58/baneSNTO.tar.xz)
 
 

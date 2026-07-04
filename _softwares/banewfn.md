@@ -77,7 +77,7 @@ source $env(VMDSCRIPTS)/vcube.tcl
 set style_dir $env(VMDSCRIPTS)\\styles
 ```
 
-最后下载ggdh老师的[vcube](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=18150&fromuid=63020)，并把vcube.tcl和style放进vmd所在目录。公社下载文件要注册，在这里也[提供一份2.0版](/_file/banewfn/vcube2.0.rar)。
+最后下载ggdh老师的[vcube](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=18150&fromuid=63020)，并把vcube.tcl和style放进vmd所在目录。公社下载文件要注册，在这里也[提供一份2.0版](/assets/files/banewfn/vcube2.0.rar)。
 
 完成后，Win+R运行cmd，在命令行键入VMD，如果可以成功运行VMD，且输出
 ```
@@ -166,14 +166,14 @@ formchk h2.chk
 ## 工具集
 此处的脚本默认读者已按上述安装流程安装了所有程序，尤其是gitbash和VMD。（Linux版可以忽略）
 
-- 脚本集合入口在[这里](/_file/banewfn/scripts/)
-- 配置文件集合入口在[这里](/_file/banewfn/confs/)
+- 脚本集合入口在[这里](/assets/files/banewfn/scripts/)
+- 配置文件集合入口在[这里](/assets/files/banewfn/confs/)
 
 如果不想捣鼓conf，只是想做某个分析，可以看内联配置的bwc脚本集，这些脚本同bw文件一样是双击即用的，同时无需配置文件：
 
-- bwc脚本集在[这里](/_file/banewfn/bwc/)
+- bwc脚本集在[这里](/assets/files/banewfn/bwc/)
 
-VS code高亮语法插件：[bt-highlight.vsix](/_file/banewfn/banewfn-syntax-1.1.1.vsix)
+VS code高亮语法插件：[bt-highlight.vsix](/assets/files/banewfn/banewfn-syntax-1.1.2.vsix)
 
 ## 报错排查
 
@@ -236,7 +236,7 @@ ntdll.dll          00007FFB143E427C  Unknown               Unknown  Unknown
 ## 自定义脚本教程
 注意，以下内容只是简单介绍一下，并不会经常更新。如果下述内容与随banewfn一起release的最新pdf文档冲突，以最新的pdf文档为准。
 
-Manual-ver1.3: [BaneWfn_Munual.md](/_file/banewfn/BaneWfn_Project_Manual_zh.pdf)
+Manual-ver1.3: [BaneWfn_Munual.md](/assets/files/banewfn/BaneWfn_Project_Manual_zh.pdf)
 
 公社介绍贴：
 - [[辅助/分析程序] 模板化Multiwfn运行的一种途径](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=56646&fromuid=63020)
