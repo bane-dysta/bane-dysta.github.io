@@ -1,0 +1,92 @@
+{% comment %}
+  Auto attachment list for posts.
+
+  Resolution order:
+  1. Explicit front matter: asset_id: 57
+  2. Default from the post filename index:
+     _posts/2026-01-03-57.md       -> /assets/posts/57/
+     _posts/2026-01-03-57-title.md -> /assets/posts/57/
+
+  This keeps old posts compatible while allowing future index-named posts
+  to omit asset_id from front matter.
+{% endcomment %}
+
+{% assign page_filename = page.path | split: '/' | last %}
+{% assign filename_without_ext = page_filename | remove: '.markdown' | remove: '.md' %}
+{% assign filename_parts = filename_without_ext | split: '-' %}
+{% assign candidate_asset_id = filename_parts[3] | append: '' %}
+{% assign candidate_number = candidate_asset_id | plus: 0 | append: '' %}
+{% assign resolved_asset_id = '' %}
+
+{% if page.asset_id %}
+  {% assign resolved_asset_id = page.asset_id | append: '' %}
+{% elsif candidate_asset_id == candidate_number %}
+  {% assign resolved_asset_id = candidate_asset_id %}
+{% endif %}
+
+{% if resolved_asset_id != '' %}
+  {% assign asset_prefix = '/assets/posts/' | append: resolved_asset_id | append: '/' %}
+  {% assign sorted_static_files = site.static_files | sort: 'path' %}
+  {% assign asset_count = 0 %}
+
+  {% for file in sorted_static_files %}
+    {% assign current_prefix = file.path | slice: 0, asset_prefix.size %}
+    {% if current_prefix == asset_prefix %}
+      {% assign asset_count = asset_count | plus: 1 %}
+    {% endif %}
+  {% endfor %}
+
+  {% if asset_count > 0 %}
+    <section class="post-assets" aria-labelledby="post-assets-heading">
+      <h2 id="post-assets-heading" data-toc-skip>本文附件</h2>
+      <p class="post-assets-desc">共 {{ asset_count }} 个文件，位于 <code>{{ asset_prefix }}</code>。</p>
+      <ul class="post-asset-list">
+        {% for file in sorted_static_files %}
+          {% assign current_prefix = file.path | slice: 0, asset_prefix.size %}
+          {% if current_prefix == asset_prefix %}
+            <li class="post-asset-item">
+              <a href="{{ file.path | relative_url }}" download>{{ file.name }}</a>
+              <a class="post-asset-raw" href="{{ file.path | relative_url }}" target="_blank" rel="noopener">查看</a>
+            </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+    </section>
+
+    <style>
+      .post-assets {
+        margin-top: 2rem;
+        padding: 1rem 1.15rem;
+        border: 1px solid var(--main-border-color, #e5e5e5);
+        border-radius: 0.75rem;
+        background: var(--card-bg, transparent);
+      }
+
+      .post-assets h2 {
+        margin-top: 0;
+        padding-top: 0;
+      }
+
+      .post-assets-desc {
+        margin-bottom: 0.75rem;
+        font-size: 0.95rem;
+        opacity: 0.85;
+      }
+
+      .post-asset-list {
+        margin-bottom: 0;
+        padding-left: 1.25rem;
+      }
+
+      .post-asset-item {
+        margin: 0.25rem 0;
+      }
+
+      .post-asset-raw {
+        margin-left: 0.45rem;
+        font-size: 0.86rem;
+        opacity: 0.75;
+      }
+    </style>
+  {% endif %}
+{% endif %}
