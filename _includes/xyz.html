@@ -17,80 +17,189 @@
 <script>
 function normalizeMolBlock(rawMol) {
   if (!rawMol) return '';
-  return String(rawMol).replace(/\r\n?/g, '\n').trim();
+  return String(rawMol)
+    .replace(/^\uFEFF/, '')
+    .replace(/\r\n?/g, '\n')
+    .replace(/[ \t]+$/gm, '')
+    .replace(/\n+$/, '');
 }
 
-function parseMolWithFallback(rawMol) {
+function tryChemDoodleReadMOL(molData) {
+  try {
+    var molecule = ChemDoodle.readMOL(molData);
+    if (molecule && molecule.atoms && molecule.atoms.length > 0) {
+      return molecule;
+    }
+  } catch (err) {
+    console.warn('ChemDoodle.readMOL failed, using fallback parser:', err);
+  }
+  return null;
+}
+
+function parseCountsLine(line) {
+  if (!line) return null;
+
+  /* Standard MDL V2000 counts line: atom and bond counts are fixed-width 3-column fields.
+     This is important for cases such as " 98122...", which means 98 atoms and 122 bonds. */
+  var atomFixed = parseInt(line.slice(0, 3), 10);
+  var bondFixed = parseInt(line.slice(3, 6), 10);
+  if (Number.isInteger(atomFixed) && Number.isInteger(bondFixed) && atomFixed > 0 && bondFixed >= 0) {
+    return { atomCount: atomFixed, bondCount: bondFixed };
+  }
+
+  /* Tolerate non-standard counts lines exported without strict fixed-width padding. */
+  var spaced = line.match(/^\s*(\d{1,3})\s+(\d{1,3})(?:\s|$)/);
+  if (spaced) {
+    return { atomCount: parseInt(spaced[1], 10), bondCount: parseInt(spaced[2], 10) };
+  }
+
+  var compact = line.match(/^\s*(\d{1,3})(\d{3})(?:\s|$)/);
+  if (compact) {
+    return { atomCount: parseInt(compact[1], 10), bondCount: parseInt(compact[2], 10) };
+  }
+
+  return null;
+}
+
+function normalizeElementSymbol(rawSymbol) {
+  if (!rawSymbol) return null;
+
+  var lettersOnly = String(rawSymbol).replace(/[^A-Za-z]/g, '');
+  if (!lettersOnly) return null;
+
+  var normalized = lettersOnly.charAt(0).toUpperCase() + lettersOnly.slice(1).toLowerCase();
+  if (ChemDoodle.ELEMENT && ChemDoodle.ELEMENT[normalized]) {
+    return normalized;
+  }
+
+  return null;
+}
+
+function parseMolAtomLine(line) {
+  if (!line) return null;
+
+  var x = parseFloat(line.slice(0, 10));
+  var y = parseFloat(line.slice(10, 20));
+  var z = parseFloat(line.slice(20, 30));
+  var element = normalizeElementSymbol(line.slice(31, 34).trim());
+
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z) || !element) {
+    var parts = line.trim().split(/\s+/);
+    if (parts.length < 4) return null;
+    x = parseFloat(parts[0]);
+    y = parseFloat(parts[1]);
+    z = parseFloat(parts[2]);
+    element = normalizeElementSymbol(parts[3]);
+  }
+
+  if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z) || !element) {
+    return null;
+  }
+
+  return { x: x, y: y, z: z, element: element };
+}
+function parseMolBondLine(line) {
+  if (!line) return null;
+
+  var beginIndex = parseInt(line.slice(0, 3), 10) - 1;
+  var endIndex = parseInt(line.slice(3, 6), 10) - 1;
+  var order = parseInt(line.slice(6, 9), 10);
+
+  if (!Number.isInteger(beginIndex) || !Number.isInteger(endIndex)) {
+    var parts = line.trim().split(/\s+/);
+    if (parts.length < 3) return null;
+    beginIndex = parseInt(parts[0], 10) - 1;
+    endIndex = parseInt(parts[1], 10) - 1;
+    order = parseInt(parts[2], 10);
+  }
+
+  if (!Number.isInteger(beginIndex) || !Number.isInteger(endIndex)) {
+    return null;
+  }
+
+  return { beginIndex: beginIndex, endIndex: endIndex, order: Number.isInteger(order) ? order : 1 };
+}
+
+function molBlockLooksParseable(lines, countsIndex, counts) {
+  if (!counts || counts.atomCount <= 0 || counts.bondCount < 0) return false;
+  if (countsIndex + 1 + counts.atomCount + counts.bondCount > lines.length) return false;
+
+  for (var a = 0; a < counts.atomCount; a++) {
+    if (!parseMolAtomLine(lines[countsIndex + 1 + a])) return false;
+  }
+
+  for (var b = 0; b < counts.bondCount; b++) {
+    if (!parseMolBondLine(lines[countsIndex + 1 + counts.atomCount + b])) return false;
+  }
+
+  return true;
+}
+
+function findCountsLine(lines) {
+  /* Prefer the normal MOL position first, but do not require a fixed header length.
+     ChemDraw, GaussView, and Liquid capture can add/remove blank title/comment lines. */
+  var preferred = [3, 4, 2];
+  for (var p = 0; p < preferred.length; p++) {
+    var idx = preferred[p];
+    if (idx < lines.length) {
+      var counts = parseCountsLine(lines[idx]);
+      if (molBlockLooksParseable(lines, idx, counts)) {
+        return { index: idx, counts: counts };
+      }
+    }
+  }
+
+  for (var i = 0; i < lines.length; i++) {
+    var detected = parseCountsLine(lines[i]);
+    if (molBlockLooksParseable(lines, i, detected)) {
+      return { index: i, counts: detected };
+    }
+  }
+
+  return null;
+}
+
+function parseMolWithFallback(rawMol, options) {
   var molData = normalizeMolBlock(rawMol);
   if (!molData) return null;
 
-  var molecule = ChemDoodle.readMOL(molData);
-  if (molecule && molecule.atoms && molecule.atoms.length > 0) {
-    return molecule;
-  }
+  /* Keep the original header while trying ChemDoodle first.
+     Do not trim leading blank title lines: they are meaningful in MDL MOL files. */
+  var molecule = tryChemDoodleReadMOL(molData);
+  if (molecule) return molecule;
 
   var lines = molData.split('\n');
-  var countsIndex = -1;
-  for (var i = 0; i < lines.length; i++) {
-    if (/^\s*\d+\s+\d+/.test(lines[i])) {
-      countsIndex = i;
-      break;
-    }
-  }
+  var located = findCountsLine(lines);
+  if (!located) return null;
 
-  if (countsIndex === -1) {
-    return null;
-  }
+  options = options || {};
+  var coordinateScale = Number.isFinite(options.coordinateScale) ? options.coordinateScale : 1;
+  var flipY = !!options.flipY;
 
-  var counts = lines[countsIndex].trim().split(/\s+/);
-  var atomCount = parseInt(counts[0], 10);
-  var bondCount = parseInt(counts[1], 10);
-  if (!Number.isInteger(atomCount) || !Number.isInteger(bondCount) || atomCount <= 0 || bondCount < 0) {
-    return null;
-  }
-
+  var countsIndex = located.index;
+  var atomCount = located.counts.atomCount;
+  var bondCount = located.counts.bondCount;
   var parsed = new ChemDoodle.structures.Molecule();
 
   for (var a = 0; a < atomCount; a++) {
-    var atomLine = lines[countsIndex + 1 + a];
-    if (!atomLine) return null;
-
-    var atomParts = atomLine.trim().split(/\s+/);
-    if (atomParts.length < 4) return null;
-
-    var x = parseFloat(atomParts[0]);
-    var y = parseFloat(atomParts[1]);
-    var z = parseFloat(atomParts[2]);
-    var element = atomParts[3];
-
-    if (!Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z) || !element) {
-      return null;
-    }
-
-    parsed.atoms.push(new ChemDoodle.structures.Atom(element, x, y, z));
+    var atom = parseMolAtomLine(lines[countsIndex + 1 + a]);
+    if (!atom) return null;
+    parsed.atoms.push(new ChemDoodle.structures.Atom(
+      atom.element,
+      atom.x * coordinateScale,
+      (flipY ? -atom.y : atom.y) * coordinateScale,
+      atom.z * coordinateScale
+    ));
   }
 
   for (var b = 0; b < bondCount; b++) {
-    var bondLine = lines[countsIndex + 1 + atomCount + b];
-    if (!bondLine) return null;
-
-    var bondParts = bondLine.trim().split(/\s+/);
-    if (bondParts.length < 3) return null;
-
-    var beginIndex = parseInt(bondParts[0], 10) - 1;
-    var endIndex = parseInt(bondParts[1], 10) - 1;
-    var order = parseInt(bondParts[2], 10);
-
-    if (!parsed.atoms[beginIndex] || !parsed.atoms[endIndex]) {
-      return null;
-    }
-
-    parsed.bonds.push(new ChemDoodle.structures.Bond(parsed.atoms[beginIndex], parsed.atoms[endIndex], Number.isInteger(order) ? order : 1));
+    var bond = parseMolBondLine(lines[countsIndex + 1 + atomCount + b]);
+    if (!bond || !parsed.atoms[bond.beginIndex] || !parsed.atoms[bond.endIndex]) return null;
+    parsed.bonds.push(new ChemDoodle.structures.Bond(parsed.atoms[bond.beginIndex], parsed.atoms[bond.endIndex], bond.order));
   }
 
   return parsed.atoms.length > 0 ? parsed : null;
 }
-
 {% if include.mode == '2d' %}
 /* 2D Canvas */
 (function() {
@@ -159,7 +268,23 @@ function parseMolWithFallback(rawMol) {
   canvas.styles.atoms_useVDWDiameters_3D = {{ include.use_vdw_3d | default: false }};
   canvas.styles.atoms_vdwMultiplier_3D = {{ include.vdw_multiplier_3d | default: 1.0 }};
   canvas.styles.atoms_sphereDiameter_3D = {{ include.atom_diameter_3d | default: 8.0 }};
-  canvas.styles.bonds_cylinderDiameter_3D = {{ include.bond_diameter_3d | default: 1.5 }};
+  canvas.styles.bonds_cylinderDiameter_3D = {{ include.bond_diameter_3d | default: 1.0 }};
+
+  function applyInitial3DScale() {
+    /* In ChemDoodle 3D/WebGL canvases, wheel zoom is controlled by camera.zoom,
+       not styles.scale. Treat initial_scale_3d as apparent display scale:
+       1 = original size, 0.5 = half size, 0.1 = one tenth size. */
+    var initialScale3D = {{ include.initial_scale_3d | default: 0.5 }};
+    if (Number.isFinite(initialScale3D) && initialScale3D > 0) {
+      canvas.camera.zoom = 1 / initialScale3D;
+      if (typeof canvas.updateScene === 'function') {
+        canvas.updateScene();
+      } else {
+        canvas.repaint();
+      }
+    }
+  }
+
   console.log('Styles set for:', uniqueCanvasId);
   
   {% if include.xyz %}
@@ -171,20 +296,6 @@ function parseMolWithFallback(rawMol) {
   
   var molecule = new ChemDoodle.structures.Molecule();
   
-  function normalizeElementSymbol(rawSymbol) {
-    if (!rawSymbol) return null;
-
-    var lettersOnly = rawSymbol.replace(/[^A-Za-z]/g, '');
-    if (!lettersOnly) return null;
-
-    var normalized = lettersOnly.charAt(0).toUpperCase() + lettersOnly.slice(1).toLowerCase();
-    if (ChemDoodle.ELEMENT && ChemDoodle.ELEMENT[normalized]) {
-      return normalized;
-    }
-
-    return null;
-  }
-
   /* Parse atoms from XYZ data */
   for (var i = 2; i < 2 + numAtoms && i < lines.length; i++) {
     var parts = lines[i].trim().split(/\s+/);
@@ -228,13 +339,21 @@ function parseMolWithFallback(rawMol) {
   
   console.log('XYZ molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms and', molecule.bonds.length, 'bonds');
   canvas.loadMolecule(molecule);
+  applyInitial3DScale();
   console.log('XYZ molecule loaded for:', uniqueCanvasId);
   {% elsif include.mol %}
   var molData = {{ include.mol | jsonify }};
-  var molecule = parseMolWithFallback(molData);
+  var molecule = parseMolWithFallback(molData, {
+    /* ChemDoodle.readMOL normally multiplies MOL coordinates by bondLength_2D.
+       Do the same only when readMOL fails and our fallback parser is used;
+       otherwise shifted-header MOL files look tiny in coordinate space, making fixed-size atoms appear huge. */
+    coordinateScale: {{ include.mol_coordinate_scale_3d | default: 20 }},
+    flipY: true
+  });
   if (molecule && molecule.atoms && molecule.atoms.length > 0) {
     console.log('MOL molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms');
     canvas.loadMolecule(molecule);
+    applyInitial3DScale();
     console.log('MOL molecule loaded for:', uniqueCanvasId);
   } else {
     console.error('Failed to parse MOL data for:', uniqueCanvasId, molData);
@@ -245,6 +364,7 @@ function parseMolWithFallback(rawMol) {
   var molecule = ChemDoodle.readMOL(molfile);
   console.log('SMILES molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms');
   canvas.loadMolecule(molecule);
+  applyInitial3DScale();
   console.log('SMILES molecule loaded for:', uniqueCanvasId);
   {% endif %}
 })();

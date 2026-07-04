@@ -71,6 +71,10 @@
   <script id="MathJax-script" async src="{{ site.data.origin[type].mathjax.js | relative_url }}"></script>
 {% endif %}
 
+{% if page.chem %}
+  {% include chemdoodle.html %}
+{% endif %}
+
 <!-- Pageviews -->
 {% if page.layout == 'post' %}
   {% assign provider = site.pageviews.provider %}

@@ -1,226 +1,18 @@
----
-title: 在blog中渲染chem对象
-date: 2025-8-23 12:00:00 +0800
-categories: [blog, build]
-tags: [post]   
-chem: true
----
-截图截累了，研究研究怎么基于chemdoodle.js在blog中渲染chem对象。
-## 配置
-### 基础建设
-首先是chemdoodle，把js和css放到对应位置，创建`_include/chemdoodle.html`:
-```
-<head>
-<link rel="stylesheet" href="{{ '/assets/css/ChemDoodleWeb.css' | relative_url }}" type="text/css">
-<link rel="stylesheet" href="{{ '/assets/css/jquery-ui-1.11.4.css' | relative_url }}" type="text/css">
-
-<script src="{{ '/assets/js/data/ChemDoodleWeb.js' | relative_url }}"></script>
-<script src="{{ '/assets/js/data/ChemDoodleWeb-uis.js' | relative_url }}"></script>
-<script src="{{ '/assets/js/data/openchemlib-minimal.js' | relative_url }}"></script>
-
-<style>
-  .molecule-container {
-    text-align: center;
-    margin: 20px 0;
-  }
-  
-  .canvas-container {
-    display: inline-block;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-</style>
-</head>
-```
-
-然后是方便引用的liquid模板`_include/xyz.html`:
-{% raw %}
-```
-<div class="molecule-container">
-  <div class="canvas-container">
-    {% assign unique_id = include.id | default: 'mol' %}
-    {% unless include.id %}
-      {% assign content_hash = include.xyz | append: include.mol | append: include.smiles | append: include.representation | append: include.bgcolor | size %}
-      {% assign unique_id = unique_id | append: '_' | append: content_hash | append: '_' | append: include.mode %}
-    {% endunless %}
-    
-    {% if include.mode == '2d' %}
-      <canvas id="viewACS_{{ unique_id }}" width="{{ include.width | default: 400 }}" height="{{ include.height | default: 300 }}"></canvas>
-    {% elsif include.mode == '3d' %}
-      <canvas id="transform3d_{{ unique_id }}" width="{{ include.width | default: 400 }}" height="{{ include.height | default: 400 }}"></canvas>
-    {% endif %}
-  </div>
-</div>
-
-<script>
-{% if include.mode == '2d' %}
-// 2D Canvas
-(function() {
-  // Generate truly unique ID at runtime
-  var timestamp = Date.now();
-  var random = Math.floor(Math.random() * 10000);
-  var uniqueCanvasId = 'view2d_' + timestamp + '_' + random;
-  
-  // Update the canvas element ID
-  var originalCanvas = document.getElementById('viewACS_{{ unique_id }}');
-  if (originalCanvas) {
-    originalCanvas.id = uniqueCanvasId;
-    console.log('Canvas ID updated from viewACS_{{ unique_id }} to:', uniqueCanvasId);
-  } else {
-    console.error('Original canvas not found: viewACS_{{ unique_id }}');
-    return;
-  }
-  
-  var canvas = new ChemDoodle.ViewerCanvas(uniqueCanvasId, {{ include.width | default: 400 }}, {{ include.height | default: 300 }});
-  canvas.styles.bonds_width_2D = 0.6;
-  canvas.styles.bonds_saturationWidthAbs_2D = 2.6;
-  canvas.styles.atoms_font_size_2D = 10;
-  
-  {% if include.smiles %}
-  var smiles = '{{ include.smiles }}';
-  var molfile = OCL.Molecule.fromSmiles(smiles).toMolfile();
-  var molecule = ChemDoodle.readMOL(molfile);
-  molecule.scaleToAverageBondLength({{ include.scale | default: 20 }});
-  canvas.loadMolecule(molecule);
-  {% elsif include.mol %}
-  var molData = {{ include.mol | jsonify }};
-  var molecule = ChemDoodle.readMOL(molData);
-  molecule.scaleToAverageBondLength({{ include.scale | default: 20 }});
-  canvas.loadMolecule(molecule);
-  {% endif %}
-})();
-
-{% elsif include.mode == '3d' %}
-// 3D Canvas
-(function() {
-  // Generate truly unique ID at runtime
-  var timestamp = Date.now();
-  var random = Math.floor(Math.random() * 10000);
-  var uniqueCanvasId = 'transform3d_' + timestamp + '_' + random;
-  
-  // Update the canvas element ID
-  var originalCanvas = document.getElementById('transform3d_{{ unique_id }}');
-  if (originalCanvas) {
-    originalCanvas.id = uniqueCanvasId;
-    console.log('Canvas ID updated from transform3d_{{ unique_id }} to:', uniqueCanvasId);
-  } else {
-    console.error('Original canvas not found: transform3d_{{ unique_id }}');
-    return;
-  }
-  
-  console.log('Starting 3D canvas initialization for:', uniqueCanvasId);
-  var canvas = new ChemDoodle.TransformCanvas3D(uniqueCanvasId, {{ include.width | default: 400 }}, {{ include.height | default: 400 }});
-  console.log('3D canvas created:', uniqueCanvasId);
-  
-  canvas.styles.set3DRepresentation('{{ include.representation | default: "Ball and Stick" }}');
-  canvas.styles.backgroundColor = '{{ include.bgcolor | default: "black" }}';
-  // 调整球的大小
-  // canvas.styles.atoms_sphereDiameter_3D = 0.1; // 默认约0.5，可以试试0.8, 1.0, 1.2等
-  // 可选：同时调整键的粗细以保持比例协调
-  canvas.styles.bonds_cylinderDiameter_3D = 0.2; // 默认约0.25
-  console.log('Styles set for:', uniqueCanvasId);
-  
-  {% if include.xyz %}
-  // Parse XYZ coordinate data
-  var xyzData = {{ include.xyz | jsonify }};
-  var lines = xyzData.trim().split('\n');
-  var numAtoms = parseInt(lines[0]);
-  var comment = lines[1]; // Skip comment line
-  
-  var molecule = new ChemDoodle.structures.Molecule();
-  
-  // Parse atoms from XYZ data
-  for (var i = 2; i < 2 + numAtoms; i++) {
-    var parts = lines[i].trim().split(/\s+/);
-    var element = parts[0];
-    var x = parseFloat(parts[1]);
-    var y = parseFloat(parts[2]);
-    var z = parseFloat(parts[3]);
-    
-    molecule.atoms.push(new ChemDoodle.structures.Atom(element, x, y, z));
-  }
-  
-  // Auto-generate bonds based on distance (simple approach)
-  // You may want to customize this based on your needs
-  for (var j = 0; j < molecule.atoms.length; j++) {
-    for (var k = j + 1; k < molecule.atoms.length; k++) {
-      var atom1 = molecule.atoms[j];
-      var atom2 = molecule.atoms[k];
-      
-      var dx = atom1.x - atom2.x;
-      var dy = atom1.y - atom2.y;
-      var dz = atom1.z - atom2.z;
-      var distance = Math.sqrt(dx*dx + dy*dy + dz*dz);
-      
-      // Simple bonding criteria based on atomic radii
-      var maxBondDistance = 2.0; // Adjust as needed
-      if (distance < maxBondDistance) {
-        molecule.bonds.push(new ChemDoodle.structures.Bond(atom1, atom2));
-      }
-    }
-  }
-  
-  console.log('XYZ molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms and', molecule.bonds.length, 'bonds');
-  canvas.loadMolecule(molecule);
-  console.log('XYZ molecule loaded for:', uniqueCanvasId);
-  {% elsif include.mol %}
-  var molData = {{ include.mol | jsonify }};
-  var molecule = ChemDoodle.readMOL(molData);
-  console.log('MOL molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms');
-  canvas.loadMolecule(molecule);
-  console.log('MOL molecule loaded for:', uniqueCanvasId);
-  {% elsif include.smiles %}
-  var smiles = '{{ include.smiles }}';
-  var molfile = OCL.Molecule.fromSmiles(smiles).toMolfile();
-  var molecule = ChemDoodle.readMOL(molData);
-  console.log('SMILES molecule created for', uniqueCanvasId, 'with', molecule.atoms.length, 'atoms');
-  canvas.loadMolecule(molecule);
-  console.log('SMILES molecule loaded for:', uniqueCanvasId);
-  {% endif %}
-})();
-{% endif %}
-</script>
-
-<style>
-  .molecule-container {
-    text-align: center;
-    margin: 20px 0;
-  }
-  
-  .canvas-container {
-    display: inline-block;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-  }
-</style>
-```
-{% endraw %}
-
-为了方便管理，可以在js-selector.html里补上：
-
-{% raw %}
-```
-{% if page.chem %}
-  {% include chemdoodle.html %}
-{% endif %}
-```
-{% endraw %}
-
-这样可以在文章 front matter 中如此打开 chem：
-```yaml
-chem: true
-```
-
-随后就能在blog中用liquid语言加载chemdoodle了。
-
-### 代码块
-
-但是直接写liquid不太友好，可以再加点东西：
-```js
 (function () {
   'use strict';
 
   var counter = 0;
+
+  function hasChemDoodle() {
+    /* ChemDoodleWeb.js defines `let ChemDoodle` in the global lexical scope.
+       That is available as the bare identifier `ChemDoodle`, but not as
+       `window.ChemDoodle` in modern browsers. */
+    return typeof ChemDoodle !== 'undefined' && !!ChemDoodle && !!ChemDoodle.structures;
+  }
+
+  function hasOpenChemLib() {
+    return typeof OCL !== 'undefined' && !!OCL && !!OCL.Molecule;
+  }
 
   function normalizeText(raw) {
     return String(raw || '')
@@ -236,7 +28,7 @@ chem: true
     if (!lettersOnly) return null;
 
     var normalized = lettersOnly.charAt(0).toUpperCase() + lettersOnly.slice(1).toLowerCase();
-    if (window.ChemDoodle && ChemDoodle.ELEMENT && ChemDoodle.ELEMENT[normalized]) {
+    if (hasChemDoodle() && ChemDoodle.ELEMENT && ChemDoodle.ELEMENT[normalized]) {
       return normalized;
     }
     return null;
@@ -387,7 +179,7 @@ chem: true
     return parsed.atoms.length > 0 ? parsed : null;
   }
 
-  function parseXYZ(rawXYZ, bondMaxDistance) {
+  function extractXYZAtomLines(rawXYZ) {
     var xyzData = normalizeText(rawXYZ).trim();
     if (!xyzData) return null;
 
@@ -401,18 +193,15 @@ chem: true
 
     if (!lines.length) return null;
 
-    var first = parseInt(lines[0], 10);
     var hasCountHeader = /^\d+\s*$/.test(lines[0]);
+    var expectedCount = hasCountHeader ? parseInt(lines[0], 10) : lines.length;
     var start = hasCountHeader ? 2 : 0;
-    var end = hasCountHeader ? Math.min(start + first, lines.length) : lines.length;
-    var molecule = new ChemDoodle.structures.Molecule();
+    var end = hasCountHeader ? Math.min(start + expectedCount, lines.length) : lines.length;
+    var atoms = [];
 
     for (var j = start; j < end; j++) {
       var parts = lines[j].trim().split(/\s+/);
-      if (parts.length < 4) {
-        console.warn('Skipping malformed XYZ line:', lines[j]);
-        continue;
-      }
+      if (parts.length < 4) continue;
 
       var element = normalizeElementSymbol(parts[0]);
       var x = parseFloat(parts[1]);
@@ -424,23 +213,83 @@ chem: true
         continue;
       }
 
-      molecule.atoms.push(new ChemDoodle.structures.Atom(element, x, y, z));
+      atoms.push(element + ' ' + x + ' ' + y + ' ' + z);
     }
 
-    var maxDistance = Number.isFinite(bondMaxDistance) ? bondMaxDistance : 2.0;
-    for (var a = 0; a < molecule.atoms.length; a++) {
-      for (var b = a + 1; b < molecule.atoms.length; b++) {
-        var atom1 = molecule.atoms[a];
-        var atom2 = molecule.atoms[b];
-        var dx = atom1.x - atom2.x;
-        var dy = atom1.y - atom2.y;
-        var dz = atom1.z - atom2.z;
-        var distance = Math.sqrt(dx * dx + dy * dy + dz * dz);
-        if (distance < maxDistance) molecule.bonds.push(new ChemDoodle.structures.Bond(atom1, atom2));
+    return atoms.length ? atoms : null;
+  }
+
+  function makeStandardXYZ(rawXYZ) {
+    var atoms = extractXYZAtomLines(rawXYZ);
+    if (!atoms || !atoms.length) return null;
+    return String(atoms.length) + '\nGenerated by chem-codeblock.js\n' + atoms.join('\n');
+  }
+
+  function scaleMoleculeCoordinates(molecule, scale) {
+    if (!molecule || !molecule.atoms || !Number.isFinite(scale) || scale === 1) return molecule;
+    for (var i = 0; i < molecule.atoms.length; i++) {
+      molecule.atoms[i].x *= scale;
+      molecule.atoms[i].y *= scale;
+      molecule.atoms[i].z *= scale;
+    }
+    return molecule;
+  }
+
+  function deduceCovalentBonds(molecule) {
+    if (!molecule || !molecule.atoms || molecule.bonds.length) return molecule;
+
+    if (ChemDoodle.informatics && ChemDoodle.informatics.BondDeducer) {
+      try {
+        new ChemDoodle.informatics.BondDeducer().deduceCovalentBonds(molecule, 1);
+        return molecule;
+      } catch (err) {
+        console.warn('ChemDoodle BondDeducer failed, using simple distance fallback:', err);
       }
     }
 
-    return molecule.atoms.length > 0 ? molecule : null;
+    return molecule;
+  }
+
+  function parseXYZ(rawXYZ, options) {
+    options = options || {};
+    var standardXYZ = makeStandardXYZ(rawXYZ);
+    if (!standardXYZ) return null;
+
+    var molecule = null;
+
+    if (typeof ChemDoodle.readXYZ === 'function') {
+      try {
+        molecule = ChemDoodle.readXYZ(standardXYZ);
+      } catch (err) {
+        console.warn('ChemDoodle.readXYZ failed, using manual XYZ parser:', err);
+      }
+    }
+
+    if (!molecule || !molecule.atoms || !molecule.atoms.length) {
+      var lines = standardXYZ.split('\n');
+      var count = parseInt(lines[0], 10);
+      molecule = new ChemDoodle.structures.Molecule();
+      for (var i = 2; i < 2 + count && i < lines.length; i++) {
+        var parts = lines[i].trim().split(/\s+/);
+        if (parts.length < 4) continue;
+        var element = normalizeElementSymbol(parts[0]);
+        var x = parseFloat(parts[1]);
+        var y = parseFloat(parts[2]);
+        var z = parseFloat(parts[3]);
+        if (!element || !Number.isFinite(x) || !Number.isFinite(y) || !Number.isFinite(z)) continue;
+        molecule.atoms.push(new ChemDoodle.structures.Atom(element, x, y, z));
+      }
+      deduceCovalentBonds(molecule);
+    }
+
+    if (!molecule || !molecule.atoms || !molecule.atoms.length) return null;
+
+    /* XYZ coordinates are normally in Angstrom. MOL files read through this
+       ChemDoodle build are effectively much larger on the canvas, so scale XYZ
+       after bond deduction to make atom_diameter_3d=8 and bond_diameter_3d=1
+       behave consistently with your MOL examples. */
+    scaleMoleculeCoordinates(molecule, Number.isFinite(options.coordinateScale) ? options.coordinateScale : 1);
+    return molecule;
   }
 
   function getLanguage(node) {
@@ -508,6 +357,7 @@ chem: true
       bondDiameter3D: numberAttr(['bond_diameter_3d', 'bond-diameter-3d'], 1.0),
       initialScale3D: numberAttr(['initial_scale_3d', 'initial-scale-3d'], 0.5),
       molCoordinateScale3D: numberAttr(['mol_coordinate_scale_3d', 'mol-coordinate-scale-3d'], 20),
+      xyzCoordinateScale3D: numberAttr(['xyz_coordinate_scale_3d', 'xyz-coordinate-scale-3d'], 20),
       bondMaxDistance: numberAttr(['bond_max', 'bond-max', 'bond_max_distance', 'bond-max-distance'], 2.0),
       scale2D: numberAttr(['scale', 'scale_2d', 'scale-2d'], 20),
       replace: boolAttr('replace', true)
@@ -545,7 +395,7 @@ chem: true
 
   function buildMolecule(language, source, mode, params) {
     if (language === 'xyz') {
-      return parseXYZ(source, params.bondMaxDistance);
+      return parseXYZ(source, { coordinateScale: mode === '3d' ? params.xyzCoordinateScale3D : 1 });
     }
 
     if (language === 'mol' || language === 'sdf') {
@@ -557,7 +407,7 @@ chem: true
 
     if (language === 'smiles' || language === 'smi') {
       var smiles = normalizeText(source).trim().split(/\s+/)[0];
-      if (!smiles || !window.OCL) return null;
+      if (!smiles || !hasOpenChemLib()) return null;
       var molfile = OCL.Molecule.fromSmiles(smiles).toMolfile();
       return ChemDoodle.readMOL(molfile);
     }
@@ -661,8 +511,20 @@ chem: true
     return unique;
   }
 
-  function renderAllChemCodeBlocks() {
-    if (!window.ChemDoodle) {
+  function renderAllChemCodeBlocks(attempt) {
+    attempt = attempt || 0;
+
+    if (!hasChemDoodle()) {
+      /* Usually this is only because ChemDoodleWeb.js created a global lexical
+         binding instead of window.ChemDoodle. If the script is still loading,
+         wait briefly instead of permanently skipping code blocks. */
+      if (attempt < 50) {
+        window.setTimeout(function () {
+          renderAllChemCodeBlocks(attempt + 1);
+        }, 100);
+        return;
+      }
+
       console.error('ChemDoodle is not loaded; cannot render molecule code blocks.');
       return;
     }
@@ -671,195 +533,10 @@ chem: true
   }
 
   if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', renderAllChemCodeBlocks);
+    document.addEventListener('DOMContentLoaded', function () {
+      renderAllChemCodeBlocks(0);
+    });
   } else {
-    renderAllChemCodeBlocks();
+    renderAllChemCodeBlocks(0);
   }
 })();
-
-```
-{: file='assets/js/data/chem-codeblock.js'}
-
-这样代码块就可以代替手写liquid了
-
-## 测试
-
-### smiles转2d
-
-{% raw %}
-```
-{% include xyz.html 
-   mode="2d" 
-   smiles="CCO" 
-   width=300 
-   height=250 %}
-```
-{% endraw %}
-
-{% include xyz.html 
-   mode="2d" 
-   smiles="CCO" 
-   width=300 
-   height=250 %}
-
-### mol转2d
-
-{% raw %}
-```
-{% include xyz.html 
-   mode="2d" 
-   mol="
-   ChemDraw08232514192D
-
-  6  6  0  0  0  0  0  0  0  0999 V2000
-   -0.7145    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.7145   -0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7145   -0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7145    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  2  0      
-  2  3  1  0      
-  3  4  2  0      
-  4  5  1  0      
-  5  6  2  0      
-  6  1  1  0      
-M  END"
-   id="ethanol" %}
-```
-{% endraw %}
-
-{% include xyz.html 
-   mode="2d" 
-   mol="
-   ChemDraw08232514192D
-
-  6  6  0  0  0  0  0  0  0  0999 V2000
-   -0.7145    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.7145   -0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7145   -0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7145    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  2  0      
-  2  3  1  0      
-  3  4  2  0      
-  4  5  1  0      
-  5  6  2  0      
-  6  1  1  0      
-M  END"
-   id="ethanol" %}
-
-### xyz转3d
-
-{% raw %}
-```
-{% include xyz.html 
-   mode="3d" 
-   xyz="
-   3
-Ethanol
-C    0.000    0.000    0.000
-C    1.540    0.000    0.000  
-O    2.080    1.260    0.000" 
-   atom_diameter_3d=0.8 bond_diameter_3d=0.22
-   representation="Ball and Stick"
-   bgcolor="white" %}
-```
-{% endraw %}
-
-{% include xyz.html 
-   mode="3d" 
-   xyz="
-   3
-Ethanol
-C    0.000    0.000    0.000
-C    1.540    0.000    0.000  
-O    2.080    1.260    0.000" 
-   atom_diameter_3d=0.8 bond_diameter_3d=0.22
-   representation="Ball and Stick"
-   bgcolor="white" %}
-
-### mol转3d
-
-{% raw %}
-```
-{% include xyz.html 
-   mode="3d" 
-   mol="
-   ChemDraw08232514192D
-
-  6  6  0  0  0  0  0  0  0  0999 V2000
-   -0.7145    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.7145   -0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7145   -0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7145    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  2  0      
-  2  3  1  0      
-  3  4  2  0      
-  4  5  1  0      
-  5  6  2  0      
-  6  1  1  0      
-M  END" 
-   atom_diameter_3d=8.0 bond_diameter_3d=1.0
-   width=500 
-   height=500 %}
-```
-{% endraw %}
-
-{% include xyz.html 
-   mode="3d" 
-   mol="
-   ChemDraw08232514192D
-
-  6  6  0  0  0  0  0  0  0  0999 V2000
-   -0.7145    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-   -0.7145   -0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000   -0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7145   -0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.7145    0.4125    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-    0.0000    0.8250    0.0000 C   0  0  0  0  0  0  0  0  0  0  0  0
-  1  2  2  0      
-  2  3  1  0      
-  3  4  2  0      
-  4  5  1  0      
-  5  6  2  0      
-  6  1  1  0      
-M  END" 
-   atom_diameter_3d=8.0 bond_diameter_3d=1.0
-   width=500 
-   height=500 %}
-
-### mol文件引用
-
-{% raw %}
-```
-{% capture mol_text %}{% include_relative mols/48/1.mol %}{% endcapture %}
-{% include xyz.html mode="3d" mol=mol_text width=300 height=250 %}
-```
-{% endraw %}
-
-{% capture mol_text %}{% include_relative mols/48/1.mol %}{% endcapture %}
-{% include xyz.html mode="3d" mol=mol_text width=500 height=550 %}
-
-## 代码块
-
-### xyz
-
-```xyz
-3
-linear HCH
-H 0. 0. 0.
-C 1. 0. 0.
-H 2. 0. 0.
-```
-{: mode="3d" width="300" height="250" initial_scale_3d="0.5" }
-
-### smiles
-
-```smiles
-c1ccccc1
-```
-{: mode="2d" width="300" height="220" }
