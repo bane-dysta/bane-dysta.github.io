@@ -14,7 +14,20 @@
   </div>
 </div>
 
+{% if include.mol %}
+<pre class="chem-mol-data" hidden aria-hidden="true">{{ include.mol | escape }}</pre>
+{% endif %}
+
 <script>
+function readMolDataNearCurrentScript() {
+  var script = document.currentScript;
+  var node = script ? script.previousElementSibling : null;
+  if (node && node.classList && node.classList.contains('chem-mol-data')) {
+    return node.textContent || '';
+  }
+  return '';
+}
+
 function normalizeMolBlock(rawMol) {
   if (!rawMol) return '';
   return String(rawMol)
@@ -230,7 +243,7 @@ function parseMolWithFallback(rawMol, options) {
   molecule.scaleToAverageBondLength({{ include.scale | default: 20 }});
   canvas.loadMolecule(molecule);
   {% elsif include.mol %}
-  var molData = {{ include.mol | jsonify }};
+  var molData = readMolDataNearCurrentScript();
   var molecule = parseMolWithFallback(molData);
   if (molecule && molecule.atoms && molecule.atoms.length > 0) {
     molecule.scaleToAverageBondLength({{ include.scale | default: 20 }});
@@ -342,7 +355,7 @@ function parseMolWithFallback(rawMol, options) {
   applyInitial3DScale();
   console.log('XYZ molecule loaded for:', uniqueCanvasId);
   {% elsif include.mol %}
-  var molData = {{ include.mol | jsonify }};
+  var molData = readMolDataNearCurrentScript();
   var molecule = parseMolWithFallback(molData, {
     /* ChemDoodle.readMOL normally multiplies MOL coordinates by bondLength_2D.
        Do the same only when readMOL fails and our fallback parser is used;
