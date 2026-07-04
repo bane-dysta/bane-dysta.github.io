@@ -154,9 +154,7 @@ paginate: 10
 baseurl: ""
 
 # Folders/files starting with "_" are ignored by default.
-# Explicitly include downloadable assets under `_file/`.
 include:
-  - _file
   - _draft
   
 # ------------ The following options are not recommended to be modified ------------------
@@ -235,6 +233,7 @@ exclude:
   - purgecss.js
   - "*.config.js"
   - "package*.json"
+  - "*.tgz"
 
 jekyll-archives:
   enabled: [categories, tags]

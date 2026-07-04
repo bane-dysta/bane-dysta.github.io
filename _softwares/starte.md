@@ -29,7 +29,7 @@ Starte 支持两类工作方式：
 
 ## 安装
 
-release：[starte](/_file/55/starte_static.7z)
+release：[starte](/assets/posts/55/starte_static.7z)
 
 安装：解压后将`starte`可执行文件加入 `PATH` 或者在 Gaussian route 中使用相对/绝对路径调用即可。
 

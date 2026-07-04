@@ -483,4 +483,4 @@ banetask db query --sql "SELECT task_name, energy, nimag FROM task_flat_latest"
 ```
 
 ## 其他
-VS code高亮插件：[bt-highlight.vsix](/_file/banetask/bt-highlight.vsix)
+VS code高亮插件：[bt-highlight.vsix](/assets/files/banetask/bt-highlight.vsix)

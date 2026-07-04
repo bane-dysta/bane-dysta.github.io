@@ -13,7 +13,7 @@ baneMECP 是个用于求解 **MECP（Minimum Energy Crossing Point）** 与 **ME
 
 公社介绍贴（部分内容过时，但有例子）：[适用于更多程序的sobMECP修改版](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=55740&fromuid=63020)
 
-本站下载：[banemecp.tgz](/_file/banemecp/banemecp.tgz)
+本站下载：[banemecp.tgz](/assets/files/banemecp/banemecp.tgz)
 
 <!-- TOC tocDepth:2..3 chapterDepth:2..6 -->
 

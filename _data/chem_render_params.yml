@@ -1,0 +1,125 @@
+# Shared parameter schema for both `{% include xyz.html %}` and molecule code blocks.
+# Add/change defaults and aliases here first; both render paths consume this file.
+defaults:
+  mode: "3d"
+  width: 400
+  height: 400
+  representation: "Ball and Stick"
+  bgcolor: "black"
+  useVDW3D: "auto"
+  vdwMultiplier3D: "auto"
+  atomDiameter3D: 8.0
+  bondDiameter3D: 1.0
+  initialScale3D: 0.9
+  molCoordinateScale3D: 20
+  xyzCoordinateScale3D: 20
+  bondMode: "lite"
+  bondScale: 1.0
+  bondTolerance: 0.02
+  bondMaxDistance: 1
+  scale2D: 20
+  replace: true
+
+profiles:
+  codeblock: {}
+  liquid: {}
+  # Preserve the historical Liquid 2D canvas height.
+  liquid_2d:
+    height: 300
+  # Preserve the historical Liquid inline-XYZ scale. External XYZ sources and
+  # code blocks keep the shared xyzCoordinateScale3D default above.
+  liquid_inline_xyz:
+    xyzCoordinateScale3D: 1
+
+params:
+  - key: mode
+    type: string
+    liquid_key: mode
+    attr_aliases: [mode]
+    lowercase: true
+
+  - key: width
+    type: number
+    liquid_key: width
+    attr_aliases: [width]
+
+  - key: height
+    type: number
+    liquid_key: height
+    attr_aliases: [height]
+
+  - key: representation
+    type: string
+    liquid_key: representation
+    attr_aliases: [representation]
+
+  - key: bgcolor
+    type: string
+    liquid_key: bgcolor
+    attr_aliases: [bgcolor, background, background_color, background-color]
+
+  - key: useVDW3D
+    type: string
+    liquid_key: use_vdw_3d
+    attr_aliases: [use_vdw_3d, use-vdw-3d]
+
+  - key: vdwMultiplier3D
+    type: string
+    liquid_key: vdw_multiplier_3d
+    attr_aliases: [vdw_multiplier_3d, vdw-multiplier-3d]
+
+  - key: atomDiameter3D
+    type: number
+    liquid_key: atom_diameter_3d
+    attr_aliases: [atom_diameter_3d, atom-diameter-3d]
+
+  - key: bondDiameter3D
+    type: number
+    liquid_key: bond_diameter_3d
+    attr_aliases: [bond_diameter_3d, bond-diameter-3d]
+
+  - key: initialScale3D
+    type: number
+    liquid_key: initial_scale_3d
+    attr_aliases: [initial_scale_3d, initial-scale-3d]
+
+  - key: molCoordinateScale3D
+    type: number
+    liquid_key: mol_coordinate_scale_3d
+    attr_aliases: [mol_coordinate_scale_3d, mol-coordinate-scale-3d]
+
+  - key: xyzCoordinateScale3D
+    type: number
+    liquid_key: xyz_coordinate_scale_3d
+    attr_aliases: [xyz_coordinate_scale_3d, xyz-coordinate-scale-3d]
+
+  - key: bondMode
+    type: string
+    liquid_key: bond_mode
+    attr_aliases: [bond_mode, bond-mode]
+    lowercase: true
+
+  - key: bondScale
+    type: number
+    liquid_key: bond_scale
+    attr_aliases: [bond_scale, bond-scale]
+
+  - key: bondTolerance
+    type: number
+    liquid_key: bond_tolerance
+    attr_aliases: [bond_tolerance, bond-tolerance]
+
+  - key: bondMaxDistance
+    type: number
+    liquid_key: bond_max
+    attr_aliases: [bond_max, bond-max, bond_max_distance, bond-max-distance]
+
+  - key: scale2D
+    type: number
+    liquid_key: scale
+    attr_aliases: [scale, scale_2d, scale-2d]
+
+  - key: replace
+    type: boolean
+    liquid_key: replace
+    attr_aliases: [replace]

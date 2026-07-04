@@ -53,7 +53,7 @@ order: 7
 ### 2026.4.14
 中关村学院周泽浩老师在35届年会上关于[TDDFT-ris 2.0](http://bbs.keinsci.com/thread-50702-1-1.html)的报告引用了本博客[大体系的激发态波函数分析方案](https://bane-dysta.top/posts/47/)的内容
 
-![alt text](/_file/tabs/about/20260414.jpg)
+![alt text](/assets/img/about/20260414.jpg)
 
 周老师的TDDFT-ris可以做到10万原子的TDDFT，很厉害的报告，感谢周老师让我沾了点光😸
 
