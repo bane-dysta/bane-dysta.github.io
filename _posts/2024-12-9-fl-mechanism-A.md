@@ -1,8 +1,8 @@
 ---
 title: "Study note：Fluorescence Probe - part A"
 date: 2024-12-9 12:00:00 +0800
-categories: [Quantum Chemistry,note]
-tags: [note,excited state]   
+categories: [Quantum Chemistry]
+tags: [Fluorescence Probe, Excited State, PET, Mechanism]
 math: true     
 ---
 > tips：荧光探针的机理很杂很碎，而错误解读又很多，难以分辨。本文记录一下笔者学习过程中对各种基本原理的总结，内容仅供参考，未必完全正确，会随笔者学习理解过程随时更新。如果读者发现任何地方与已有认识不符，不要怀疑，一定是笔者理解有误，请务必在评论区指出！

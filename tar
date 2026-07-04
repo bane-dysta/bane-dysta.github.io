@@ -8,7 +8,6 @@ tar -czf blog-src.tgz \
   CNAME \
   _posts \
   _data \
-  _file \
   _includes \
   _layouts \
   _plugins \

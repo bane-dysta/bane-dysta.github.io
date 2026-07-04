@@ -1,8 +1,8 @@
 ---
 title: Study note：弱相互作用的分析
 date: 2024-10-30 19:00:00 +0800
-categories: [Analysis Method, Weak Interaction]
-tags: [H-Bond,RDG,NCI,IGMH,Multiwfn]     
+categories: [Wavefunction Analysis]
+tags: [Weak Interaction, RDG, NCI, IGMH, Multiwfn]
 ---
 
 2026-02-23: banewfn宣传页做好了，用banewfn完成比下文手动做更简单，欢迎体验。

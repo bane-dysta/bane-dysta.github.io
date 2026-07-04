@@ -1,8 +1,8 @@
 ---
 title: Study note：振动分辨光谱+Huang-Rhys因子(分解重组能)的计算
 date: 2024-12-12 12:00:00 +0800
-categories: [Quantum Chemistry,note]
-tags: [note,Huang-Rhys]   
+categories: [Quantum Chemistry]
+tags: [Huang-Rhys, Vibronic Spectrum, Reorganization Energy, Excited State]
 math: true     
 ---
 ## Gaussian

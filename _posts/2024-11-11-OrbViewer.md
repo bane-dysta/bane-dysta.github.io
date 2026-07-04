@@ -1,8 +1,8 @@
 ---
 title: Orbital Viewer：快速可视化分子轨道工具
 date: 2024-11-11 12:00:00 +0800
-categories: [Scripts]
-tags: [Orb-Viewer]  
+categories: [Tools and Scripts]
+tags: [OrbViewer, Molecular Orbital, Visualization]
 pin: true   
 ---
 [![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](https://github.com/yourusername/orbital-viewer)
