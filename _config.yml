@@ -233,7 +233,7 @@ exclude:
   - purgecss.js
   - "*.config.js"
   - "package*.json"
-  - "*.tgz"
+  - "blog-src.tgz"
 
 jekyll-archives:
   enabled: [categories, tags]
