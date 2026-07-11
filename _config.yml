@@ -207,7 +207,7 @@ defaults:
       path: ""
       type: softwares
     values:
-      layout: software
+      layout: page
       comments: false
       toc: false
 
