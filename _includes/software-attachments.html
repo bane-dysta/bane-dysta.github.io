@@ -1,0 +1,99 @@
+{% comment %}
+  Software attachments are discovered at build time.
+
+  Default directory:
+    /assets/files/<software page slug in lowercase>/
+
+  Override the directory name with this front matter when needed:
+    attachment_dir: custom-directory
+{% endcomment %}
+
+{% assign software_path = page.url | remove_first: '/software/' %}
+{% assign software_slug = software_path | split: '/' | first %}
+{% assign attachment_dir = page.attachment_dir | default: software_slug | downcase %}
+{% assign attachment_root = '/assets/files/' | append: attachment_dir | append: '/' %}
+{% assign sorted_attachment_files = site.static_files | sort: 'path' %}
+{% assign attachment_count = 0 %}
+
+{% for file in sorted_attachment_files %}
+  {% assign file_prefix = file.path | slice: 0, attachment_root.size %}
+  {% if file_prefix == attachment_root %}
+    {% assign attachment_count = attachment_count | plus: 1 %}
+  {% endif %}
+{% endfor %}
+
+{% if attachment_count > 0 %}
+  <section class="software-attachments" aria-labelledby="software-attachments-title">
+    <h2 id="software-attachments-title">附件下载</h2>
+
+    <div class="software-attachments-table-wrap">
+      <table class="software-attachments-table">
+        <thead>
+          <tr>
+            <th>文件</th>
+            <th class="software-attachments-actions-heading">操作</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for file in sorted_attachment_files %}
+            {% assign file_prefix = file.path | slice: 0, attachment_root.size %}
+            {% if file_prefix == attachment_root %}
+              {% assign relative_path = file.path | remove_first: attachment_root %}
+              <tr>
+                <td><code>{{ relative_path }}</code></td>
+                <td class="software-attachments-actions">
+                  <a href="{{ file.path | relative_url }}" download>下载</a>
+                  <a href="{{ file.path | relative_url }}" target="_blank" rel="noopener">打开</a>
+                </td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <style>
+    .software-attachments {
+      margin-top: 2rem;
+    }
+
+    .software-attachments-table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--main-border-color, #ddd);
+      border-radius: 0.6rem;
+    }
+
+    .software-attachments-table {
+      width: 100%;
+      margin: 0;
+      border-collapse: collapse;
+    }
+
+    .software-attachments-table th,
+    .software-attachments-table td {
+      padding: 0.7rem 0.85rem;
+      border-bottom: 1px solid var(--main-border-color, #ddd);
+      vertical-align: middle;
+    }
+
+    .software-attachments-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .software-attachments-table code {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+
+    .software-attachments-actions-heading,
+    .software-attachments-actions {
+      width: 9rem;
+      white-space: nowrap;
+    }
+
+    .software-attachments-actions a + a {
+      margin-left: 0.7rem;
+    }
+  </style>
+{% endif %}
