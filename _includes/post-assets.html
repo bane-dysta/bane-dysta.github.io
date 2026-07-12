@@ -1,31 +1,54 @@
 {% comment %}
-  Auto attachment list for posts.
+  Auto attachment tree for posts and software collection pages.
 
-  Resolution order:
+  Posts:
   1. Explicit front matter: asset_id: 57
   2. Default from the post filename index:
      _posts/2026-01-03-57.md       -> /assets/posts/57/
      _posts/2026-01-03-57-title.md -> /assets/posts/57/
 
-  This keeps old posts compatible while allowing future index-named posts
-  to omit asset_id from front matter.
+  Any supported page can override the complete directory with:
+     asset_path: /assets/posts/58/
+
+  Software pages:
+  1. Explicit files-directory name: asset_dir: custom-folder
+  2. Default from the source filename (lowercase):
+     _softwares/banetask.md -> /assets/files/banetask/
+     _softwares/xyzTrick.md -> /assets/files/xyztrick/
 {% endcomment %}
 
 {% assign page_filename = page.path | split: '/' | last %}
 {% assign filename_without_ext = page_filename | remove: '.markdown' | remove: '.md' %}
-{% assign filename_parts = filename_without_ext | split: '-' %}
-{% assign candidate_asset_id = filename_parts[3] | append: '' %}
-{% assign candidate_number = candidate_asset_id | plus: 0 | append: '' %}
-{% assign resolved_asset_id = '' %}
+{% assign asset_prefix = '' %}
+{% assign asset_heading = '本文附件' %}
 
-{% if page.asset_id %}
-  {% assign resolved_asset_id = page.asset_id | append: '' %}
-{% elsif candidate_asset_id == candidate_number %}
-  {% assign resolved_asset_id = candidate_asset_id %}
+{% if page.asset_path %}
+  {% assign asset_prefix = page.asset_path | append: '' %}
+  {% assign asset_heading = '软件附件' %}
+{% elsif page.collection == 'softwares' %}
+  {% assign resolved_asset_dir = page.asset_dir | default: filename_without_ext | downcase %}
+  {% if resolved_asset_dir != '' %}
+    {% assign asset_prefix = '/assets/files/' | append: resolved_asset_dir | append: '/' %}
+    {% assign asset_heading = '软件附件' %}
+  {% endif %}
+{% else %}
+  {% assign filename_parts = filename_without_ext | split: '-' %}
+  {% assign candidate_asset_id = filename_parts[3] | append: '' %}
+  {% assign candidate_number = candidate_asset_id | plus: 0 | append: '' %}
+  {% assign resolved_asset_id = '' %}
+
+  {% if page.asset_id %}
+    {% assign resolved_asset_id = page.asset_id | append: '' %}
+  {% elsif candidate_asset_id == candidate_number %}
+    {% assign resolved_asset_id = candidate_asset_id %}
+  {% endif %}
+
+  {% if resolved_asset_id != '' %}
+    {% assign asset_prefix = '/assets/posts/' | append: resolved_asset_id | append: '/' %}
+  {% endif %}
 {% endif %}
 
-{% if resolved_asset_id != '' %}
-  {% assign asset_prefix = '/assets/posts/' | append: resolved_asset_id | append: '/' %}
+{% if asset_prefix != '' %}
   {% assign sorted_static_files = site.static_files | sort: 'path' %}
   {% assign asset_count = 0 %}
 
@@ -37,21 +60,121 @@
   {% endfor %}
 
   {% if asset_count > 0 %}
-    <section class="post-assets" aria-labelledby="post-assets-heading">
-      <h2 id="post-assets-heading" data-toc-skip>本文附件</h2>
+    <section class="post-assets" data-asset-tree aria-labelledby="post-assets-heading">
+      <div class="post-assets-header">
+        <h2 id="post-assets-heading" data-toc-skip>{{ asset_heading }}</h2>
+        <div class="post-assets-actions" aria-label="附件目录操作">
+          <button type="button" data-asset-action="expand">全部展开</button>
+          <button type="button" data-asset-action="collapse">全部收起</button>
+        </div>
+      </div>
+
       <p class="post-assets-desc">共 {{ asset_count }} 个文件，位于 <code>{{ asset_prefix }}</code>。</p>
-      <ul class="post-asset-list">
+
+      <ul class="post-asset-list" data-asset-source>
         {% for file in sorted_static_files %}
           {% assign current_prefix = file.path | slice: 0, asset_prefix.size %}
           {% if current_prefix == asset_prefix %}
-            <li class="post-asset-item">
-              <a href="{{ file.path | relative_url }}" download>{{ file.name }}</a>
-              <a class="post-asset-raw" href="{{ file.path | relative_url }}" target="_blank" rel="noopener">查看</a>
+            {% assign relative_asset_path = file.path | remove_first: asset_prefix %}
+            <li class="post-asset-item" data-asset-path="{{ relative_asset_path | escape }}">
+              <a class="post-asset-download" href="{{ file.path | relative_url | escape }}" download>{{ file.name | escape }}</a>
+              <a class="post-asset-raw" href="{{ file.path | relative_url | escape }}" target="_blank" rel="noopener">查看</a>
             </li>
           {% endif %}
         {% endfor %}
       </ul>
     </section>
+
+    <script>
+      (() => {
+        const countFiles = (node) => {
+          let total = node.files.length;
+          node.directories.forEach((directory) => {
+            total += countFiles(directory);
+          });
+          return total;
+        };
+
+        const renderTree = (node, list) => {
+          const directoryNames = Array.from(node.directories.keys()).sort((a, b) =>
+            a.localeCompare(b, undefined, { numeric: true, sensitivity: 'base' })
+          );
+
+          directoryNames.forEach((directoryName) => {
+            const directory = node.directories.get(directoryName);
+            const directoryItem = document.createElement('li');
+            directoryItem.className = 'post-asset-directory';
+
+            const details = document.createElement('details');
+            const summary = document.createElement('summary');
+
+            const name = document.createElement('span');
+            name.className = 'post-asset-directory-name';
+            name.textContent = directoryName;
+
+            const count = document.createElement('span');
+            count.className = 'post-asset-directory-count';
+            count.textContent = `${countFiles(directory)} 个文件`;
+
+            summary.append(name, count);
+            details.appendChild(summary);
+
+            const childList = document.createElement('ul');
+            renderTree(directory, childList);
+            details.appendChild(childList);
+            directoryItem.appendChild(details);
+            list.appendChild(directoryItem);
+          });
+
+          node.files
+            .sort((a, b) =>
+              a.dataset.assetPath.localeCompare(b.dataset.assetPath, undefined, {
+                numeric: true,
+                sensitivity: 'base'
+              })
+            )
+            .forEach((fileItem) => list.appendChild(fileItem));
+        };
+
+        document.querySelectorAll('.post-assets[data-asset-tree]').forEach((section) => {
+          if (section.dataset.assetTreeReady === 'true') return;
+
+          const sourceList = section.querySelector('[data-asset-source]');
+          if (!sourceList) return;
+
+          const root = { directories: new Map(), files: [] };
+          const fileItems = Array.from(sourceList.querySelectorAll(':scope > .post-asset-item'));
+
+          fileItems.forEach((fileItem) => {
+            const parts = (fileItem.dataset.assetPath || '').split('/').filter(Boolean);
+            if (parts.length === 0) return;
+
+            let current = root;
+            parts.slice(0, -1).forEach((directoryName) => {
+              if (!current.directories.has(directoryName)) {
+                current.directories.set(directoryName, { directories: new Map(), files: [] });
+              }
+              current = current.directories.get(directoryName);
+            });
+            current.files.push(fileItem);
+          });
+
+          sourceList.textContent = '';
+          sourceList.classList.add('post-asset-tree');
+          renderTree(root, sourceList);
+          section.dataset.assetTreeReady = 'true';
+
+          section.querySelectorAll('[data-asset-action]').forEach((button) => {
+            button.addEventListener('click', () => {
+              const shouldOpen = button.dataset.assetAction === 'expand';
+              section.querySelectorAll('details').forEach((details) => {
+                details.open = shouldOpen;
+              });
+            });
+          });
+        });
+      })();
+    </script>
 
     <style>
       .post-assets {
@@ -62,30 +185,150 @@
         background: var(--card-bg, transparent);
       }
 
+      .post-assets-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 0.65rem 1rem;
+      }
+
       .post-assets h2 {
-        margin-top: 0;
-        padding-top: 0;
+        margin: 0;
+        padding: 0;
+      }
+
+      .post-assets-actions {
+        display: flex;
+        gap: 0.4rem;
+      }
+
+      .post-assets-actions button {
+        padding: 0.2rem 0.55rem;
+        border: 1px solid var(--main-border-color, #d8d8d8);
+        border-radius: 0.35rem;
+        color: inherit;
+        background: transparent;
+        font-size: 0.78rem;
+        cursor: pointer;
+      }
+
+      .post-assets-actions button:hover {
+        background: var(--button-bg, rgba(127, 127, 127, 0.12));
       }
 
       .post-assets-desc {
-        margin-bottom: 0.75rem;
-        font-size: 0.95rem;
-        opacity: 0.85;
+        margin: 0.65rem 0 0.8rem;
+        font-size: 0.92rem;
+        opacity: 0.82;
       }
 
-      .post-asset-list {
-        margin-bottom: 0;
-        padding-left: 1.25rem;
+      .post-asset-list,
+      .post-asset-tree ul {
+        margin: 0;
+        padding-left: 0;
+        list-style: none;
+      }
+
+      .post-asset-tree ul {
+        margin: 0.2rem 0 0.3rem 0.65rem;
+        padding-left: 0.9rem;
+        border-left: 1px solid var(--main-border-color, #dedede);
+      }
+
+      .post-asset-directory {
+        margin: 0.18rem 0;
+      }
+
+      .post-asset-directory summary {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        min-height: 1.8rem;
+        padding: 0.16rem 0.35rem;
+        border-radius: 0.35rem;
+        cursor: pointer;
+        user-select: none;
+        list-style: none;
+      }
+
+      .post-asset-directory summary::-webkit-details-marker {
+        display: none;
+      }
+
+      .post-asset-directory summary:hover {
+        background: var(--button-bg, rgba(127, 127, 127, 0.1));
+      }
+
+      .post-asset-directory summary::before {
+        content: '›';
+        display: inline-block;
+        width: 0.75rem;
+        font-size: 1.15rem;
+        line-height: 1;
+        text-align: center;
+        transition: transform 0.15s ease;
+      }
+
+      .post-asset-directory details[open] > summary::before {
+        transform: rotate(90deg);
+      }
+
+      .post-asset-directory-name::before {
+        content: '📁';
+        margin-right: 0.4rem;
+        font-size: 0.95em;
+      }
+
+      .post-asset-directory-count {
+        margin-left: auto;
+        font-size: 0.76rem;
+        opacity: 0.65;
       }
 
       .post-asset-item {
-        margin: 0.25rem 0;
+        display: flex;
+        align-items: baseline;
+        gap: 0.55rem;
+        min-width: 0;
+        margin: 0.12rem 0;
+        padding: 0.22rem 0.35rem 0.22rem 1.55rem;
+        border-radius: 0.35rem;
+        position: relative;
+      }
+
+      .post-asset-item:hover {
+        background: var(--button-bg, rgba(127, 127, 127, 0.08));
+      }
+
+      .post-asset-item::before {
+        content: '📄';
+        position: absolute;
+        left: 0.35rem;
+        top: 0.24rem;
+        font-size: 0.9em;
+      }
+
+      .post-asset-download {
+        min-width: 0;
+        overflow-wrap: anywhere;
       }
 
       .post-asset-raw {
-        margin-left: 0.45rem;
-        font-size: 0.86rem;
-        opacity: 0.75;
+        margin-left: auto;
+        flex: 0 0 auto;
+        font-size: 0.82rem;
+        opacity: 0.72;
+      }
+
+      @media (max-width: 576px) {
+        .post-assets-actions {
+          width: 100%;
+        }
+
+        .post-asset-directory-count {
+          font-size: 0.72rem;
+        }
       }
     </style>
   {% endif %}

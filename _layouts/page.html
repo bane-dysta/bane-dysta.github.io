@@ -77,6 +77,10 @@ layout: default
     <div class="content">
       {{ content }}
     </div>
+
+    {% if page.collection == 'softwares' %}
+      {% include post-assets.html %}
+    {% endif %}
   {% else %}
     {{ content }}
   {% endif %}
