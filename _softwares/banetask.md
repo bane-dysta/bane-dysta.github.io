@@ -1,452 +1,133 @@
 ---
 title: BaneTask
-summary: 量子化学任务控制系统
+summary: 量子化学任务、执行与结果管理系统
 ---
 
-Last Update: 2026/03/20
+Last Update: 2026/07/19
 
-BaneTask 是一个用 **C++17** 编写的量子化学任务控制 / 工作流生成工具。本程序的目的是把你从**输入文件批量生成、任务依赖串联、前后处理脚本拼装、结果快照与归档整理**这些重复劳动里解放出来：你只需要写一个相对简洁的 `.bt` 文本文件描述流程，BaneTask 会在目录中生成对应的输入文件、命令脚本与 workflow 文件。
+BaneTask 是一个用 **C++17** 编写的量子化学任务组织与结果管理工具。它使用单个文件描述计算步骤，把结构来源、程序输入、任务依赖、资源请求、前后处理、执行调度和结果整理放进同一套流程。
 
-- `gaussian` / `orca` / `script` / `other` 四类任务
-- `runif` 条件生成
-- `.bane.result.kv` 结果快照
-- `banetask db` / `btask db` / `btask compare` 的 SQLite 派生库能力
-- Windows `cmd` / `bat` 与 Linux `bash` 双栈脚本输出
-- `.projbt` 项目模式与 Windows `btc` 快速入口
+Gaussian、ORCA 等量子化学程序仍负责实际计算；BaneTask 负责把一个 case 或一批 case 从输入生成一路组织到查询、绘图和结项归档。
+
+```text
+结构文件 + .bt / .projbt
+  -> banetask 展开任务并生成输入、命令和 .bwrk
+  -> btrun 在本地或调度系统上执行 workflow
+  -> btproc 提取规范结果并写入事实存储
+  -> btdb / @derive / @plot 查询、计算、导表和出图
+  -> btdb archive create 导出单文件 .btdb
+```
 
 {% include embed/bilibili.html id='BV1QJPpzkEMY' %}
 
-项目地址：
-
-- **GitHub**: https://github.com/bane-dysta/banetask
-- **Gitee**: https://gitee.com/bane-dysta/banetask2
-
-> 文档里不再硬编码旧的安装包文件名。当前工程的打包方式是：Linux/Unix 生成 `TGZ` / `STGZ`，Windows 生成 `ZIP`；请以仓库 Release 页面中的实际产物为准。
-
 <!-- TOC tocDepth:2..3 chapterDepth:2..6 -->
 
-- [安装与快速开始](#安装与快速开始)
-- [配置与目录结构](#配置与目录结构)
-  - [banetask.conf 的查找规则与优先级](#banetaskconf-的查找规则与优先级)
-- [配置](#配置)
-  - [量子化学程序环境](#量子化学程序环境)
-  - [Windows 与 Shell 选择](#windows-与-shell-选择)
-- [bt 任务文件](#bt-任务文件)
-  - [文件头：元信息、define、include](#文件头元信息defineinclude)
-  - [任务块：依赖、输入生成与控制](#任务块依赖输入生成与控制)
-    - [`%program`](#program)
-    - [`%source`](#source)
-    - [`%control`](#control)
-    - [`%keywords` 与关键词展开](#keywords-与关键词展开)
-    - [`%extrakeywords`](#extrakeywords)
-    - [`%mod`](#mod)
-  - [前后处理脚本：pre\_comd 与 comd](#前后处理脚本pre_comd-与-comd)
-  - [归档与结果快照](#归档与结果快照)
-- [运行产物与目录约定](#运行产物与目录约定)
-- [结果数据库与项目比较](#结果数据库与项目比较)
-  - [`runif` 的写法](#runif-的写法)
-  - [`banetask db`](#banetask-db)
-  - [`btask db` 与 `btask compare`](#btask-db-与-btask-compare)
+- [下载与文档](#下载与文档)
+- [BaneTask 能做什么](#banetask-能做什么)
+- [快速开始](#快速开始)
+  - [准备程序环境](#准备程序环境)
+  - [编写任务文件](#编写任务文件)
+  - [生成并运行](#生成并运行)
+  - [查询与归档](#查询与归档)
+- [任务描述能力](#任务描述能力)
+  - [程序后端](#程序后端)
+  - [依赖与条件](#依赖与条件)
+  - [批量展开与模块复用](#批量展开与模块复用)
+  - [前后处理命令](#前后处理命令)
+- [执行与调度](#执行与调度)
+- [结果、派生计算与绘图](#结果派生计算与绘图)
+  - [结果存储](#结果存储)
+  - [Derive 与 Plot](#derive-与-plot)
+  - [单文件归档](#单文件归档)
 - [命令行工具](#命令行工具)
-  - [banetask 主程序](#banetask-主程序)
-  - [btask 辅助工具](#btask-辅助工具)
-  - [btc（Windows 辅助入口）](#btcwindows-辅助入口)
-- [示例](#示例)
-- [其他](#其他)
+- [配置目录](#配置目录)
+- [从源码构建](#从源码构建)
+- [项目与资源](#项目与资源)
 
 <!-- /TOC -->
 
-## 安装与快速开始
+## 下载与文档
 
-Release:
+- **Linux 自解压安装包**：[banetask-Linux-x86_64-2.36.5.sh](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/release/banetask-Linux-x86_64-2.36.5.sh)
+- **Windows 安装包**：[banetask_setup.exe](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/release/banetask_setup.exe)
+- **完整手册**：[BaneTask_Project_Manual_zh.pdf](/assets/files/banetask/BaneTask_Project_Manual_zh.pdf)
 
-- Linux: [下载installer](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/release/banetask-Linux-x86_64-1.0.sh)
-- Windows: [下载installer](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/release/banetask_setup.exe)
-
-把发布的可执行文件加入 `PATH`：
+发布包中的 `bin/` 与 `share/banelib/` 共同组成运行环境。移动或解压后应保留两者的相对目录关系，并把 `bin/` 加入 `PATH`。
 
 ```bash
 export PATH=/path/to/banetask/bin:$PATH
+banetask --version
+btrun --version
 ```
 
-帮助：
+## BaneTask 能做什么
 
-```bash
-banetask --help
-btask --help
-```
+- 用统一 DSL 描述任务块、结构来源、依赖关系、条件、资源和元数据。
+- 生成多种量子化学程序的输入文件，并在同一流程中串联不同程序。
+- 为任务生成 `.bwrk` workflow，在本地文件队列、Slurm、SGE、PBS 或 SSH/rsync 远程 profile 上执行。
+- 使用 `define:`、`matrix:`、结构化 YAML 集合和 `@foreach` 批量展开参数、结构和任务变体。
+- 从计算输出提取带属性名、单位、序列轴和来源信息的规范结果。
+- 使用 `@derive` 完成相对能、热力学组合、表格整理和逐原子数据处理。
+- 使用 `%plot` / `@plot` 生成能垒、收敛、光谱、相关、热图、柱图、轨道能级和激发态能级等图。
+- 把 current records、历史解析 revision、内容寻址对象、分析配方和显式发布结果封装为可校验的 `.btdb` 单文件。
 
-> BaneTask 本身只负责生成输入与 workflow / command 脚本，不强绑定具体队列系统。你可以用自己的调度器，也可以把 `autorun: true` 配合 `BANETASK_SCRIPTS_PATH/run.sh` 或 `run.bat` 串起来用。
+BaneTask 更适合有连续依赖、批量结构、条件分支或长期结果管理需求的项目。只提交一个现成输入文件时，也可以直接使用 `btrun task`，不必先写 `.bt`。
 
-## 配置与目录结构
+## 快速开始
 
-### banetask.conf 的查找规则与优先级
+下面的例子先用 Gaussian 优化甲烷并计算频率，再在没有虚频时使用 ORCA 做单点计算。
 
-BaneTask 会按以下顺序查找 `banetask.conf`：
-
-1. 当前目录（`.`）
-2. `banetask` 可执行文件所在目录
-3. `~/.bane/task/`
-4. `/etc/banetask/`
-
-同一个配置项的优先级固定为：
-
-**环境变量 > 配置文件 > 内置默认值**。
-
-因此你可以把常用默认值写在 `~/.bane/task/banetask.conf`，再在 CI / 集群节点上用环境变量做覆盖。
-
-## 配置
-
-建议把所有可移植、可复用的资源集中到 `~/.bane/task/`（Windows 下对应 `%USERPROFILE%\.bane\task\`），典型结构如下：
+目录结构：
 
 ```text
-~/.bane/task/
-  banetask.conf
-  envs/                 # 各程序运行环境配置（*.conf）
-  bt_templates/         # btask 用的 .bt 模板
-  other_templates/      # %program other 用的输入模板
-  scripts/              # run.sh / run.bat 及 scripts 指令入口
-  multiwfn_templates/   # Multiwfn 输入流模板
-  external/             # env.sh / env.bat / env.cmd 等外部环境初始化
-  banewfn/              # 可选：banewfn 子系统模板 / 脚本
+methane/
+  methane.xyz
+  methane.bt
 ```
 
-`banetask.conf` 是一个简单的 `KEY=VALUE` 文件。你不需要把所有变量都写满；只要写你需要覆盖的项即可。下面是与当前源码行为一致的说明：
+`methane.xyz`：
 
-- `BANETASK_TASK_PATH`：当你 **不带参数运行** `banetask` 时，用它作为任务搜索根目录（默认 `.`）。
-- `BANETASK_LOG_PATH`：banetask 自己的日志输出目录（默认 `.`）。
-- `BANETASK_ENVCONF_PATH`：程序环境配置目录（默认 `~/.bane/task/envs`）。
-- `BANETASK_TEMPLATE_PATH`：`btask` 模板目录（默认 `~/.bane/task/bt_templates`）。
-- `BANETASK_OTHER_TEMPLATES_PATH`：`%program other` 的输入模板目录（默认 `~/.bane/task/other_templates`）。
-- `BANETASK_SCRIPTS_PATH`：`scripts ...` 指令和 `autorun` 使用的 `run.sh` / `run.bat` 所在目录（默认 `~/.bane/task/scripts`）。
-- `BANETASK_EXTERNAL_SCRIPTS_PATH`：生成的 `pre_comd / comd` 会优先尝试加载这里的 `env.sh` / `env.bat` / `env.cmd`（默认 `~/.bane/task/external`）。
-- `BANETASK_WFN_EXAMPLES_PATH`：`multiwfn ...` 指令使用的模板目录（默认 `~/.bane/task/multiwfn_templates`）。
-- `BANETASK_BANEWFN_PATH`：`banewfn ...` 指令使用的模板 / 脚本目录（默认空）。
-- `BANETASK_SHELL`：强制脚本输出 shell 类型，可取 `bash` / `sh` / `gitbash` 或 `cmd` / `bat` / `dos`。
-- `USE_GITBASH=true`：在 Windows 上强制输出 bash 风格脚本。
-- `BANETASK_CMD_ENABLE_DIRECTIVES=true`：在 cmd 模式下开启更多内置指令解析；默认关闭。
-- `IF_WAIT_FREQ`：依赖完成性检查策略开关；不写时默认偏向看日志尾部，设为 `false` 时会退回全文件扫描。
+```xyz
+5
+methane
+C      0.000000    0.000000    0.000000
+H      0.629118    0.629118    0.629118
+H     -0.629118   -0.629118    0.629118
+H     -0.629118    0.629118   -0.629118
+H      0.629118   -0.629118   -0.629118
+```
 
-### 量子化学程序环境
+### 准备程序环境
 
-`BANETASK_ENVCONF_PATH` 目录下的 `*.conf` 用于告诉 BaneTask：
-
-- 这个程序的输入文件后缀是什么；
-- 跑前需要怎样 `ENV_SETUP`；
-- 真正执行时要用怎样的 `RUN_CMD_TEMPLATE`。
-
-源码要求每个环境配置文件至少包含：
-
-- `SUFFIX`
-- `ENV_SETUP`
-- `RUN_CMD_TEMPLATE`
-
-常用可选项：
-
-- `CONF_CORES`
-- `CONF_MEMORY`
-- `OUTPUT_SUFFIX`
-
-当前模板变量支持：
-
-- `${ACTUAL_INPUT_FILE}`
-- `${ACTUAL_OUTPUT_FILE}`
-- `${ACTUAL_INPUT_FILENAME}`
-- `${ACTUAL_OUTPUT_FILENAME}`
-- `${ACTUAL_INPUT_STEM}`
-- `${CORES}`
-
-示例：
+程序运行方式由 `<type>.conf` 描述。建议把配置放在 `~/.bane/task/envs/`。下面是一个最小的 `g16.conf`：
 
 ```conf
-CONF_CORES=32
-CONF_MEMORY=96000
+[main]
+DESCRIPTION=Gaussian 16
 SUFFIX=gjf
 OUTPUT_SUFFIX=log
+CONF_CORES=16
+CONF_MEMORY=64000
 
-ENV_SETUP='source "$HOME/apprepo/gaussian/16-hy/scripts/env.sh"
-export GAUSS_SCRDIR="$HOME/scratch"'
+[ENV_SETUP]
+source "$HOME/apprepo/gaussian/16/env.sh"
 
-RUN_CMD_TEMPLATE='g16 "${ACTUAL_INPUT_FILE}" > "${ACTUAL_OUTPUT_FILE}"'
+[RUN_CMD_TEMPLATE]
+g16 "${ACTUAL_INPUT_FILE}" > "${ACTUAL_OUTPUT_FILE}"
 ```
 
-约定的配置文件名：
+ORCA、GAMESS、AMESP、xTB 等程序使用同样的分节格式。`[main]` 保存标量配置；`[ENV_SETUP]`、`[RUN_CMD_TEMPLATE]` 和自定义区块直接保存多行脚本。
 
-- Gaussian：优先找 `g16.conf`，找不到再找 `gaussian.conf`
-- ORCA：`orca.conf`
-- Script：`script.conf`
-- Other：由 `.other_task` 中记录的程序名决定，例如 `xtb.conf`
+### 编写任务文件
 
-### Windows 与 Shell 选择
-
-为了让同一套 `.bt` 能在 Linux / macOS（bash）与 Windows（cmd）都能工作，源码里引入了脚本输出 shell 选择：
-
-- 非 Windows 平台默认输出 **bash** 风格脚本
-- Windows 平台默认输出 **cmd** 风格脚本
-
-可用配置：
-
-- `BANETASK_SHELL=bash` / `cmd`
-- `USE_GITBASH=true`
-
-`autorun: true` 的行为也随 shell 变化：
-
-- bash 模式：尝试调用 `BANETASK_SCRIPTS_PATH/run.sh`
-- cmd 模式：尝试调用 `BANETASK_SCRIPTS_PATH/run.bat`
-
-在 **cmd 模式** 下，当前代码默认把大多数 `%preprocess` / `%process` 内容按原始命令行写入脚本，以避免和 Windows 内置命令冲突。`banewfn ...` 仍保留了内置适配；其余快捷指令若要展开，请显式打开：
-
-```conf
-BANETASK_CMD_ENABLE_DIRECTIVES=true
-```
-
-## bt 任务文件
-
-### 文件头：元信息、define、include
-
-一个 `.bt` 文件由两部分组成：
-
-1. 文件头（YAML-like）：元信息与 `define:` 变量
-2. 若干任务块（`$taskname`）
-
-示例：
-
-```yaml
-autorun: true
-
-#INCLUDE common.yaml
-
-define:
-  func: B3LYP
-  basis: 6-31G(d)
-```
-
-当前解析器支持：
-
-- `#INCLUDE path/to/file.yaml`：出现在头部，用于引入额外 metadata / define
-- `&INCLUDE path/to/file.bt`：出现在任务区，用于并入另一份 `.bt` / `.projbt`
-
-此外，如果 `.bt` 所在目录里存在以下文件，会被自动加载：
-
-- `extra.yaml`：作为低优先级头部 / define 来源
-- `extra.bt`：作为附加任务块并入当前文件
-
-### 任务块：依赖、输入生成与控制
-
-每个任务块以 `$任务名` 开头，例如 `$opt`、`$sp`。任务名会用于创建输出目录，也会参与生成输入文件名。
-
-#### `%program`
-
-- `gaussian`（默认）
-- `orca`
-- `other`
-- `script`
-
-#### `%source`
-
-`%source` 同时决定“从哪里取结构”和“依赖哪些前置任务完成”。支持：
-
-- `origin`
-- `任务名`
-- `任务名 guess`
-- `restart`
-- `xyz=文件名`
-- 多依赖：用逗号分隔，例如 `opt,td,td_t1`
-
-其中第一个依赖用于取结构，所有依赖都会参与完成性检查；多依赖时，`runif` 也需要显式写依赖名前缀。
-
-#### `%control`
-
-当前代码支持：
-
-- `totcore 32`
-- `totmem 96000`
-- `runifdef [SOMEVAR]`
-- `runif {{ nimag }} = 1`
-- `verbosity p|t`
-
-#### `%keywords` 与关键词展开
-
-Gaussian 与 ORCA 当前都支持 `{a,b,c}` 形式的关键词集合展开，会按笛卡尔积生成多份输入文件。展开项也会成为文件名前缀的一部分。
-
-#### `%extrakeywords`
-
-以 `end exkwd` 结束。对于不同程序：
-
-- Gaussian：写在坐标之后
-- ORCA：写在关键词行之后
-- Script：作为脚本正文
-- Other：是否使用取决于模板
-
-#### `%mod`
-
-支持 `charge` / `spin` 的 `set` / `add` / `subtract`。
-
-### 前后处理脚本：pre_comd 与 comd
-
-`%preprocess` 与 `%process` 并不会在生成阶段执行，而是写入任务目录下的：
-
-- `pre_comd`
-- `comd`
-
-占位符：
-
-- `[taskname]`
-- `[originname]`
-- `[inputname]`
-- `[rootname]`
-
-在 bash 模式下，当前代码内置了一组快捷指令：
-
-- `scripts ...`
-- `multiwfn ...`
-- `copy ...`
-- `banewfn ...`
-- `analysis ...`
-- `result ...` / `results ...`
-- `benv ...`
-
-### 归档与结果快照
-
-`%archive` 当前会触发两类动作：
-
-1. 生成 `任务名_archive.json`
-2. 在 bash 模式下，按属性写入 `banejs --archive ...` 或 `banejs --soc ...`
-
-与此同时，如果结果记录链开启，`comd` 还会追加一条 `banejs` 命令，导出：
-
-- `.bane.result.kv`
-- `Results/DB/snapshots/*.kv`
-- `Results/DB/records/*.json`
-- `Results/DB/queue/*.ready`
-
-`runif` 就是基于这些轻量快照工作的；`banetask db` / `btask db` 则基于记录 JSON 同步 SQLite 派生库。
-
-## 运行产物与目录约定
-
-假设你的 `.bt` 位于 `methane/methane.bt`，典型产物如下：
-
-- 在 `.bt` 同级目录下，为每个任务块创建子目录：`opt/`、`sp/`……
-- 在任务目录中生成输入文件、`.bwrk`、`pre_comd`、`comd`
-- 条件满足且命令链完整时，生成 `.bane.result.kv`
-- 在 case 根目录生成 `Results/DB/` 子树与 `project.db`
-- `bt.status` 记录已经生成过 workflow 的任务块
-
-如果你只想刷新 `pre_comd / comd`（以及归档 JSON），而不想改动 `.bwrk`，可以使用：
-
-```bash
-banetask your.bt --comd-only
-```
-
-## 结果数据库与项目比较
-
-### `runif` 的写法
-
-单依赖时可以直接写：
-
-```text
-runif {{ nimag }} = 1
-runif {{ imag1 }} < -500
-```
-
-多依赖时必须显式写成：
-
-```text
-runif {{ td.energy }} > {{ td_t1.energy }}
-```
-
-当前常用别名：
-
-- `energy`
-- `scf_energy`
-- `free_energy`
-- `nimag`
-- `imag1`, `imag2`, ...
-- `converged`
-
-### `banetask db`
-
-当前代码支持：
-
-```bash
-banetask db init [--path <task_dir|file.bt>]
-banetask db sync [--path <task_dir|file.bt>]
-banetask db rebuild [--path <task_dir|file.bt>]
-banetask db query --sql "SELECT * FROM task_flat_latest"
-banetask db export --sql "SELECT * FROM task_flat_latest" --format csv --out runs.csv
-```
-
-默认数据库位置：
-
-```text
-<case_root>/Results/DB/project.db
-```
-
-### `btask db` 与 `btask compare`
-
-项目模式下还支持：
-
-```bash
-btask db sync --path ./my_project
-btask db query --sql "SELECT case_key, task_name, energy FROM task_flat_latest"
-btask compare opt td --metric energy --path ./my_project
-```
-
-`btask compare` 默认比较 `energy`，也可以比较 `tddft.total_energy` 这类 JSON 扩展字段。
-
-## 命令行工具
-
-### banetask 主程序
-
-常用方式：
-
-- `banetask your.bt`
-- `banetask some_dir/`
-- `banetask your.bt --comd-only`
-- `banetask db ...`
-
-主选项：
-
-- `-h, --help`
-- `-v, --version`
-- `-l, --log <path>`
-- `-d, --debug`
-- `--comd-only`
-
-### btask 辅助工具
-
-当前实现中的 `btask` 包含：
-
-- `-t`：创建测试文件夹和示例文件
-- `-r`：删除当前目录及子目录下的所有 `bt.status`
-- `-l` / `-c`：列出模板
-- `-i`：交互式模板选择器
-- `-m`：合并模板
-- `-v`：为 `.bt` 生成 define 部分
-- `-b`：项目批处理模式
-- `-u`：项目更新模式
-- `db ...`：项目级 banedb
-- `compare ...`：项目级横向比较
-- `.projbt` 批处理执行 / 收集模式
-
-### btc（Windows 辅助入口）
-
-`btc.exe` 仅在 Windows 目标下构建。它会：
-
-1. 找到 `.xyz`
-2. 由 `.btc` 模板生成同名 `.bt`
-3. 需要时备份旧 `.bt`
-4. 默认调用 `run.bat -p <directory>`
-
-## 示例
-
-下面给一个“Gaussian 优化 + ORCA 单点 + 条件后续任务”的例子：
+`methane.bt`：
 
 ```bt
 autorun: false
+project: methane-demo
 
 define:
-  func: B3LYP
+  method: B3LYP
   basis: 6-31G(d)
 
 $opt
@@ -455,9 +136,7 @@ $opt
   %control
     totcore 16
     totmem 64000
-  %keywords "opt freq [func]/[basis]"
-  %process
-    scripts fchk
+  %keywords "opt freq [method]/[basis]"
 
 $sp
   %source opt
@@ -465,22 +144,337 @@ $sp
   %control
     totcore 32
     totmem 96000
+  %when
+    completed opt
+    {{ opt.nimag }} = 0
   %keywords "wB97M-V def2-TZVP def2/J RIJCOSX TightSCF"
 
-$ts_check
-  %source opt
-  %control
-    runif {{ nimag }} = 1
-    runif {{ imag1 }} < -500
-  %keywords "freq [func]/[basis]"
+@derive summary
+  let E = energy(sp)
+  emit final_energy = E
+@end
 ```
 
-如果你要查结果，可以直接：
+`%source opt` 同时声明了几何来源和上游依赖。`%when` 读取上游完成状态与结果快照；条件满足后，`sp` 才进入生成计划。
+
+### 生成并运行
+
+生成输入文件、`pre_comd`、`comd` 和 `.bwrk`：
 
 ```bash
-banetask db sync --path ./methane
-banetask db query --sql "SELECT task_name, energy, nimag FROM task_flat_latest"
+banetask methane/methane.bt
 ```
 
-## 其他
-VS code高亮插件：[bt-highlight.vsix](/assets/files/banetask/bt-highlight.vsix)
+在本地文件队列中运行：
+
+```bash
+btrun kick --backend local --path ./methane
+```
+
+`btrun kick` 也会在可用时先调用 `banetask`，因此日常使用可以直接从项目目录启动：
+
+```bash
+btrun kick --path ./methane
+```
+
+检查调度脚本而不提交：
+
+```bash
+btrun render --path ./methane --explain
+```
+
+### 查询与归档
+
+同步并查询结果：
+
+```bash
+btdb case sync --path ./methane
+btdb case query --path ./methane \
+  --sql "SELECT task_name, energy, nimag FROM task_flat_latest"
+```
+
+结项时导出并校验单文件归档：
+
+```bash
+btdb case archive create \
+  --path ./methane \
+  --out methane.btdb
+
+btdb archive verify methane.btdb
+```
+
+## 任务描述能力
+
+### 程序后端
+
+`%program` 决定输入生成方式和相关字段的解释规则。
+
+| 类型 | 主要输入字段 | 生成内容 |
+| --- | --- | --- |
+| `gaussian` | `%keywords`、`%extrainput` | `*.gjf` |
+| `orca` | `%keywords`、`%extrainput` | `*.inp` |
+| `gamess` | `%keywords`、`%extrainput` | `*.inp` |
+| `amesp` | `%keywords`、`%extrainput` | `*.aip` |
+| `mopac` | `%keywords`、`%extrainput` | `*.mop` |
+| `bdf` | `%keywords`、`%extrainput` | `*.inp` |
+| `fcclasses` | 结构化 `%source`、`%keywords`、`%extrainput` | 作业计划、独立目录与启动器 |
+| `mrcc` | `%keywords`、`%extrainput` | `*.inp` |
+| `maple` | `%keywords`、`%extrainput` | `*.inp` |
+| `xtb` | `%args`、`%extrainput` | `*.xyz` 与可选 `.xcontrol` |
+| `script` | `%runner`、`%body` | `*.sh` 或 `*.bat` |
+| `other` | `%template`、`%param` | 由模板定义的任意输入 |
+
+未写 `%program` 时默认使用 `gaussian`。各程序可查询的结果属性取决于相应的 BaneLib 输入与结果后端；部分后端以输入生成和 workflow 为主。
+
+### 依赖与条件
+
+`%source` 可以引用原始结构、上游任务、显式结构文件或重启工件：
+
+```bt
+%source origin
+%source opt
+%source xyz=reactant.xyz
+%source restart
+```
+
+需要多个上游资源时，可以使用逗号依赖或结构化 `%source`。`%when` 支持：
+
+- `defined [NAME]`：检查变量是否存在；
+- `completed <task>`：检查任务是否完成；
+- `completed allothers`：等待同一流程的其他有效任务；
+- `{{ task.property }}`：读取能量、虚频、收敛状态等结果快照。
+
+条件读取的是任务结果，不需要在 shell 中自行扫描日志或轮询目录。
+
+### 批量展开与模块复用
+
+`define:` 保存可复用变量，`matrix:` 对参数做组合展开：
+
+```yaml
+define:
+  basis: def2-TZVP
+
+matrix:
+  method: B3LYP, CAM-B3LYP, wB97XD
+  solvent: water, dmso
+```
+
+展开后的任务保留模板任务名和 `matrix.*` 元数据，方便数据库筛选与横向比较。更大的流程可以使用：
+
+- `&INCLUDE`：并入任务文件、局部片段或 `.btlib` 命名片段；
+- `@foreach` / `@foreach?`：按 YAML 集合或结构帧生成任务；
+- `btool expand`：查看 include、foreach 和 matrix 展开后的规范任务文件；
+- `btool fmt` / `btool migrate`：格式化或迁移到规范 DSL v2。
+
+### 前后处理命令
+
+`%preprocess` 与 `%process` 会生成任务目录中的 `pre_comd` 和 `comd`。内建命令包括：
+
+- `run`：运行脚本目录中的命令；
+- `mwfn` / `multiwfn`、`banewfn`：执行波函数分析配方；
+- `publish`：复制人工结果到 `Results/`，`--pin` 可把结果纳入结项归档；
+- `cp`、`mv`、`mkdir`、`snapshot`、`mass`：处理任务文件和目录；
+- `result`、`dbcollect`、`atomvec`：补充任务结果与逐原子数据；
+- `benv`、`fork`：加载环境或采集结构。
+
+不匹配内建 DSL 的行会作为原样 shell 命令写入。项目也可以通过 manifest 扩展自定义 Process DSL 命令。
+
+## 执行与调度
+
+每个输入文件对应一个 `.bwrk` workflow，其中包含资源请求、环境初始化、前处理、主命令、返回码处理和后处理。`btrun` 负责选择执行目标并消费这些 workflow。
+
+支持的执行方式：
+
+- 本地文件队列；
+- Slurm；
+- SGE；
+- PBS；
+- 使用 SSH/rsync 的远程 execution profile。
+
+常用命令：
+
+```bash
+# 生成并提交目录中的 workflow
+btrun kick --path ./project
+
+# 提交已有 .bwrk
+btrun submit --path ./project
+
+# 只渲染调度脚本
+btrun render --path ./project --explain
+
+# 不写 .bt，直接提交已有程序输入
+btrun task -t orca mol1.inp mol2.inp
+
+# 查看本地队列
+btrun queue status
+btrun queue list
+```
+
+execution profile、queue catalog 和 routing policy 用 YAML 描述。自动选择会综合 backend、profile、队列、核心数、内存、GPU 和优先级；`--explain` 可显示候选目标及拒绝原因。
+
+## 结果、派生计算与绘图
+
+### 结果存储
+
+任务结果分成事实源、可重建缓存、运行状态和人工结果视图：
+
+```text
+.bane/
+  store/
+    records/                 # current records
+    revisions/               # 历史解析 revision
+    objects/sha256/          # 内容寻址工件
+  cache/
+    snapshots/               # 条件判断使用的集中快照
+    project.db               # 可删除重建的 SQLite 查询缓存
+  run/
+    db-queue/                # 待同步标记
+
+Results/
+  Recipes/                   # 实际使用的分析、Derive 与 Plot 配方
+  Derived/                   # 派生标量和表格
+  Plots/                     # 图、数据、渲染脚本和 manifest
+  Method/                    # 方法学 Markdown / JSON
+  FCclasses/                 # 速率与量子产率汇总
+  published.json             # publish --pin 的显式选择清单
+```
+
+`.bane/store/` 保存长期事实；`.bane/cache/project.db` 是查询索引，可以由 `btdb sync` / `rebuild` 重新生成。`Results/` 面向下载、检查和交流，不承担数据库事实源职责。
+
+### Derive 与 Plot
+
+`@derive` 可以从任务结果计算标量、生成表格、筛选与排序记录、连接逐原子属性，并输出 CSV、TSV、JSONL、KV、XYZ 或 extxyz。内建函数覆盖规范能量选择、单位换算、CBS 外推、热力学组合、谐振零点能和 RRHO 等常见任务。
+
+```bt
+@derive activation
+  let G_r = single_point(sp_R) + gibbs_corr(freq_R)
+  let G_ts = single_point(sp_TS) + gibbs_corr(freq_TS)
+  require nimag(freq_R) == 0
+  require nimag(freq_TS) == 1
+  emit delta_g = convert(G_ts - G_r, "kcal/mol")
+@end
+```
+
+`%plot` / `@plot` 使用同一套规范属性与单位系统。图的实际数据、规范声明、渲染脚本、fingerprint 和 manifest 会一并保存，因此结果可以追溯、检查和重画。
+
+单独处理分析脚本时，可以直接运行：
+
+```bash
+banetask analysis.btder
+banetask figure.btplt --rerender-plots
+```
+
+### 单文件归档
+
+`.btdb` 是不可变的导出、迁移和长期保存容器。默认封存：
+
+- current records 与历史 revisions；
+- records/revisions 实际引用的 SHA-256 对象；
+- `Results/Recipes/`；
+- `Results/published.json` 显式选择的普通结果；
+- 可用的顶层 `.bt` / `.projbt` 上下文。
+
+SQLite、snapshot、queue 和 scheduler 状态不进入归档。恢复时由事实源重建数据库：
+
+```bash
+btdb archive restore project.btdb --out ./restored_project
+```
+
+归档使用 ZIP64 store 容器，并通过 manifest、CRC、字节数、SHA-256、对象引用和路径规则检查完整性。SHA-256 用于检测损坏或改动，不提供作者身份认证。
+
+## 命令行工具
+
+| 工具 | 职责 | 常用入口 |
+| --- | --- | --- |
+| `banetask` | 解析 `.bt` / `.projbt`，生成输入与 workflow，执行 Derive / Plot | `banetask case.bt` |
+| `btrun` | 提交、渲染和执行 `.bwrk`，管理本地或远程调度 | `btrun kick --path ./project` |
+| `btdb` | 同步、查询、报告、比较、校验和 `.btdb` 归档 | `btdb project sync --path ./project` |
+| `btool` | 模板、project 维护、改名、格式化、展开、解释和静态检查 | `btool lint --strict ./cases` |
+| `btc` | 从 `.btc` 模板初始化单 case 或多 case project | `btc template.btc *.xyz` |
+| `btproc` | 结果提取、方法学说明、结构采集和逐原子处理等运行期任务 | `btproc result ...` |
+| `var` | 读取和写入 YAML / `.bt` 变量 | `var read define:method --file case.bt` |
+
+查看完整帮助：
+
+```bash
+banetask --help
+btrun --help
+btrun help conf
+btdb --help
+btool --help
+btc --help
+```
+
+## 配置目录
+
+推荐的用户级目录：
+
+```text
+~/.bane/task/
+  banetask.conf
+  envs/                  # <type>.conf
+  bt_templates/          # .bt 与变量模板
+  btlib/                 # 可复用片段库
+  other_templates/       # %program other 输入模板
+  scripts/               # Process DSL 脚本
+  multiwfn_templates/
+  banewfn/
+  external/
+  btrun/
+    profiles/
+    queues/
+    routes/
+
+~/.bane/taskq/
+  pending/
+  running/
+  done/
+  failed/
+  cancelled/
+  logs/
+```
+
+`banetask.conf` 使用 `KEY=value`。环境变量覆盖配置文件，同类查找路径支持路径列表：POSIX 使用 `:`，Windows 使用 `;`。
+
+常用配置项：
+
+- `BANETASK_ENVCONF_PATH`：程序环境配置目录；
+- `BANETASK_TEMPLATE_PATH`：任务与变量模板目录；
+- `BANETASK_BTLIB_PATH`：共享 `.btlib` 与片段目录；
+- `BANETASK_OTHER_TEMPLATES_PATH`：`other` 输入模板目录；
+- `BANETASK_SCRIPTS_PATH`：Process DSL 脚本目录；
+- `BANETASK_WFN_EXAMPLES_PATH`、`BANETASK_BANEWFN_PATH`：波函数分析模板目录；
+- `BANETASK_GNUPLOT`：gnuplot 可执行文件；
+- `BTRUN_PROFILE_DIR`：execution profile 目录；
+- `BTRUN_QUEUE_DIR`：本地文件队列目录。
+
+完整查找顺序、环境变量和 profile 格式见项目手册。
+
+## 从源码构建
+
+BaneTask 依赖 BaneLib。`BANETASK_BANELIB_ROOT` 可以指向 BaneLib 的源码树、构建树或安装树。
+
+```bash
+cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Release \
+  -DBANETASK_BANELIB_ROOT=/path/to/banelib
+
+cmake --build build -j
+cmake --install build --prefix /your/prefix
+```
+
+主要依赖：
+
+- CMake 3.10 或更新版本；
+- C++17 编译器；
+- BaneLib 的 `bane::core`、`bane::chem`、`bane::input`、`bane::qc`、`bane::structure` targets；
+- Threads、JsonCpp 和 SQLite。
+
+安装完成后，确认 `<prefix>/bin/` 与 `<prefix>/share/banelib/` 同时存在。
+
+## 项目与资源
+
+- **网站介绍文章**：[BaneTask：把量子化学项目从任务生成一路管到结果分析](/posts/54/)
+- **VS Code 高亮插件**：[bt-highlight.vsix](/assets/files/banetask/bt-highlight.vsix)
+- **用户手册**：[BaneTask_Project_Manual_zh.pdf](/assets/files/banetask/BaneTask_Project_Manual_zh.pdf)
