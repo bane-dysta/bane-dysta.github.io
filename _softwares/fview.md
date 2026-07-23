@@ -79,3 +79,6 @@ text_editor_path=notepad.exe
 ```
 
 `gview_path` 可以改为本机的 `gview.exe` 完整路径；`text_editor_path` 也可以换成其他编辑器，例如 VS Code。修改配置后无需重新安装。
+
+## download
+见笔者的[公社贴](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=59986&fromuid=63020)。
