@@ -34,6 +34,7 @@ mv -f dislin.png ${input}_nci
 mv -f output.txt ${input}_nci 
 end
 
+collect(RDG);
 
 # Bundled by bane dysta
 # ConfDir: D:\program\Banewfn\conf
