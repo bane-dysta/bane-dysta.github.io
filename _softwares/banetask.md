@@ -48,8 +48,8 @@ Gaussian、ORCA 等量子化学程序仍负责实际计算；BaneTask 负责把�
 
 ## 下载与文档
 
-- **Linux 自解压安装包**：[banetask-Linux-x86_64-2.36.5.sh](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/release/banetask-Linux-x86_64-2.36.5.sh)
-- **Windows 安装包**：[banetask_setup.exe](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/release/banetask_setup.exe)
+- **Linux 自解压安装包**：[banetask-Linux-x86_64-2.36.5.sh](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/release/banetask-Linux-x86_64-2.39.0.sh)
+- **Windows 安装包**：[banetask_setup.exe](https://pub-ec46b9a843f44891acf04d27fddf97e0.r2.dev/release/banetask_setup-2.39.exe)
 - **完整手册**：[BaneTask_Project_Manual_zh.pdf](/assets/files/banetask/BaneTask_Project_Manual_zh.pdf)
 
 发布包中的 `bin/` 与 `share/banelib/` 共同组成运行环境。移动或解压后应保留两者的相对目录关系，并把 `bin/` 加入 `PATH`。

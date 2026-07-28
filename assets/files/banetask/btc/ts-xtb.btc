@@ -1,0 +1,52 @@
+autorun: true
+totcore: 4
+totmem: 8000
+
+$interface-gfn2-xtb
+  %program xtb
+  %args --gfn 2 --chrg [charge] --uhf [uhf]
+  %interface provider
+
+$opt_ts
+  %source origin
+  %interface consume interface-gfn2-xtb
+  %keywords "opt(TS,noeigen,calcfc,nomicro) external='[external]'"
+
+$ts_freq
+  %source opt_ts
+  %interface consume interface-gfn2-xtb
+  %keywords "freq external='[external]'"
+# 基于TS结构计算IRC。为避免出现意外的其他虚频，要求虚频数为1时才可以进行IRC计算。
+# 若仍担心意外情况，还可以在%when中约束如虚频值大于100 cm-1的才允许进入IRC计算。
+$IRC_forward
+    %source ts_freq
+    %keywords "irc=(LQA,maxpoint=60,rcfc,recalc=3,forward) external='[external]'"
+    %interface consume interface-gfn2-xtb
+    %control   
+      geom check
+    %when
+      {{ ts_freq.nimag }} = 1  
+
+$IRC_reverse
+    %source ts_freq
+    %keywords "irc=(LQA,maxpoint=60,rcfc,recalc=3,reverse) external='[external]'"
+    %interface consume interface-gfn2-xtb
+    %control
+      geom check
+    %when
+      {{ ts_freq.nimag }} = 1    
+
+# 基于IRC末端结构计算结构优化，为避免IRC未走通的虚假轨迹，要求IRC至少跑10帧
+$Int_forward
+    %source IRC_forward
+    %keywords "opt(nomicro) external='[external]'"
+    %interface consume interface-gfn2-xtb
+    %when
+        {{ IRC_forward.tot_frame }} >= 10
+
+$Int_reverse
+    %source IRC_reverse
+    %keywords "opt(nomicro) external='[external]'"
+    %interface consume interface-gfn2-xtb
+    %when
+        {{ IRC_reverse.tot_frame }} >= 10
