@@ -88,7 +88,6 @@ type "vhelp function" to get detailed usage of that function
 ```
 则配置完成。部分用户反映按照上述步骤配置完之后vcube加载失败，这可能是权限问题，此时可以尝试将VMDSCRIPTS变量添加至系统变量，也就是下半部分窗口。
 
-
 #### GitBash
 为了在命令行使用bash脚本，需要安装一个gitbash。可以去[官网](https://git-scm.com/install/windows)下，但是这里走的是GitHub，偶尔会抽风下不下来。此时也可以去国内镜像下载，比如[清华源](https://mirrors.tuna.tsinghua.edu.cn/github-release/git-for-windows/git/)。
 

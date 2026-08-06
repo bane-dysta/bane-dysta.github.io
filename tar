@@ -1,5 +1,6 @@
 rm -f *.patch
 tar -czf blog-src.tgz \
+  --exclude='*.tgz' \
   .github \
   _config.yml \
   Gemfile \
@@ -20,4 +21,6 @@ tar -czf blog-src.tgz \
   postindex.py \
   pull.bat \
   push.bat \
-  tools
+  tools \
+  AGENTS.md
+  
