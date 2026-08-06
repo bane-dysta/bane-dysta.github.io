@@ -121,7 +121,9 @@
 }
 
 .code-collapsible-content {
-    overflow: hidden;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
     transition: max-height 0.3s ease;
 }
 

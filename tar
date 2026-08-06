@@ -1,6 +1,7 @@
 rm -f *.patch
 tar -czf blog-src.tgz \
   --exclude='*.tgz' \
+  --exclude='*.zip' \
   .github \
   _config.yml \
   Gemfile \
