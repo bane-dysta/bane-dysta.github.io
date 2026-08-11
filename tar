@@ -1,7 +1,14 @@
 rm -f *.patch
 tar -czf blog-src.tgz \
   --exclude='*.tgz' \
+  --exclude='*.txz' \
+  --exclude='*.tar.gz' \
+  --exclude='*.tar.xz' \
   --exclude='*.zip' \
+  --exclude='*.7z' \
+  --exclude='*.pdf' \
+  --exclude='*.gif' \
+  --exclude='*.exe' \
   .github \
   _config.yml \
   Gemfile \
