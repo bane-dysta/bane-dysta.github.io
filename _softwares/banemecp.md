@@ -142,9 +142,8 @@ ndiis=8
 hupd_method=bofill
 pf_alpha=0.50
 pf_sigma=0.50
-pf_tstep=0.20
-pf_tgrad=0.20
-pf_thresh=1e-4
+pf_tstep=4.5e-4
+pf_tgrad=4.5e-4
 end
 ```
 
