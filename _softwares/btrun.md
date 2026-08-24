@@ -22,10 +22,12 @@ Last Update: 2026/07/18
   -> 执行、记录日志并进入终止状态
 ```
 
-项目地址：
+项目地址(暂时关闭，等重构好后会再开)：
 
 - GitHub：https://github.com/bane-dysta/banetask
 - Gitee：https://gitee.com/bane-dysta/banetask2
+
+下载：[公社介绍贴](http://bbs.keinsci.com/forum.php?mod=viewthread&tid=60229&fromuid=63020)内有下载地址。
 
 <!-- TOC tocDepth:2..3 chapterDepth:2..6 -->
 
