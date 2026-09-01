@@ -23,7 +23,7 @@ end
 %command
 #!/bin/bash
 rm -f template.gjf
-read X Y Z < <(awk '/The unit normal vector is /{print $6,$7,$8; exit}' "${output}")
+read X Y Z < <(awk '/The unit normal vector is /{print $6,$7,$8; exit}' "aromatic_${input}.out")
 vector="${X},${Y},${Z}"
 echo [aromatic] > nics2.bwc
 echo "%process" >> nics2.bwc
@@ -43,15 +43,15 @@ cat << EOF >> nics2.bwc
 # [nics2d]
 # 14
 # 1
-# \${grid:- }          # default: 100,100
+# ${grid:-100,100}    # default: 100,100
 # 8
 # ${ring}
-# \${distance:-1}      # distance between plotting plane and geometric center in Angstrom
-# \${range:-6}        # length of the plotting plane in Angstroms
+# ${distance:-1}      # distance between plotting plane and geometric center in Angstrom
+# ${range:-6}        # length of the plotting plane in Angstroms
 # 2
-# \${outfile:-NICS_2D.log}
+# ${outfile:-NICS_2D.log}
 # 0                   # decide plotting plane by vector
-# \${vector}
+# ${vector}
 # 4                   # Enable showing atom labels and reference point
 # 2                   # GREEN
 # 8                   # Enable showing bonds
