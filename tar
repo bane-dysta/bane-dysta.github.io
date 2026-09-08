@@ -17,6 +17,7 @@ tar -czf blog-src.tgz \
   CNAME \
   _posts \
   _data \
+  _draft \
   _includes \
   _layouts \
   _plugins \

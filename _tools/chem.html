@@ -1,0 +1,175 @@
+---
+layout: page
+title: ChemDoodle 转 SMILES
+description: 绘制二维分子结构，并将结构导出为 SMILES 字符串。
+icon: fas fa-atom
+order: 4
+---
+
+<link rel="stylesheet" href="{{ '/assets/css/ChemDoodleWeb.css' | relative_url }}" type="text/css">
+<link rel="stylesheet" href="{{ '/assets/css/jquery-ui-1.11.4.css' | relative_url }}" type="text/css">
+
+<script src="{{ '/assets/js/data/ChemDoodleWeb.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/data/ChemDoodleWeb-uis.js' | relative_url }}"></script>
+<script src="{{ '/assets/js/data/openchemlib-minimal.js' | relative_url }}"></script>
+
+<style>
+.chem-tool {
+  margin: 1.5rem auto;
+  text-align: center;
+}
+
+.chem-tool__tips {
+  margin-bottom: 1.5rem;
+  text-align: left;
+}
+
+.chem-tool__tips p {
+  margin-bottom: 0.5rem;
+}
+
+.chem-tool__tips ul {
+  margin-bottom: 0;
+}
+
+#sketcherContainer {
+  max-width: 100%;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+}
+
+#sketcher {
+  border: 1px solid var(--main-border-color, #ccc);
+  margin: 0 auto;
+}
+
+.export-button {
+  margin: 1rem 0 0.75rem;
+  padding: 0.6rem 1.25rem;
+  border: 0;
+  border-radius: 0.25rem;
+  background-color: #4caf50;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.export-button:hover {
+  background-color: #45a049;
+}
+
+#smilesOutput {
+  display: block;
+  width: min(100%, 32rem);
+  margin: 0 auto;
+  padding: 0.65rem;
+  border: 1px solid var(--main-border-color, #ccc);
+  border-radius: 0.25rem;
+  background: var(--main-bg, #fff);
+  color: var(--text-color, inherit);
+  font-size: 1rem;
+}
+</style>
+
+<div class="chem-tool">
+  <div class="chem-tool__tips">
+    <p><strong>Tips：</strong></p>
+    <ul>
+      <li>移动端 ChemDoodle 绘板会错位，请在浏览器设置中选择访问电脑版。</li>
+      <li>OpenChemLib 导出的 SMILES 不包含完整的立体结构信息。OpenBabel 可以避免这个问题，但其体积约 8 MB；这里使用约 560 KB 的 OpenChemLib minimal 版本。</li>
+      <li>免费版 ChemDoodle 没有手动输入基团的功能。</li>
+    </ul>
+  </div>
+
+  <div id="sketcherContainer">
+    <canvas id="sketcher" width="750" height="600"></canvas>
+  </div>
+
+  <button class="export-button" id="exportSmiles" type="button">导出为 SMILES</button>
+  <input type="text" id="smilesOutput" readonly placeholder="SMILES 会显示在这里...">
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const output = document.getElementById('smilesOutput');
+  const exportButton = document.getElementById('exportSmiles');
+
+  if (!window.ChemDoodle || !window.OCL) {
+    output.value = 'ChemDoodle 或 OpenChemLib 加载失败';
+    exportButton.disabled = true;
+    return;
+  }
+
+  const sketcher = new ChemDoodle.SketcherCanvas('sketcher', 750, 600, {
+    useServices: false,
+    floatDrawTools: true
+  });
+
+  sketcher.styles.atoms_displayTerminalCarbonLabels_2D = true;
+  sketcher.styles.atoms_useJMOLColors = true;
+  sketcher.styles.bonds_clearOverlaps_2D = true;
+  sketcher.styles.shapes_color = '#c10000';
+  sketcher.repaint();
+
+  exportButton.addEventListener('click', function () {
+    try {
+      const mol = sketcher.getMolecule();
+      if (!mol || mol.atoms.length === 0) {
+        output.value = '请先绘制一个分子';
+        return;
+      }
+
+      const molfile = ChemDoodle.writeMOLV3(mol);
+      const molecule = OCL.Molecule.fromMolfile(molfile);
+      if (!molecule) {
+        throw new Error('无法解析 MOL 文件');
+      }
+
+      const smiles = molecule.toSmiles();
+      output.value = smiles;
+      copyToClipboard(smiles);
+    } catch (error) {
+      console.error('导出 SMILES 失败:', error);
+      output.value = '错误：' + error.message;
+    }
+  });
+
+  function copyToClipboard(text) {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(text).then(
+        function () {
+          alert('SMILES 已复制到剪贴板！');
+        },
+        function (error) {
+          console.error('Clipboard API 复制失败:', error);
+          fallbackCopy(text);
+        }
+      );
+      return;
+    }
+
+    fallbackCopy(text);
+  }
+
+  function fallbackCopy(text) {
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+
+    try {
+      if (!document.execCommand('copy')) {
+        throw new Error('复制命令未成功执行');
+      }
+      alert('SMILES 已复制到剪贴板！');
+    } catch (error) {
+      console.error('复制失败:', error);
+      alert('无法复制 SMILES，请手动复制。');
+    } finally {
+      document.body.removeChild(textArea);
+    }
+  }
+});
+</script>
