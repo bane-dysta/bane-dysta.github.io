@@ -6,17 +6,17 @@ layout: page
 {% include lang.html %}
 
 <div id="page-category">
-  <h1 class="ps-lg-2 pe-md-3 d-flex align-items-center">
-    <span>
+  <div class="ps-lg-2 pe-md-3 d-flex align-items-center justify-content-between w-100 mb-4">
+    <h1 class="mb-0">
       <i class="far fa-folder-open fa-fw text-muted"></i>
       {{ page.title }}
       <span class="lead text-muted ps-2">{{ page.posts | size }}</span>
-    </span>
-    <a href="{{ '/guide/' | relative_url }}" class="btn btn-outline-primary btn-sm ms-auto flex-shrink-0">
+    </h1>
+    <a href="{{ '/guide/' | relative_url }}" class="btn btn-outline-primary btn-sm ms-3 flex-shrink-0">
       <i class="fas fa-arrow-left fa-fw me-1"></i>
       返回 GUIDE
     </a>
-  </h1>
+  </div>
 
   <ul class="content ps-0">
     {% for entry in page.posts %}
