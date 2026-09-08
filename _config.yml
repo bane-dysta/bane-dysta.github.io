@@ -175,6 +175,15 @@ collections:
   tabs:
     output: true
     sort_by: order
+  guides:
+    output: true
+    sort_by: order
+    permalink: /guide/:name/
+  # 工具维护入口：_tools/。每个文件的 front matter 同时定义 TOOLS 首页卡片。
+  tools:
+    output: true
+    sort_by: order
+    permalink: /tools/:name/
   softwares:
     output: true
     permalink: /software/:name/
@@ -205,6 +214,19 @@ defaults:
       permalink: /:title/
   - scope:
       path: ""
+      type: guides
+    values:
+      layout: guide-category
+      comments: false
+      toc: false
+  - scope:
+      path: ""
+      type: tools
+    values:
+      comments: false
+      toc: false
+  - scope:
+      path: ""
       type: softwares
     values:
       layout: page
@@ -224,6 +246,7 @@ compress_html:
     envs: [development]
 
 exclude:
+  - temp
   - "*.gem"
   - "*.gemspec"
   - docs
@@ -234,6 +257,7 @@ exclude:
   - "*.config.js"
   - "package*.json"
   - "blog-src.tgz"
+  - tar
 
 jekyll-archives:
   enabled: [categories, tags]

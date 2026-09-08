@@ -1,0 +1,645 @@
+---
+layout: page
+title: 溶液计算器
+description: 根据分子量、浓度与质量或体积进行互算，支持 SMILES 和 CAS 号。
+icon: fas fa-flask
+order: 3
+---
+
+<style>
+/* 溶液计算器 - 优化样式 */
+.calculator-container {
+    background-color: #ffffff;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    max-width: 800px;
+    margin: 2rem auto;
+    transition: all 0.3s ease;
+}
+
+.calculator-container h2 {
+    font-size: 1.8rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+    text-align: center;
+    border-bottom: 2px solid #e7f0fd;
+    padding-bottom: 15px;
+}
+
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-label {
+    color: #34495e;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.form-control {
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.6rem 1rem;
+    transition: all 0.2s;
+    background-color: #f8fafc;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.15);
+    background-color: #fff;
+}
+
+.input-group {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.input-group .form-control {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.input-group .form-select {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-left: none;
+}
+
+.input-group-append .btn {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.btn-outline-secondary {
+    color: #3498db;
+    border-color: #e2e8f0;
+    background-color: #f8fafc;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #edf2f7;
+    color: #2980b9;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+    box-shadow: 0 4px 6px rgba(52, 152, 219, 0.2);
+    padding: 0.6rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 8px rgba(52, 152, 219, 0.25);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(52, 152, 219, 0.2);
+}
+
+.btn-secondary {
+    background-color: #95a5a6;
+    border-color: #95a5a6;
+}
+
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+    border-color: #7f8c8d;
+}
+
+/* 模态框样式 */
+.modal-content {
+    border-radius: 12px;
+    border: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.modal-header {
+    border-bottom: 1px solid #edf2f7;
+    padding: 1.25rem 1.5rem;
+    background-color: #f8fafc;
+    border-top-left-radius: 12px;
+    border-top-right-radius: 12px;
+}
+
+.modal-title {
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #edf2f7;
+    padding: 1.25rem 1.5rem;
+    background-color: #f8fafc;
+    border-bottom-left-radius: 12px;
+    border-bottom-right-radius: 12px;
+}
+
+.btn-close {
+    color: #64748b;
+}
+
+/* 结构图像容器 */
+#structureContainer {
+    padding: 15px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+}
+
+#structureImage {
+    max-width: 320px;
+    margin: 0 auto;
+    background-color: white;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+/* 错误和成功消息样式 */
+#errorMessage {
+    border-radius: 8px;
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+}
+
+#resultLabel {
+    margin-top: 1.25rem;
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.success {
+    background-color: #d1f5ea;
+    color: #0d6e4d;
+    border-left: 4px solid #10b981;
+}
+
+.error {
+    background-color: #fee2e2;
+    color: #991b1b;
+    border-left: 4px solid #ef4444;
+}
+
+/* 响应式调整 */
+@media (max-width: 768px) {
+    .calculator-container {
+        padding: 20px 15px;
+        margin: 1rem 10px;
+    }
+
+    .form-group {
+        margin-bottom: 1rem;
+    }
+
+    .modal-dialog {
+        margin: 0.5rem;
+    }
+}
+
+/* 暗色模式支持 */
+@media (prefers-color-scheme: dark) {
+    .calculator-container {
+        background-color: #1a202c;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .calculator-container h2 {
+        color: #e2e8f0;
+        border-bottom-color: #2d3748;
+    }
+
+    .form-label {
+        color: #e2e8f0;
+    }
+
+    .form-control, .form-select, .btn-outline-secondary {
+        background-color: #2d3748;
+        border-color: #4a5568;
+        color: #e2e8f0;
+    }
+
+    .form-control:focus {
+        background-color: #2d3748;
+        border-color: #3498db;
+    }
+
+    .modal-header, .modal-footer {
+        background-color: #2d3748;
+        border-color: #4a5568;
+    }
+
+    .modal-content {
+        background-color: #1a202c;
+    }
+
+    .modal-title {
+        color: #e2e8f0;
+    }
+
+    #structureContainer {
+        background-color: #2d3748;
+    }
+
+    #structureImage {
+        background-color: #1a202c;
+    }
+
+    .success {
+        background-color: rgba(16, 185, 129, 0.2);
+        color: #d1fae5;
+    }
+
+    .error {
+        background-color: rgba(239, 68, 68, 0.2);
+        color: #fee2e2;
+    }
+}
+
+</style>
+
+
+<div class="calculator-container">
+    <h2 class="text-center mb-4">溶液计算器</h2>
+
+    <div class="form-group row">
+        <label for="molecularWeight" class="col-sm-3 col-form-label">分子量:</label>
+        <div class="col-sm-9">
+            <div class="input-group">
+                <input type="text" class="form-control" id="molecularWeight">
+                <button class="btn btn-outline-secondary" type="button" id="openSmilesButton">输入SMILES或CAS号</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="concentration" class="col-sm-3 col-form-label">目标浓度:</label>
+        <div class="col-sm-9">
+            <div class="input-group">
+                <input type="text" class="form-control" id="concentration" value="2">
+                <select class="form-select" id="concentrationUnit" style="max-width: 120px;">
+                    <option value="mmol/L">mmol/L</option>
+                    <option value="mol/L">mol/L</option>
+                    <option value="g/L">g/L</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="mass" class="col-sm-3 col-form-label">称量的质量:</label>
+        <div class="col-sm-9">
+            <div class="input-group">
+                <input type="text" class="form-control" id="mass">
+                <select class="form-select" id="massUnit" style="max-width: 120px;">
+                    <option value="g">g</option>
+                    <option value="mg">mg</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <label for="volume" class="col-sm-3 col-form-label">需要的体积:</label>
+        <div class="col-sm-9">
+            <div class="input-group">
+                <input type="text" class="form-control" id="volume">
+                <select class="form-select" id="volumeUnit" style="max-width: 120px;">
+                    <option value="mL">mL</option>
+                    <option value="L">L</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="text-center mt-3">
+        <button class="btn btn-primary" id="calculateButton">计算</button>
+    </div>
+
+    <div id="resultLabel" class="text-center mt-3" style="display: none;"></div>
+</div>
+
+<!-- SMILES Input Modal -->
+<div class="modal fade" id="smilesModal" tabindex="-1" aria-labelledby="smilesModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="smilesModalLabel">输入SMILES或CAS号</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="smilesInput" class="form-label">请输入 SMILES 或 CAS号:</label>
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="smilesInput">
+                        <button class="btn btn-outline-secondary" type="button" id="processInputButton">处理输入</button>
+                    </div>
+                </div>
+                <div id="errorMessage" class="alert alert-danger" style="display: none;"></div>
+                <div id="structureContainer" class="text-center" style="display: none;">
+                    <div id="structureImage"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                <button type="button" class="btn btn-primary" id="confirmSelectionButton" style="display: none;">确认</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript dependencies -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+<script src="https://unpkg.com/openchemlib/dist/openchemlib-full.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+<!-- Custom styles and scripts -->
+
+<script>
+// 全局变量
+let currentSmiles = null;
+let smilesModal;
+
+// 在文档加载完成后初始化
+document.addEventListener('DOMContentLoaded', function() {
+    // 初始化模态框
+    smilesModal = new bootstrap.Modal(document.getElementById('smilesModal'));
+
+    // 事件监听器设置
+    document.getElementById('openSmilesButton').addEventListener('click', () => {
+        document.getElementById('smilesInput').value = '';
+        document.getElementById('errorMessage').style.display = 'none';
+        document.getElementById('structureContainer').style.display = 'none';
+        document.getElementById('confirmSelectionButton').style.display = 'none';
+        smilesModal.show();
+    });
+
+    document.getElementById('processInputButton').addEventListener('click', processInput);
+    document.getElementById('confirmSelectionButton').addEventListener('click', confirmSelection);
+    document.getElementById('calculateButton').addEventListener('click', calculate);
+
+    // 监听分子量输入框失去焦点事件
+    document.getElementById('molecularWeight').addEventListener('blur', onMolecularWeightChange);
+
+    // 监听输入框键盘事件
+    document.getElementById('smilesInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            processInput();
+        }
+    });
+});
+
+// 从CAS号获取SMILES
+async function getSmilesFromCas(casNumber) {
+    try {
+        const url = `https://pubchem.ncbi.nlm.nih.gov/rest/pug/compound/name/${casNumber}/property/CanonicalSMILES/JSON`;
+        const response = await fetch(url);
+
+        if (response.ok) {
+            const data = await response.json();
+            try {
+                const smiles = data.PropertyTable.Properties[0].CanonicalSMILES;
+                return smiles;
+            } catch (error) {
+                showError("未找到该CAS号的SMILES");
+                return null;
+            }
+        } else {
+            showError("无法从PubChem获取数据");
+            return null;
+        }
+    } catch (error) {
+        showError("API请求失败: " + error.message);
+        return null;
+    }
+}
+
+// 计算分子量
+function calculateMolecularWeight(smiles) {
+    try {
+        // 使用OpenChemLib计算分子量
+        const molecule = OCL.Molecule.fromSmiles(smiles);
+
+        // 获取MolecularFormula对象，而不是创建它
+        const formula = molecule.getMolecularFormula();
+
+        // 直接访问relativeWeight属性，根据文档这是一个数字属性
+        const molecularWeight = formula.relativeWeight;
+        return molecularWeight;
+    } catch (error) {
+        showError("计算分子量时出错: " + error.message);
+        return null;
+    }
+}
+
+// 处理SMILES或CAS号输入
+async function processInput() {
+    const inputValue = document.getElementById('smilesInput').value.trim();
+
+    // 隐藏之前的错误信息
+    document.getElementById('errorMessage').style.display = 'none';
+
+    if (inputValue === '') {
+        showError("请输入SMILES或CAS号");
+        return;
+    }
+
+    let smiles;
+
+    // 判断是否为CAS号
+    if (/-/.test(inputValue) && inputValue.split('-').every(part => /^\d+$/.test(part))) {
+        // 如果像是CAS号，从PubChem获取SMILES
+        smiles = await getSmilesFromCas(inputValue);
+    } else {
+        // 否则假设为SMILES
+        smiles = inputValue;
+    }
+
+    if (smiles) {
+        try {
+            // 使用OpenChemLib进行分子验证和显示
+            const molecule = OCL.Molecule.fromSmiles(smiles);
+
+            // 创建分子的SVG图像
+            const svgString = molecule.toSVG(300, 200);
+
+            // 显示结构
+            document.getElementById('structureImage').innerHTML = svgString;
+            document.getElementById('structureContainer').style.display = 'block';
+            document.getElementById('confirmSelectionButton').style.display = 'block';
+
+            // 保存当前SMILES以便后续使用
+            currentSmiles = smiles;
+        } catch (error) {
+            showError("无效的SMILES，请重新输入: " + error.message);
+        }
+    }
+}
+
+// 确认选择分子
+function confirmSelection() {
+    if (currentSmiles) {
+        const molecularWeight = calculateMolecularWeight(currentSmiles);
+        if (molecularWeight) {
+            document.getElementById('molecularWeight').value = molecularWeight.toFixed(2);
+            smilesModal.hide();
+        }
+    }
+}
+
+// 分子量输入框变化处理
+async function onMolecularWeightChange() {
+    const inputValue = document.getElementById('molecularWeight').value.trim();
+
+    if (inputValue === '') return;
+
+    // 判断是否为数字
+    if (!isNaN(inputValue)) return;
+
+    // 判断是否为CAS号
+    if (/-/.test(inputValue) && inputValue.split('-').every(part => /^\d+$/.test(part))) {
+        const smiles = await getSmilesFromCas(inputValue);
+        if (smiles) {
+            const molecularWeight = calculateMolecularWeight(smiles);
+            if (molecularWeight !== null) {
+                document.getElementById('molecularWeight').value = molecularWeight.toFixed(2);
+            }
+        }
+    } else {
+        // 尝试作为SMILES处理
+        try {
+            const molecularWeight = calculateMolecularWeight(inputValue);
+            if (molecularWeight !== null) {
+                document.getElementById('molecularWeight').value = molecularWeight.toFixed(2);
+            }
+        } catch (error) {
+            // 如果既不是数字也不是有效的SMILES，不做处理
+        }
+    }
+}
+
+// 显示错误消息
+function showError(message) {
+    const errorElement = document.getElementById('errorMessage');
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+}
+
+// 显示结果
+function showResult(message, isSuccess = true) {
+    const resultElement = document.getElementById('resultLabel');
+    resultElement.textContent = message;
+    resultElement.className = isSuccess ? 'success' : 'error';
+    resultElement.style.display = 'block';
+}
+
+// 计算函数
+function calculate() {
+    try {
+        const molecularWeight = parseFloat(document.getElementById('molecularWeight').value);
+        const concentration = parseFloat(document.getElementById('concentration').value);
+
+        if (isNaN(molecularWeight) || molecularWeight <= 0) {
+            showResult("请输入有效的分子量", false);
+            return;
+        }
+
+        if (isNaN(concentration) || concentration <= 0) {
+            showResult("请输入有效的浓度", false);
+            return;
+        }
+
+        // 转换浓度单位到 mol/L
+        const concentrationUnit = document.getElementById('concentrationUnit').value;
+        let concentrationMol;
+
+        if (concentrationUnit === "mmol/L") {
+            concentrationMol = concentration / 1000;
+        } else if (concentrationUnit === "mol/L") {
+            concentrationMol = concentration;
+        } else {
+            // g/L转换为mol/L
+            concentrationMol = concentration / molecularWeight;
+        }
+
+        const massInput = document.getElementById('mass').value.trim();
+        const volumeInput = document.getElementById('volume').value.trim();
+
+        if (massInput && !volumeInput) {
+            // 已知质量，计算体积
+            let mass = parseFloat(massInput);
+            if (isNaN(mass) || mass <= 0) {
+                showResult("请输入有效的质量", false);
+                return;
+            }
+
+            // 根据质量单位转换
+            const massUnit = document.getElementById('massUnit').value;
+            if (massUnit === "mg") {
+                mass = mass / 1000; // mg to g
+            }
+
+            const volume = mass / (concentrationMol * molecularWeight);
+            let volumeMl = volume * 1000; // 转换为 mL
+
+            const volumeUnit = document.getElementById('volumeUnit').value;
+            if (volumeUnit === "L") {
+                volumeMl /= 1000;
+            }
+
+            document.getElementById('volume').value = volumeMl.toFixed(2);
+            showResult(`计算的体积: ${volumeMl.toFixed(2)} ${volumeUnit}`);
+
+        } else if (volumeInput && !massInput) {
+            // 已知体积，计算质量
+            let volumeMl = parseFloat(volumeInput);
+            if (isNaN(volumeMl) || volumeMl <= 0) {
+                showResult("请输入有效的体积", false);
+                return;
+            }
+
+            const volumeUnit = document.getElementById('volumeUnit').value;
+            if (volumeUnit === "L") {
+                volumeMl *= 1000; // L to mL
+            }
+
+            const volume = volumeMl / 1000; // mL to L
+            let mass = concentrationMol * molecularWeight * volume;
+
+            const massUnit = document.getElementById('massUnit').value;
+            if (massUnit === "mg") {
+                mass *= 1000; // g to mg
+            }
+
+            document.getElementById('mass').value = mass.toFixed(4);
+            showResult(`计算的质量: ${mass.toFixed(4)} ${massUnit}`);
+
+        } else if (massInput && volumeInput) {
+            showResult("请只填写质量或体积中的一个", false);
+        } else {
+            showResult("请填写质量或体积中的一个", false);
+        }
+
+    } catch (error) {
+        showResult("计算出错: " + error.message, false);
+    }
+}
+</script>
