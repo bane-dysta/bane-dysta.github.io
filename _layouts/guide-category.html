@@ -1,0 +1,52 @@
+---
+layout: page
+# A manually curated article collection
+---
+
+{% include lang.html %}
+
+<div id="page-category">
+  <h1 class="ps-lg-2 pe-md-3 d-flex align-items-center">
+    <span>
+      <i class="far fa-folder-open fa-fw text-muted"></i>
+      {{ page.title }}
+      <span class="lead text-muted ps-2">{{ page.posts | size }}</span>
+    </span>
+    <a href="{{ '/guide/' | relative_url }}" class="btn btn-outline-primary btn-sm ms-auto flex-shrink-0">
+      <i class="fas fa-arrow-left fa-fw me-1"></i>
+      返回 GUIDE
+    </a>
+  </h1>
+
+  <ul class="content ps-0">
+    {% for entry in page.posts %}
+      {% assign matched_post = nil %}
+
+      {% if entry.ref %}
+        {% assign filename_suffix = entry.ref | prepend: '-' | append: '.md' %}
+        {% for post in site.posts %}
+          {% if post.path contains filename_suffix %}
+            {% assign matched_post = post %}
+            {% break %}
+          {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      <li class="d-flex justify-content-between px-md-3">
+        {% if matched_post %}
+          <a href="{{ matched_post.url | relative_url }}">{{ entry.title | default: matched_post.title }}</a>
+          <span class="dash flex-grow-1"></span>
+          {% include datetime.html date=matched_post.date class='text-muted small text-nowrap' lang=lang %}
+        {% elsif entry.url %}
+          <a href="{{ entry.url }}">{{ entry.title }}</a>
+          <span class="dash flex-grow-1"></span>
+          {% if entry.date %}
+            {% include datetime.html date=entry.date class='text-muted small text-nowrap' lang=lang %}
+          {% endif %}
+        {% else %}
+          <span class="text-muted">{{ entry.title | default: entry.ref }}</span>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>

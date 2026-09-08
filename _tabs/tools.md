@@ -3,189 +3,27 @@ layout: page
 icon: fas fa-cog
 order: 6
 ---
-<div class="collapsible-section">
-<button class="collapsible-btn">量子化学</button>
-<div class="collapsible-content" markdown="1">
 
-<div class="collapsible-section">
-<button class="collapsible-btn">Gaussian</button>
-<div class="collapsible-content" markdown="1">
+{% comment %}新增/修改工具只需要编辑 _tools/；这里会自动生成工具卡片。{% endcomment %}
 
-[Gaussian官网](https://gaussian.com/gaussian16/)
-
-[DFT](https://gaussian.com/DFT)
-
-[Basis Set](https://gaussian.com/basissets/)
-
-```
-PBE-1/3:
-PBEPBE IOp(3/76=1000003333) IOp(3/77=0666706667)
-
-PBE38:
-PBEPBE IOp(3/76=1000003750) IOp(3/77=0625006250)
-
-revDSD-PBEP86-D3(BJ):
-DSDPBEP86 IOp(3/125=0079905785,3/78=0429604296,3/76=0310006900,3/74=1004) em=gd3bj IOp(3/174=0437700,3/175=-1,3/176=0,3/177=-1,3/178=5500000)
-
-RSX-QIDH:
-PBEQIDH IOP(3/74=1001009,3/78=0666606666,3/107=0270000000,
-3/108=0270000000,3/119=0310000000,3/120=0310000000,
-3/125=0333403334,3/130=06900,3/131=06900)
-```
-
+<div class="tools-grid">
+  {% assign tools = site.tools | sort: 'order' %}
+  {% for tool in tools %}
+    <a
+      class="tool-card"
+      href="{{ tool.url | relative_url }}"
+      {% if tool.new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}
+    >
+      <span class="tool-card__icon" aria-hidden="true">
+        <i class="{{ tool.icon }}"></i>
+      </span>
+      <span class="tool-card__body">
+        <span class="tool-card__title">{{ tool.title }}</span>
+        <span class="tool-card__description">{{ tool.description }}</span>
+      </span>
+      <span class="tool-card__arrow" aria-hidden="true">
+        <i class="fas fa-chevron-right"></i>
+      </span>
+    </a>
+  {% endfor %}
 </div>
-</div>
-
-
-
-<div class="collapsible-section">
-<button class="collapsible-btn">ORCA</button>
-<div class="collapsible-content" markdown="1">
-
-[ORCA 6.1 Manual](https://www.faccts.de/docs/orca/6.1/manual/index.html)
-
-[泛函列表](https://www.faccts.de/docs/orca/6.0/manual/contents/structure.html#density-functional-methods)
-
-[自定义泛函](https://www.faccts.de/docs/orca/6.0/manual/contents/detailed/model.html#sec-model-dft-functionals-detailed)
-
-[基组可用性](https://www.faccts.de/docs/orca/6.0/manual/contents/detailed/basisset.html#table-basisset-availability-detailed)
-
-[TDDFT](https://www.faccts.de/docs/orca/6.0/manual/contents/detailed/tddft.html)
-
-[Delta SCF](https://www.faccts.de/docs/orca/6.0/manual/contents/typical/energygradients.html#scf-and-symmetry)
-
-[输入文件](https://sites.google.com/site/orcainputlibrary/)
-
-</div>
-</div>
-
-<div class="collapsible-section">
-<button class="collapsible-btn">MRCC</button>
-<div class="collapsible-content" markdown="1">
-
-[钟老师的帖子](http://bbs.keinsci.com/thread-29156-1-1.html)
-
-</div>
-</div>
-
-<div class="collapsible-section">
-<button class="collapsible-btn">GAMESS</button>
-<div class="collapsible-content" markdown="1">
-
-[手册](https://www.msg.chem.iastate.edu/gamess/GAMESS_Manual/docs-input.txt)
-
-</div>
-</div>
-
-<div class="collapsible-section">
-<button class="collapsible-btn">xTB</button>
-<div class="collapsible-content" markdown="1">
-
-[手册](https://xtb-docs.readthedocs.io/en/latest/#)
-
-</div>
-</div>
-
-<div class="collapsible-section">
-<button class="collapsible-btn">论坛</button>
-<div class="collapsible-content" markdown="1">
-
-[计算化学公社](http://bbs.keinsci.com/forum.php)
-
-[思想家公社的门口](http://sobereva.com/)
-
-</div>
-</div>
-
-<div class="collapsible-section">
-<button class="collapsible-btn">单位换算</button>
-<div class="collapsible-content" markdown="1">
-
-|            |   Hartree    |      eV      |     kcal/mol     |    kJ/mol     |
-| :--------: | :----------: | :----------: | :--------------: | :-----------: |
-| 1 Hartree  |      1       | 27.211386 eV | 627.509 kcal/mol | 2625.5 kJ/mol |
-|    1 eV    | 0.0367493 Eh |      1       | 23.0605 kcal/mol | 96.485 kJ/mol |
-| 1 kcal/mol | 0.0015936 Eh | 0.0433641 eV |        1         | 4.184 kJ/mol  |
-|  1 kJ/mol  | 0.0003800 Eh | 0.0103643 eV | 0.2390 kcal/mol  |       1       |
-
-</div>
-</div>
-
-</div>
-</div>
-
-<div class="collapsible-section">
-<button class="collapsible-btn">杂项</button>
-<div class="collapsible-content" markdown="1">
-
-[Notion](https://zhuanlan.zhihu.com/p/614078488)
-
-```
-sudo mkdir -p /etc/docker
-sudo tee /etc/docker/daemon.json <<-'EOF'
-{
-  "registry-mirrors": [
-    "https://docker.hpcloud.cloud",
-    "https://docker.m.daocloud.io",
-    "https://docker.unsee.tech",
-    "https://docker.1panel.live",
-    "http://mirrors.ustc.edu.cn",
-    "https://docker.chenby.cn",
-    "http://mirror.azure.cn",
-    "https://dockerpull.org",
-    "https://dockerhub.icu",
-    "https://hub.rat.dev"
-  ]
-}
-EOF
-sudo systemctl daemon-reload
-sudo systemctl restart docker
-```
-[Docker 镜像加速列表](https://www.coderjia.cn/archives/dba3f94c-a021-468a-8ac6-e840f85867ea)
-
-解压命令：
-
-| 压缩文件格式 | 解压命令 | 命令参数解释 |
-|--------------|----------|--------------|
-| .tar | tar -xvf filename.tar | x: 解压，v: 显示详细信息，f: 指定文件 |
-| .tar.gz / .tgz | tar -zxvf filename.tar.gz | z: 支持gzip压缩，x: 解压，v: 显示详细信息，f: 指定文件 |
-| .tar.bz2 | tar -jxvf filename.tar.bz2 | j: 支持bzip2压缩，x: 解压，v: 显示详细信息，f: 指定文件 |
-| .tar.xz | tar -Jxvf filename.tar.xz | J: 支持xz压缩，x: 解压，v: 显示详细信息，f: 指定文件 |
-| .gz | gzip -d filename.gz | -d: 解压 |
-| .zip | unzip filename.zip | 直接解压 |
-| .rar | unrar x filename.rar | x: 解压到当前目录 |
-| .7z | 7z x filename.7z | x: 解压 |
-| .bz2 | bzip2 -d filename.bz2 | -d: 解压 |
-| .xz | xz -d filename.xz | -d: 解压 |
-
-</div>
-</div>
-
-<div class="collapsible-section">
-<button class="collapsible-btn">Blog</button>
-<div class="collapsible-content" markdown="1">
-
-[Chripy官网](https://chirpy.cotes.page/)
-
-别人的blog好牛哎
-
-[Marvin](https://winxuan.github.io/posts/creat-blog/)
-
-[MsEspeon](https://ittousei.github.io/posts/customize-my-blog/)
-
-[masterke](https://masterke.cn/)
-
-[草稿纸](https://bane-dysta.github.io/draft)
-
-[本地服务器网址](http://127.0.0.1:4000/)
-
-[本地草稿纸](http://127.0.0.1:4000/draft)
-
-
-
-</div>
-</div>
-
-```
-test
-```

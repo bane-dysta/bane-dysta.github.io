@@ -1,3 +1,12 @@
+---
+layout: null
+title: VMD 调色盘
+description: 为 VMD 的正负值颜色生成配色，并直接复制 VMD 命令。
+icon: fas fa-palette
+order: 2
+new_tab: true
+permalink: /assets/files/vmd_color_picker.html
+---
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -46,7 +55,7 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: 
+            background:
                 radial-gradient(circle at 20% 50%, rgba(0, 212, 255, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 80% 50%, rgba(167, 139, 250, 0.1) 0%, transparent 50%);
             pointer-events: none;
@@ -742,14 +751,14 @@
             const inputId = type === 'negative' ? 'pasteNegative' : 'pastePositive';
             const colorInput = type === 'negative' ? negativeColorInput : positiveColorInput;
             const pasteInput = document.getElementById(inputId);
-            
+
             let colorCode = pasteInput.value.trim();
-            
+
             // 处理不同格式的颜色代码
             if (!colorCode.startsWith('#')) {
                 colorCode = '#' + colorCode;
             }
-            
+
             // 验证颜色代码
             if (/^#[0-9A-F]{6}$/i.test(colorCode)) {
                 colorInput.value = colorCode;
@@ -765,7 +774,7 @@
         document.getElementById('pasteNegative').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') pasteColor('negative');
         });
-        
+
         document.getElementById('pastePositive').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') pasteColor('positive');
         });

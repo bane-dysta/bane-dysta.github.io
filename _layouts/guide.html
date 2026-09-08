@@ -1,0 +1,21 @@
+---
+layout: page
+# Manually curated article collections
+---
+
+{% assign guides = site.guides | sort: 'order' %}
+
+<div id="page-category">
+  <ul class="content ps-0">
+    {% for guide in guides %}
+      <li class="d-flex justify-content-between px-md-3">
+        <a href="{{ guide.url | relative_url }}">
+          <i class="far fa-folder fa-fw text-muted me-1"></i>
+          {{ guide.title }}
+        </a>
+        <span class="dash flex-grow-1"></span>
+        <span class="text-muted small text-nowrap">{{ guide.posts | size }}</span>
+      </li>
+    {% endfor %}
+  </ul>
+</div>

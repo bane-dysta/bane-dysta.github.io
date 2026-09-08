@@ -23,6 +23,8 @@ tar -czf blog-src.tgz \
   _sass \
   _tabs \
   _softwares \
+  _tools \
+  _guides \
   assets \
   index.html \
   local_serve.bat \
