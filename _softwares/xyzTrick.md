@@ -13,22 +13,22 @@ xyzTrick是一个致力于利用剪切板作为媒介传递信息，避免直接
 
 - [安装](#安装)
 - [运行功能](#运行功能)
-    - [xyz剪切板](#xyz剪切板)
-    - [逆向剪切板](#逆向剪切板)
-    - [解析chg文本](#解析chg文本)
+  - [xyz剪切板](#xyz剪切板)
+  - [逆向剪切板](#逆向剪切板)
+  - [解析chg文本](#解析chg文本)
 - [套壳功能](#套壳功能)
-    - [`.xyz`&`.chg`文件](#xyzchg文件)
-    - [`.log`&`.out`文件](#logout文件)
+  - [`.xyz`\&`.chg`文件](#xyzchg文件)
+  - [`.log`\&`.out`文件](#logout文件)
 - [插件功能](#插件功能)
-    - [clipxtb](#clipxtb)
-    - [clipchem3d](#clipchem3d)
+  - [clipxtb](#clipxtb)
+  - [clipchem3d](#clipchem3d)
 
 <!-- /TOC -->
 
 ## 安装
 在[release](https://github.com/bane-dysta/xyzTrickGview2/releases)里下载最新版。提供两种版本，一种是单可执行文件，一种是installer。
 
-单独下载可执行文件时，需要自行处理配置ini文件。installer则会获取GAUSS_EXEDIR帮用户确定一些路径。
+单独下载可执行文件时，需要自行处理配置ini文件。installer则会获取GAUSS_EXEDIR帮用户确定一些路径。注意，如果安装时没有设定GAUSS_EXEDIR，则后续设定后若想xyzTrick读取到，需要重启xyzTrick。
 
 配置文件示例：
 ```
