@@ -1,5 +1,6 @@
 wfn=*.xyz
 ring=?
+range=12
 
 %command
 #!/bin/bash
@@ -17,7 +18,7 @@ end
 
 [aromatic]
 %process
-    gen2dinp ring ${ring}
+    gen2dinp ring ${ring} range ${range}
 end
 
 %command
@@ -27,7 +28,7 @@ read X Y Z < <(awk '/The unit normal vector is /{print $6,$7,$8; exit}' "aromati
 vector="${X},${Y},${Z}"
 echo [aromatic] > nics2.bwc
 echo "%process" >> nics2.bwc
-echo "    nics2d ring ${ring} vector ${vector}" >> nics2.bwc
+echo "    nics2d ring ${ring} vector ${vector} range ${range}" >> nics2.bwc
 echo "wait" >> nics2.bwc
 cat << EOF >> nics2.bwc
 
