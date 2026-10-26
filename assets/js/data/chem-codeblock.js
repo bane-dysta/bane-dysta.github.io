@@ -466,7 +466,9 @@
     var params = getParams(code, root);
     if (!params) return;
 
-    var source = code.textContent || '';
+    // Rouge keeps line numbers and source in separate table cells.
+    var sourceNode = code.querySelector('.rouge-code') || code;
+    var source = sourceNode.textContent || '';
     var id = createCanvasElement(root, params);
     var ok = params.mode === '2d'
       ? render2D(id, language, source, params)
