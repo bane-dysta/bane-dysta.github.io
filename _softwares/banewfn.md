@@ -123,25 +123,52 @@ banewfn可以从笔者的[GitHub](https://github.com/bane-dysta/banewfn/releases
 
 如果连不上GitHub，可以去[gitee](https://gitee.com/bane-dysta/banewfn/releases)下载，但是这里要靠笔者手动release，可能不是最新版。
 
-Linux目前通过cpack单文件安装包进行release（后缀sh），运行后跟着提示操作即可。
+Linux / WSL 的 x86_64 环境可以用下面的命令安装或更新。需要系统中已有 `bash`、`curl`、Python 3.6 或更新版本，以及安装包解压所需的 `tar` 和 `gzip`。
+
 ```bash
-bash banewfn-1.3.0-linux-x86_64.sh
-```
-注意，linux版的`banewfn.rc`文件目前需要用户手动创建：
-```bash
-mkdir -p ~/.bane/wfn
-cat << EOF > ~/.bane/wfn/banewfn.rc
-# 如果你的Multiwfn在PATH里，可以直接这么写，否则要带绝对路径
-Multiwfn_exec=Multiwfn
-confpath=/path/to/conf
-cores=4
+curl -fsSL https://bane-dysta.top/assets/files/banewfn/install.sh | bash
 ```
 
-关于使用，一种方法是将`banewfn`所在路径加入`PATH`。示例：
+默认安装最新正式 Release。首次安装会引导设置安装目录、命令入口目录、模块配置目录、Multiwfn 路径和默认核心数，并询问是否将 PATH 配置写入 shell 启动文件。安装包从 GitHub 下载，脚本核对 SHA-256 后解包。
+
+默认的程序目录是 `~/.local/share/banewfn`，命令入口放在 `~/.local/bin`，运行配置保存在 `~/.bane/wfn/banewfn.rc`。如果已有 `banewfn.rc`，向导会询问是否重新配置；更新时保留已有设置。引导过程中不会运行 Multiwfn；尚未安装 Multiwfn 时，也可以先保存路径，准备好后再配置。
+
+安装完成后，按脚本显示的命令让当前终端加载 PATH。使用默认安装目录时，命令是：
+
 ```bash
-export PATH=$PATH:/path/to/banewfn-1.3.0-linux-x86_64/bin
+. ~/.local/share/banewfn/env.sh
 ```
-完成后，即可在命令行调用`banewfn`执行`bw`/`bwc`脚本。
+
+如果选择了写入 shell 启动文件，新终端会自动加载这个环境配置。
+
+再次执行安装命令即可更新。未修改的官方模块配置随版本更新；自己修改过的文件保留，新的官方文件放在程序目录下的 `config-updates/`，脚本会给出具体位置。下载、校验或安装失败时，恢复本次改动并保留原来的版本。
+
+需要重新设置资源和环境时，使用：
+
+```bash
+curl -fsSL https://bane-dysta.top/assets/files/banewfn/install.sh | bash -s -- --configure
+```
+
+还可以使用以下参数：
+
+- `--prerelease`：安装最新测试版。
+- `--tag <Release标签>`：安装指定 Release。这里填写 GitHub Release 的实际标签。
+- `--rollback`：回退到上一已安装版本；模块配置仍按上述方式保留自行修改的内容。
+- `--prefix <目录>`、`--bin-dir <目录>`、`--conf-dir <目录>`：分别设置程序、命令入口和模块配置目录。
+- `--multiwfn <路径或命令名>`、`--cores <核心数>`：设置 Multiwfn 路径和默认核心数。
+- `--profile <文件>`：指定写入 PATH 的 shell 启动文件；`--no-profile` 则只生成环境文件。
+- `--yes`：使用参数和默认值进行非交互安装。
+
+例如，自动安装到指定目录并设置资源：
+
+```bash
+curl -fsSL https://bane-dysta.top/assets/files/banewfn/install.sh | bash -s -- \
+  --yes --prefix "$HOME/apps/banewfn" --multiwfn /opt/Multiwfn/Multiwfn --cores 4
+```
+
+也可以从上述 Release 页面手动下载 Linux 的 `.sh` 安装包，再执行 `bash 安装包文件名.sh`。
+
+完成环境配置后，即可在命令行调用 `banewfn` 执行 `bw` / `bwc` 脚本。
 
 ```bash
 g16 h2.gjf
