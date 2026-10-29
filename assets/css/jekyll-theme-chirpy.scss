@@ -1,12 +1,17 @@
 ---
 ---
 
-@import 'main
+@use 'abstracts/variables' with (
+  $theme: '{{ site.theme_mode }}'
+);
+
+/* prettier-ignore */
+@use 'main
 {%- if jekyll.environment == 'production' -%}
   .bundle
 {%- endif -%}
 ';
 
 /* append your custom style below */
-@import "custom/collapsible";
-@import "custom/tools";
+@use 'custom/collapsible';
+@use 'custom/tools';
